@@ -1,0 +1,39 @@
+# Wails
+build/
+frontend/dist/
+frontend/node_modules/
+wails_build_*
+*.syso
+
+# Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+go.work
+vendor/
+
+
+# IDE, dev tools
+.vscode/
+.cursor/
+.claude/
+.DS_Store
+
+# OS
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# User data (runtime)
+data/
