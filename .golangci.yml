@@ -1,0 +1,143 @@
+run:
+  timeout: 5m
+  tests: true
+  modules-download-mode: readonly
+  skip-dirs:
+    - build
+    - frontend
+    - data
+
+linters:
+  enable:
+    # Default linters
+    - errcheck      # Checks for unchecked errors
+    - gosimple      # Simplify code
+    - govet         # Reports suspicious constructs
+    - ineffassign   # Detects ineffectual assignments
+    - staticcheck   # Go static analysis
+    - unused        # Checks for unused code
+
+    # Additional linters
+    - gofmt         # Checks code formatting
+    - goimports     # Checks import statements formatting
+    - misspell      # Finds commonly misspelled words
+    - revive        # Fast, configurable, extensible linter
+    - gosec         # Security checks
+    - unconvert     # Remove unnecessary type conversions
+    - unparam       # Reports unused function parameters
+    - gocyclo       # Computes cyclomatic complexity
+    - goconst       # Finds repeated strings for constants
+    - godot         # Checks if comments end in period
+    - errorlint     # Error wrapping issues
+    - exportloopref # Checks for pointers to loop variables
+    - gocritic      # Meta-linter with many checks
+    - gci           # Controls Go package import order
+    - bodyclose     # Checks HTTP response body is closed
+    - contextcheck  # Checks context usage
+    - dupl          # Code clone detection
+    - durationcheck # Checks for duration multiplication issues
+    - errname       # Checks error naming conventions
+    - exhaustive    # Checks exhaustiveness of enum switch
+    - forcetypeassert # Finds forced type assertions
+    - gomodguard    # Checks module dependencies
+    - goprintffuncname # Checks printf-like function names
+    - grouper       # Analyzes expression groups
+    - maintidx      # Measures maintainability index
+    - nakedret      # Checks naked returns
+    - nilerr        # Checks nil error returns
+    - nilnil        # Checks returning nil,nil
+    - noctx         # Checks HTTP requests without context
+    - prealloc      # Finds slice declarations that could be preallocated
+    - predeclared   # Finds shadowing of predeclared identifiers
+    - tenv          # Detects using os.Setenv in tests
+    - thelper       # Detects test helpers without t.Helper()
+    - tparallel     # Detects inappropriate usage of t.Parallel()
+    - wastedassign  # Finds wasted assignment statements
+    - whitespace    # Detects unnecessary whitespace
+
+linters-settings:
+  errcheck:
+    check-type-assertions: true
+    check-blank: true
+
+  govet:
+    enable-all: true
+    disable:
+      - shadow
+
+  gocyclo:
+    min-complexity: 15
+
+  goconst:
+    min-len: 3
+    min-occurrences: 3
+
+  misspell:
+    locale: US
+
+  gocritic:
+    enabled-tags:
+      - diagnostic
+      - experimental
+      - opinionated
+      - performance
+      - style
+    disabled-checks:
+      - dupImport
+      - ifElseChain
+      - octalLiteral
+      - whyNoLint
+
+  gci:
+    sections:
+      - standard
+      - default
+      - prefix(github.com/AshBuk/FingerGo)
+
+  revive:
+    rules:
+      - name: exported
+        arguments:
+          - checkPrivateReceivers
+          - disableStutteringCheck
+
+  gosec:
+    excludes:
+      - G204 # Subprocess with variable
+
+  nakedret:
+    max-func-lines: 30
+
+issues:
+  exclude-rules:
+    # Exclude some linters from running on tests files
+    - path: _test\.go
+      linters:
+        - gocyclo
+        - errcheck
+        - dupl
+        - gosec
+        - funlen
+        - goconst
+
+    # Exclude known issues in auto-generated files
+    - path: frontend/
+      linters:
+        - all
+
+    # Exclude some staticcheck messages
+    - linters:
+        - staticcheck
+      text: "SA9003:"
+
+  max-issues-per-linter: 0
+  max-same-issues: 0
+  new: false
+
+output:
+  formats:
+    - format: colored-line-number
+  print-issued-lines: true
+  print-linter-name: true
+  unique-by-line: true
+  sort-results: true
