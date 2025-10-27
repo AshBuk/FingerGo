@@ -1,0 +1,24 @@
+{
+  "$schema": "https://wails.io/schemas/config.v2.json",
+  "name": "FingerGo",
+  "outputfilename": "fingergo",
+  "frontend:install": "",
+  "frontend:build": "",
+  "frontend:dev:watcher": "frontend/src",
+  "frontend:dev:serverUrl": "auto",
+  "author": {
+    "name": "Asher Buk",
+    "email": "asherbuk@gmail.com"
+  },
+  "info": {
+    "companyName": "",
+    "productName": "FingerGo",
+    "productVersion": "0.1.0",
+    "copyright": "Copyright 2025 Asher Buk",
+    "comments": "Touch typing trainer with visual keyboard feedback"
+  },
+  "wailsjsdir": "./frontend/src/wailsjs",
+  "assetdir": "./frontend/src",
+  "reloaddirs": ["./app", "./internal"],
+  "debounceMS": 100
+}
