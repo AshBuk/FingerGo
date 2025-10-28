@@ -2,4 +2,4 @@
 // SPDX-License-Identifier: Apache-2.0
 // https://github.com/AshBuk/FingerGo
 
-
+package models

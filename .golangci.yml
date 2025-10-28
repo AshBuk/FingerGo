@@ -2,10 +2,6 @@ run:
   timeout: 5m
   tests: true
   modules-download-mode: readonly
-  skip-dirs:
-    - build
-    - frontend
-    - data
 
 linters:
   enable:
@@ -29,7 +25,7 @@ linters:
     - goconst       # Finds repeated strings for constants
     - godot         # Checks if comments end in period
     - errorlint     # Error wrapping issues
-    - exportloopref # Checks for pointers to loop variables
+    - copyloopvar   # Checks for loop variable issues
     - gocritic      # Meta-linter with many checks
     - gci           # Controls Go package import order
     - bodyclose     # Checks HTTP response body is closed
@@ -49,7 +45,7 @@ linters:
     - noctx         # Checks HTTP requests without context
     - prealloc      # Finds slice declarations that could be preallocated
     - predeclared   # Finds shadowing of predeclared identifiers
-    - tenv          # Detects using os.Setenv in tests
+    - usetesting    # Detects using os.Setenv in tests (replaces tenv)
     - thelper       # Detects test helpers without t.Helper()
     - tparallel     # Detects inappropriate usage of t.Parallel()
     - wastedassign  # Finds wasted assignment statements
@@ -109,6 +105,11 @@ linters-settings:
     max-func-lines: 30
 
 issues:
+  exclude-dirs:
+    - build
+    - frontend
+    - data
+
   exclude-rules:
     # Exclude some linters from running on tests files
     - path: _test\.go
