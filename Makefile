@@ -33,7 +33,7 @@ clean:
 generate:
 	wails generate module
 
-licenses:
+license:
 	bash scripts/check-licenses.sh
 
 

@@ -4,8 +4,6 @@
   "outputfilename": "fingergo",
   "frontend:install": "",
   "frontend:build": "",
-  "frontend:dev:watcher": "frontend/src",
-  "frontend:dev:serverUrl": "auto",
   "author": {
     "name": "Asher Buk",
     "email": "asherbuk@gmail.com"
@@ -19,6 +17,6 @@
   },
   "wailsjsdir": "./frontend/src/wailsjs",
   "assetdir": "./frontend/src",
-  "reloaddirs": ["./app", "./internal"],
+  "reloaddirs": "./app,./internal",
   "debounceMS": 100
 }
