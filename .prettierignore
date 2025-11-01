@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+vendor/
+
+# Build outputs
+build/
+dist/
+frontend/dist/
+
+# Wails generated
+wails.json
+
+# Git
+.git/
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docs (may have specific formatting)
+*.md

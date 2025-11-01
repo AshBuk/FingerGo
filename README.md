@@ -29,6 +29,7 @@ Distributed for Linux (Flatpak).
 ## Acknowledgments
 
 - Built with [Wails](https://wails.io/)
+- Gopher mascot by Renee French — CC BY 3.0 (modified). See [ATTRIBUTION.md](ATTRIBUTION.md)
 
 ## Apache 2.0 [LICENSE](LICENSE)
 
