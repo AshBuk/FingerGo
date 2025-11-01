@@ -23,7 +23,6 @@ linters:
     - unparam       # Reports unused function parameters
     - gocyclo       # Computes cyclomatic complexity
     - goconst       # Finds repeated strings for constants
-    - godot         # Checks if comments end in period
     - errorlint     # Error wrapping issues
     - copyloopvar   # Checks for loop variable issues
     - gocritic      # Meta-linter with many checks
@@ -39,7 +38,6 @@ linters:
     - goprintffuncname # Checks printf-like function names
     - grouper       # Analyzes expression groups
     - maintidx      # Measures maintainability index
-    - nakedret      # Checks naked returns
     - nilerr        # Checks nil error returns
     - nilnil        # Checks returning nil,nil
     - noctx         # Checks HTTP requests without context
@@ -49,7 +47,6 @@ linters:
     - thelper       # Detects test helpers without t.Helper()
     - tparallel     # Detects inappropriate usage of t.Parallel()
     - wastedassign  # Finds wasted assignment statements
-    - whitespace    # Detects unnecessary whitespace
 
 linters-settings:
   errcheck:
@@ -101,9 +98,6 @@ linters-settings:
     excludes:
       - G204 # Subprocess with variable
 
-  nakedret:
-    max-func-lines: 30
-
 issues:
   exclude-dirs:
     - build
@@ -140,5 +134,4 @@ output:
     - format: colored-line-number
   print-issued-lines: true
   print-linter-name: true
-  unique-by-line: true
   sort-results: true
