@@ -1,8 +1,7 @@
-<div align="center">
-  <img src="fingergo.png" alt="FingerGo Logo" width="200" align="right" style="margin-left: 20px;">
-</div>
+<img src="fingergo.png" alt="FingerGo Logo" width="400" align="right">
 
-**FingerGo** is a desktop touch-typing trainer app with real-time keyboard
+### **FingerGo**
+Touch-typing trainer desctop app with real-time keyboard
 visualization and detailed typing analytics (WPM, accuracy, mistakes).
 
 Distributed for Linux (Flatpak).
