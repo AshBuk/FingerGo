@@ -1,0 +1,32 @@
+{
+  "name": "fingergo",
+  "version": "0.1.0",
+  "description": "Touch-typing trainer desktop app with real-time keyboard visualization",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "lint": "eslint frontend/src/**/*.js",
+    "lint:fix": "eslint frontend/src/**/*.js --fix",
+    "format": "prettier --write 'frontend/src/**/*.{js,html,css}'",
+    "format:check": "prettier --check 'frontend/src/**/*.{js,html,css}'"
+  },
+  "devDependencies": {
+    "eslint": "^9.17.0",
+    "prettier": "^3.4.2"
+  },
+  "keywords": [
+    "typing",
+    "trainer",
+    "keyboard",
+    "touch-typing",
+    "wails",
+    "go",
+    "desktop"
+  ],
+  "author": "Asher Buk",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AshBuk/FingerGo.git"
+  }
+}

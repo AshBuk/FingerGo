@@ -1,39 +1,47 @@
 # FingerGo Makefile
 
-.PHONY: help deps fmt lint test build run dev clean generate licenses
+.PHONY: deps fmt lint test build run dev clean generate license
+.PHONY: go-deps go-fmt go-lint go-test js-deps js-fmt js-lint
 
-help:
-	@echo "Targets: deps fmt lint test build run dev clean generate licenses"
+# === Combined Targets ===
+deps: go-deps js-deps     # Install all dependencies (Go + JS)
+fmt: go-fmt js-fmt        # Format all code (Go + JS)
+lint: go-lint js-lint     # Lint all code (Go + JS)
+test: go-test             # Run Go tests
 
-deps:
+# === Go Targets ===
+go-deps:                  # Install Go dependencies
 	go mod tidy
-
-fmt:
+go-fmt:                   # Format Go code
 	@gofmt -s -w .
 	@goimports -w . || true
-
-lint:
+go-lint:                  # Lint Go code
 	@golangci-lint run
-
-test:
+go-test:                  # Run Go tests
 	@go test ./...
 
-build:
-	wails build
+# === JS Targets ===
+js-deps:                  # Install JS dependencies
+	npm install
+js-fmt:                   # Format JS code
+	npm run format
+js-lint:                  # Lint JS code
+	npm run lint
 
-run:
-	wails run
-
-dev:
+# === Wails Targets ===
+dev:                      # Start development mode
 	wails dev
-
-clean:
-	rm -rf build/bin dist frontend/src/wailsjs || true
-
-generate:
+build:                    # Build production binary
+	wails build
+run:                      # Run application
+	wails run
+generate:                 # Generate Wails bindings
 	wails generate module
 
-license:
+# === Utility Targets ===
+clean:                    # Remove build artifacts
+	rm -rf build/bin dist frontend/src/wailsjs node_modules || true
+license:                  # Check license headers
 	bash scripts/check-licenses.sh
 
 

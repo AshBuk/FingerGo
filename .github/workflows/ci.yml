@@ -20,6 +20,12 @@ jobs:
         with:
           go-version-file: go.mod
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
       - name: Cache Go modules
         uses: actions/cache@v4
         with:
@@ -30,10 +36,19 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-
 
-      - name: Lint
+      - name: Install dependencies
+        run: make deps
+
+      - name: Lint Go
         uses: golangci/golangci-lint-action@v6
         with:
           install-mode: goinstall
+
+      - name: Lint JavaScript
+        run: make js-lint
+
+      - name: Format check (Prettier)
+        run: npm run format:check
 
       - name: Test
         run: go test ./...
