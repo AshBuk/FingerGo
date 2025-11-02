@@ -23,13 +23,13 @@ Distributed for Linux (Flatpak).
 
 ## For Developers
 
-- [Technical specifications](specs/tech-design/)
-- [CONTRIBUTING.md](CONTRIBUTING.md)
+- [Technical specifications](docs/specs/tech-design/)
+- [CONTRIBUTING.md](docs/CONTRIBUTING.md)
 
 ## Acknowledgments
 
 - Built with [Wails](https://wails.io/)
-- Gopher mascot by Renee French — CC BY 3.0 (modified). See [ATTRIBUTION.md](ATTRIBUTION.md)
+- Gopher mascot by Renee French — CC BY 3.0 (modified). See [ATTRIBUTION.md](docs/ATTRIBUTION.md)
 
 ## Apache 2.0 [LICENSE](LICENSE)
 
