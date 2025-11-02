@@ -4,4 +4,170 @@ SPDX-License-Identifier: Apache-2.0
 https://github.com/AshBuk/FingerGo
 */
 
+/* Keyboard Layout */
+#keyboard {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: rgba(var(--accent-rgb), 0.08);
+    border-radius: 12px;
+    box-shadow:
+        0 8px 32px var(--shadow-strong),
+        inset 0 1px 0 rgba(var(--accent-rgb), 0.1);
+    max-width: 1200px;
+}
+
+/* Keyboard Rows */
+.keyboard-row {
+    display: flex;
+    gap: 0.45rem;
+    justify-content: center;
+}
+
+/* Key Styles */
+.key {
+    min-width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: var(--accent);
+    background: var(--key-bg);
+    border: 1px solid var(--key-border);
+    border-radius: 6px;
+    cursor: default;
+    transition: all 0.15s ease;
+    user-select: none;
+    box-shadow:
+        0 2px 4px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(var(--accent-rgb), 0.1);
+    position: relative;
+    line-height: 1.2;
+}
+
+.key:hover {
+    background: var(--key-bg-hover);
+    border-color: var(--key-border-strong);
+}
+
+/* Key pressed state */
+.key.pressed {
+    background: var(--key-pressed-bg);
+    border-color: var(--key-pressed-border);
+    transform: translateY(1px);
+    box-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.3),
+        inset 0 2px 4px rgba(var(--accent-rgb), 0.15);
+}
+
+/* Key highlighted as target */
+.key.target {
+    background: rgba(var(--accent-rgb), 0.35);
+    border-color: rgba(var(--accent-rgb), 0.6);
+    box-shadow:
+        0 0 16px rgba(var(--accent-rgb), 0.4),
+        0 2px 4px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(var(--accent-rgb), 0.2);
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        box-shadow:
+            0 0 16px rgba(var(--accent-rgb), 0.4),
+            0 2px 4px rgba(0, 0, 0, 0.2),
+            inset 0 1px 0 rgba(var(--accent-rgb), 0.2);
+    }
+    50% {
+        box-shadow:
+            0 0 24px rgba(var(--accent-rgb), 0.6),
+            0 2px 4px rgba(0, 0, 0, 0.2),
+            inset 0 1px 0 rgba(var(--accent-rgb), 0.3);
+    }
+}
+
+/* Key error state */
+.key.error {
+    background: rgba(220, 53, 69, 0.2);
+    border-color: rgba(220, 53, 69, 0.4);
+}
+
+/* Special key widths */
+.key-wide {
+    min-width: 96px;
+}
+
+.key-wider {
+    min-width: 114px;
+}
+
+.key-widest {
+    min-width: 132px;
+}
+
+.key-space {
+    min-width: 480px;
+}
+
+/* Special key font size adjustments */
+.key-wide,
+.key-wider,
+.key-widest {
+    font-size: 0.75rem;
+}
+
+/* Finger color mapping - subtle hints on keys */
+.key[data-finger="left-pinky"] {
+    border-left: 3px solid rgba(255, 107, 107, 0.3);
+}
+
+.key[data-finger="left-ring"] {
+    border-left: 3px solid rgba(255, 159, 64, 0.3);
+}
+
+.key[data-finger="left-middle"] {
+    border-left: 3px solid rgba(255, 205, 86, 0.3);
+}
+
+.key[data-finger="left-index"] {
+    border-left: 3px solid rgba(75, 192, 192, 0.3);
+}
+
+.key[data-finger="right-index"] {
+    border-left: 3px solid rgba(var(--accent-rgb), 0.4);
+}
+
+.key[data-finger="right-middle"] {
+    border-left: 3px solid rgba(153, 102, 255, 0.3);
+}
+
+.key[data-finger="right-ring"] {
+    border-left: 3px solid rgba(201, 203, 207, 0.3);
+}
+
+.key[data-finger="right-pinky"] {
+    border-left: 3px solid rgba(255, 99, 132, 0.3);
+}
+
+.key[data-finger="thumb"] {
+    border-top: 3px solid rgba(var(--accent-rgb), 0.4);
+}
+
+/* Smooth transitions */
+.key {
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        transform 0.1s ease,
+        box-shadow 0.15s ease;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .key { transition: none; }
+    .key.target { animation: none; }
+}
 
