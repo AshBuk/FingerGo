@@ -16,8 +16,13 @@
         return;
     }
 
-    // Load default layout (EN QWERTY for MVP)
+    // Load default layout
     const layout = window.KeyboardLayouts.getDefaultLayout();
+    if (!layout) {
+        console.error('No keyboard layout available. Ensure at least one layout is loaded.');
+        return;
+    }
+
     const rows = layout.rows;
     const fingerForKey = layout.fingerMap;
 

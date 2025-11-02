@@ -66,14 +66,10 @@ https://github.com/AshBuk/FingerGo
 
     <script src="wailsjs/runtime/runtime.js"></script>
     <script src="js/app.js"></script>
-    <!-- Keyboard layouts: registry first, then individual layouts -->
-    <script src="js/layouts.js"></script>
+    <!-- Keyboard layouts: load individual layouts before registry -->
     <script src="js/layouts/en-qwerty.js"></script>
     <!-- <script src="js/layouts/ru-jcuken.js"></script> -->
-    <script>
-        // Auto-register loaded layouts
-        window.KeyboardLayouts._autoRegister();
-    </script>
+    <script src="js/layouts.js"></script>
     <script src="js/keyboard.js"></script>
     <script src="js/typing.js"></script>
     <script src="js/ui.js"></script>
