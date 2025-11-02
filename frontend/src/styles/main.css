@@ -11,24 +11,143 @@ https://github.com/AshBuk/FingerGo
 }
 
 body {
-    font-family: system-ui, -apple-system, sans-serif;
-    background: #f5f5f5;
-    color: #333;
+    font-family: 'Inter', 'SF Pro Display', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text-default);
+    overflow: hidden;
 }
 
 #app {
     display: flex;
     flex-direction: column;
+    height: 100vh;
+    padding: 0;
+    gap: 0;
+}
+
+/* Text Display Area */
+#text-area {
+    flex: 1;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 2rem 3rem 1rem 3rem;
+    overflow-y: auto;
+}
+
+#text-display {
+    font-size: 1.5rem;
+    line-height: 1.8;
+    letter-spacing: 0.02em;
+    color: var(--accent);
+    text-align: left;
+    width: 100%;
+    max-width: 1000px;
+    font-weight: 300;
+    padding: 1.5rem 2rem;
+    background: rgba(var(--accent-rgb), 0.03);
+    border-radius: 8px;
+    min-height: 200px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.text-to-type {
+    color: var(--accent);
+    opacity: 0.9;
+}
+
+.text-to-type .typed {
+    color: var(--accent);
+    opacity: 1;
+}
+
+.text-to-type .current {
+    background: rgba(var(--accent-rgb), 0.3);
+    border-radius: 2px;
+    padding: 0 2px;
+}
+
+.text-to-type .error {
+    background: rgba(220, 53, 69, 0.3);
+    color: #dc3545;
+}
+
+/* Statistics Bar */
+#stats-bar {
+    display: flex !important;
+    visibility: visible !important;
+    justify-content: center;
+    align-items: center;
+    gap: 3rem;
+    padding: 1rem 2rem 0.75rem 2rem;
+    margin-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(var(--accent-rgb), 0.2);
+    min-height: 60px;
+}
+
+.stat-item {
+    display: flex !important;
+    visibility: visible !important;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+}
+
+.stat-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    opacity: 0.65;
+    font-weight: 500;
+}
+
+.stat-value {
+    font-size: 1.4rem;
+    font-weight: 300;
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+}
+
+/* Keyboard Section */
+#keyboard-section {
+    display: flex;
     align-items: center;
     justify-content: center;
-    height: 100vh;
-    text-align: center;
+    gap: 0;
+    padding-bottom: 1.5rem;
+    position: relative;
 }
 
-h1 {
-    font-size: 3rem;
-    color: #00ADD8;
-    margin-bottom: 1rem;
+/* Responsive adjustments */
+@media (max-width: 1400px) {
+    #text-display {
+        font-size: 1.25rem;
+        padding: 1.25rem 1.5rem;
+    }
+
+    .stat-value {
+        font-size: 1.5rem;
+    }
+
+    #stats-bar {
+        gap: 3rem;
+    }
 }
 
+@media (max-width: 1024px) {
+    #text-display {
+        font-size: 1.1rem;
+        padding: 1rem;
+    }
+
+    #app {
+        padding: 1.5rem 2rem;
+    }
+
+    #text-area {
+        padding: 1rem 1.5rem;
+    }
+}
 
