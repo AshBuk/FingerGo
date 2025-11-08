@@ -68,6 +68,78 @@ body {
     padding: 0 2px;
 }
 
+/* Character-level text rendering */
+#text-display .char {
+    display: inline;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+#text-display .char.typed {
+    opacity: 1;
+}
+
+#text-display .char.typed.correct {
+    color: var(--accent);
+    opacity: 0.7;
+}
+
+#text-display .char.typed.error {
+    background: rgba(220, 53, 69, 0.3);
+    color: #dc3545;
+    border-radius: 2px;
+}
+
+#text-display .char.current {
+    background: rgba(var(--accent-rgb), 0.3);
+    border-radius: 2px;
+    padding: 0 2px;
+    animation: blink 1s ease-in-out infinite;
+}
+
+#text-display .char.current.error {
+    background: rgba(220, 53, 69, 0.3);
+    color: #dc3545;
+    animation: none;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+#text-display .char.fade-success {
+    animation: fadeSuccess 0.3s ease;
+}
+
+@keyframes fadeSuccess {
+    0% {
+        background: rgba(220, 53, 69, 0.3);
+        color: #dc3545;
+    }
+    100% {
+        background: transparent;
+        color: var(--accent);
+        opacity: 0.7;
+    }
+}
+
+/* Legacy support for old text-to-type class */
+.text-to-type {
+    color: var(--accent);
+    opacity: 0.9;
+}
+
+.text-to-type .typed {
+    color: var(--accent);
+    opacity: 1;
+}
+
+.text-to-type .current {
+    background: rgba(var(--accent-rgb), 0.3);
+    border-radius: 2px;
+    padding: 0 2px;
+}
+
 .text-to-type .error {
     background: rgba(220, 53, 69, 0.3);
     color: #dc3545;
@@ -148,5 +220,133 @@ body {
     #text-area {
         padding: 1rem 1.5rem;
     }
+}
+
+/* Modal Styles */
+#modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 1;
+    transition: opacity 0.2s ease;
+}
+
+#modal-overlay.modal-hidden {
+    display: none;
+    opacity: 0;
+}
+
+#modal-container {
+    background: var(--bg);
+    border: 1px solid var(--line-strong);
+    border-radius: 12px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 8px 32px var(--shadow-strong);
+    display: flex;
+    flex-direction: column;
+}
+
+#modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid var(--line-weak);
+}
+
+#modal-title {
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: var(--accent);
+    margin: 0;
+}
+
+#modal-close {
+    background: none;
+    border: none;
+    color: var(--accent);
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+    line-height: 1;
+}
+
+#modal-close:hover {
+    opacity: 1;
+}
+
+#modal-content {
+    padding: 2rem;
+    color: var(--text-default);
+}
+
+/* Session Summary Styles */
+.session-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.summary-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+}
+
+.summary-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    background: rgba(var(--accent-rgb), 0.05);
+    border-radius: 8px;
+    border: 1px solid var(--line-weak);
+}
+
+.summary-label {
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    opacity: 0.65;
+    margin-bottom: 0.5rem;
+}
+
+.summary-value {
+    font-size: 2rem;
+    font-weight: 300;
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+}
+
+.summary-errors {
+    padding: 1rem;
+    background: rgba(220, 53, 69, 0.1);
+    border-radius: 8px;
+    border: 1px solid rgba(220, 53, 69, 0.3);
+}
+
+.summary-errors h3 {
+    font-size: 1.1rem;
+    color: #dc3545;
+    margin-bottom: 0.5rem;
+}
+
+.summary-errors p {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin: 0;
 }
 
