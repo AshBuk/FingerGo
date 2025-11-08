@@ -43,7 +43,7 @@ fingergo/
 │   └── config.json             # User settings
 │
 ├── frontend/                    # Web UI
-│   ├── dist/                   # Built assets (Wails embeds this)
+│   ├── dist/                   # Built assets (Wails embeds this, auto-generated)
 │   ├── src/
 │   │   ├── index.html
 │   │   ├── styles/
@@ -52,15 +52,22 @@ fingergo/
 │   │   │   ├── theme-dark.css
 │   │   │   └── theme-light.css
 │   │   ├── js/
+│   │   │   ├── events.js       # Event bus (pub/sub for module communication)
+│   │   │   ├── layouts.js      # Keyboard layout registry system
+│   │   │   ├── layouts/        # Modular keyboard layout definitions
+│   │   │   │   └── en-qwerty.js  # EN QWERTY layout data
 │   │   │   ├── app.js          # Main app controller
 │   │   │   ├── keyboard.js     # Keyboard highlighting + finger mapping
 │   │   │   ├── typing.js       # Typing engine (WPM, accuracy, mistakes)
 │   │   │   ├── ui.js           # UI rendering and updates
 │   │   │   ├── stats.js        # Statistics visualization
 │   │   │   └── settings.js     # Settings management
-│   │   └── assets/
+│   │   ├── wailsjs/            # Auto-generated Wails runtime (not in repo)
+│   │   │   └── runtime/
+│   │   │       └── runtime.js  # Wails Go-JS bridge
+│   │   └── assets/             # Static assets (TODO)
 │   │       └── icons/          # Category icons (text, code languages)
-│   └── package.json             # Optional (if using bundler)
+│   └── package.json            # Optional (if using bundler)
 │
 └── build/                       # Build configurations
     └── linux/
@@ -75,8 +82,8 @@ fingergo/
 ### High-Level Component Diagram
 ```
 ┌────────────────────────────────────────────────────────────────┐
-│                          FingerGo                               │
-│                     (Wails Desktop App)                         │
+│                          FingerGo                              │
+│                     (Wails Desktop App)                        │
 └────────────────────────────────────────────────────────────────┘
                               │
         ┌─────────────────────┴──────────────────────┐
@@ -88,21 +95,28 @@ fingergo/
 └──────────────────┘                     └──────────────────────┘
         │                                            │
         │                                            │
-        ├─ Components                                ├─ Managers
-        │  ├─ Keyboard                               │  ├─ TextManager
-        │  ├─ Typing Area                            │  ├─ StatsManager
-        │  ├─ Text Library                           │  └─ KeyboardLayouts
-        │  ├─ Statistics                             │
-        │  └─ Settings                               │
-                                                     │
-                                                     ▼
-                                        ┌────────────────────────┐
-                                        │   FILE STORAGE         │
-                                        │   (User Data Dir)      │
-                                        └────────────────────────┘
-                                                     │
-                                     ┌───────────────┼────────────────┐
-                                     │               │                │
-                                     ▼               ▼                ▼
-                                 texts/         stats.json      config.json
-                               (folders)      (sessions)       (settings)
+        ├─ Core Infrastructure                       ├─ App Layer
+        │  ├─ EventBus (events.js)                   │  └─ app.go (Wails bindings)
+        │  └─ LayoutRegistry (layouts.js)            │
+        │                                            ├─ Models (internal/models/)
+        ├─ UI Components                             │  ├─ text.go
+        │  ├─ KeyboardUI (keyboard.js)               │  ├─ session.go
+        │  ├─ TypingEngine (typing.js)               │  ├─ keyboard.go
+        │  ├─ UIManager (ui.js)                      │  └─ stats.go
+        │  ├─ StatsManager (stats.js)                │
+        │  └─ SettingsManager (settings.js)          ├─ Managers
+        │                                            │  ├─ TextManager
+        ├─ Layout Data                               │  ├─ StatsManager
+        │  └─ layouts/en-qwerty.js                   │  └─ KeyboardLayouts
+        │                                            │
+        └─ Orchestration                             ▼
+           └─ app.js (main controller)   ┌────────────────────────┐
+                                         │   FILE STORAGE         │
+                                         │   (User Data Dir)      │
+                                         └────────────────────────┘
+                                                      │
+                                      ┌───────────────┼────────────────┐
+                                      │               │                │
+                                      ▼               ▼                ▼
+                                  texts/         stats.json      config.json
+                                (folders)      (sessions)       (settings)
