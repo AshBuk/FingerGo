@@ -7,24 +7,22 @@ https://github.com/AshBuk/FingerGo
 /* Dark theme tokens */
 .theme-dark {
     /* Base colors */
-    --bg: #0D0B09;                /* very dark brown almost black */
-    --text-default: #E8E6E3;
-    --text-muted: #BFB8B2;
+    --bg: #0d0b09; /* very dark brown almost black */
+    --text-default: #e8e6e3;
+    --text-muted: #bfb8b2;
 
     /* Accent (warm off-white/cream) */
     --accent: #f5f5e9;
-    --accent-rgb: 245, 245, 233;  /* RGB values matching #f5f5e9 */
+    --accent-rgb: 245, 245, 233; /* RGB values matching #f5f5e9 */
 
     /* UI lines and key colors derived from accent */
     --line-weak: rgba(var(--accent-rgb), 0.18);
-    --line-strong: rgba(var(--accent-rgb), 0.30);
+    --line-strong: rgba(var(--accent-rgb), 0.3);
     --key-bg: rgba(var(--accent-rgb), 0.12);
     --key-bg-hover: rgba(var(--accent-rgb), 0.18);
     --key-border: rgba(var(--accent-rgb), 0.25);
-    --key-border-strong: rgba(var(--accent-rgb), 0.40);
-    --key-pressed-bg: rgba(var(--accent-rgb), 0.30);
-    --key-pressed-border: rgba(var(--accent-rgb), 0.50);
-    --shadow-strong: rgba(0, 0, 0, 0.40);
+    --key-border-strong: rgba(var(--accent-rgb), 0.4);
+    --key-pressed-bg: rgba(var(--accent-rgb), 0.3);
+    --key-pressed-border: rgba(var(--accent-rgb), 0.5);
+    --shadow-strong: rgba(0, 0, 0, 0.4);
 }
-
-

@@ -110,10 +110,10 @@
 
     // Expose minimal API
     window.KeyboardUI = {
-        setTargetKey: (k) => setTarget(normalizeKey(k)),
+        setTargetKey: k => setTarget(normalizeKey(k)),
         clearTarget: () => setTarget(null),
-        setError: (k) => setErrorState(normalizeKey(k)),
-        clearError: (k) => clearErrorState(normalizeKey(k)),
+        setError: k => setErrorState(normalizeKey(k)),
+        clearError: k => clearErrorState(normalizeKey(k)),
         getCurrentLayout: () => layout,
     };
 })();

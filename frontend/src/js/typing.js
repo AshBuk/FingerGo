@@ -25,7 +25,7 @@
         totalErrors: 0,
         totalKeystrokes: 0,
         pausedTime: 0,
-        pauseStartTime: null
+        pauseStartTime: null,
     };
 
     let statsUpdateTimer = null;
@@ -60,10 +60,10 @@
      */
     function calculateWPM() {
         if (!session.startTime || session.currentIndex === 0) return 0;
-        
+
         const elapsed = getElapsedTimeSeconds();
         if (elapsed === 0) return 0;
-        
+
         const words = session.currentIndex / 5;
         const minutes = elapsed / 60;
         return words / minutes;
@@ -75,10 +75,10 @@
      */
     function calculateCPM() {
         if (!session.startTime || session.currentIndex === 0) return 0;
-        
+
         const elapsed = getElapsedTimeSeconds();
         if (elapsed === 0) return 0;
-        
+
         const minutes = elapsed / 60;
         return session.currentIndex / minutes;
     }
@@ -97,18 +97,18 @@
      */
     function getElapsedTimeSeconds() {
         if (!session.startTime) return 0;
-        
+
         const now = Date.now();
         let elapsed = now - session.startTime;
-        
+
         // Subtract paused time
         elapsed -= session.pausedTime;
-        
+
         // If currently paused, subtract current pause duration
         if (session.isPaused && session.pauseStartTime) {
-            elapsed -= (now - session.pauseStartTime);
+            elapsed -= now - session.pauseStartTime;
         }
-        
+
         return elapsed / 1000; // Convert to seconds
     }
 
@@ -117,20 +117,20 @@
      */
     function emitStatsUpdate() {
         if (statsUpdateTimer) return;
-        
+
         statsUpdateTimer = setTimeout(() => {
             const wpm = calculateWPM();
             const cpm = calculateCPM();
             const accuracy = calculateAccuracy();
             const time = getElapsedTimeSeconds();
-            
+
             window.EventBus.emit('stats:update', {
                 wpm,
                 cpm,
                 accuracy,
-                time
+                time,
             });
-            
+
             statsUpdateTimer = null;
         }, STATS_UPDATE_THROTTLE);
     }
@@ -141,45 +141,45 @@
     function handleKeyDown(e) {
         // Ignore if session not active or paused
         if (!session.isActive || session.isPaused) return;
-        
+
         // Ignore modifier keys
         if (['Control', 'Alt', 'Meta', 'Shift'].includes(e.key)) return;
-        
+
         // Prevent default behavior for special keys during active session
         // to avoid browser navigation (Tab, Enter, etc.)
         if (['Tab', 'Enter'].includes(e.key)) {
             e.preventDefault();
         }
-        
+
         const pressedKey = normalizeKey(e.key);
         const expectedChar = session.text[session.currentIndex];
-        
+
         if (expectedChar === undefined) {
             // Session already complete
             return;
         }
-        
+
         const expectedKey = normalizeTextChar(expectedChar);
         const isCorrect = pressedKey === expectedKey;
-        
+
         session.totalKeystrokes++;
-        
+
         // Record keystroke
         session.keystrokes.push({
             key: pressedKey,
             expected: expectedKey,
             isCorrect,
             index: session.currentIndex,
-            timestamp: Date.now()
+            timestamp: Date.now(),
         });
-        
+
         if (isCorrect) {
             // Correct key pressed
             window.EventBus.emit('typing:keystroke', {
                 char: expectedChar,
                 expected: expectedKey,
                 isCorrect: true,
-                index: session.currentIndex
+                index: session.currentIndex,
             });
 
             // Clear error state if it was set
@@ -216,7 +216,7 @@
                 char: expectedChar,
                 expected: expectedKey,
                 pressed: pressedKey,
-                index: session.currentIndex
+                index: session.currentIndex,
             });
 
             // Apply visual error feedback
@@ -233,7 +233,7 @@
      */
     function completeSession() {
         session.isActive = false;
-        
+
         const sessionData = {
             text: session.text,
             currentIndex: session.currentIndex,
@@ -246,13 +246,13 @@
             totalKeystrokes: session.totalKeystrokes,
             wpm: calculateWPM(),
             cpm: calculateCPM(),
-            accuracy: calculateAccuracy()
+            accuracy: calculateAccuracy(),
         };
-        
+
         if (window.KeyboardUI) {
             window.KeyboardUI.clearTarget();
         }
-        
+
         window.EventBus.emit('typing:complete', sessionData);
     }
 
@@ -265,24 +265,24 @@
             console.error('TypingEngine.start: text cannot be empty');
             return;
         }
-        
+
         reset();
         session.text = text;
         session.isActive = true;
         session.startTime = Date.now();
-        
+
         // Set initial target key
         const firstChar = text[0];
         const firstKey = normalizeTextChar(firstChar);
         if (window.KeyboardUI) {
             window.KeyboardUI.setTargetKey(firstKey);
         }
-        
+
         window.EventBus.emit('typing:start', {
             text,
-            timestamp: session.startTime
+            timestamp: session.startTime,
         });
-        
+
         // Attach keyboard listener
         window.addEventListener('keydown', handleKeyDown);
     }
@@ -292,9 +292,9 @@
      */
     function stop() {
         if (!session.isActive) return;
-        
+
         window.removeEventListener('keydown', handleKeyDown);
-        
+
         if (session.currentIndex < session.text.length) {
             // Session incomplete
             session.isActive = false;
@@ -308,7 +308,7 @@
      */
     function pause() {
         if (!session.isActive || session.isPaused) return;
-        
+
         session.isPaused = true;
         session.pauseStartTime = Date.now();
     }
@@ -318,13 +318,13 @@
      */
     function resume() {
         if (!session.isActive || !session.isPaused) return;
-        
+
         if (session.pauseStartTime) {
             const pauseDuration = Date.now() - session.pauseStartTime;
             session.pausedTime += pauseDuration;
             session.pauseStartTime = null;
         }
-        
+
         session.isPaused = false;
     }
 
@@ -333,7 +333,7 @@
      */
     function reset() {
         window.removeEventListener('keydown', handleKeyDown);
-        
+
         session.text = '';
         session.currentIndex = 0;
         session.startTime = null;
@@ -345,12 +345,12 @@
         session.totalKeystrokes = 0;
         session.pausedTime = 0;
         session.pauseStartTime = null;
-        
+
         if (statsUpdateTimer) {
             clearTimeout(statsUpdateTimer);
             statsUpdateTimer = null;
         }
-        
+
         if (window.KeyboardUI) {
             window.KeyboardUI.clearTarget();
         }
@@ -371,7 +371,7 @@
             isPaused: session.isPaused,
             totalErrors: session.totalErrors,
             totalKeystrokes: session.totalKeystrokes,
-            duration: getElapsedTimeSeconds()
+            duration: getElapsedTimeSeconds(),
         };
     }
 
@@ -392,7 +392,7 @@
             wpm: calculateWPM(),
             cpm: calculateCPM(),
             accuracy: calculateAccuracy(),
-            time: getElapsedTimeSeconds()
+            time: getElapsedTimeSeconds(),
         };
     }
 
@@ -405,6 +405,6 @@
         reset,
         getSessionData,
         getCurrentIndex,
-        getMetrics
+        getMetrics,
     };
 })();

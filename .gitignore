@@ -1,7 +1,7 @@
 # Wails
 build/
 frontend/dist/
-frontend/node_modules/
+frontend/src/wailsjs/
 wails_build_*
 *.syso
 
@@ -16,6 +16,9 @@ wails_build_*
 go.work
 vendor/
 
+
+# Node.js
+node_modules/
 
 # IDE, dev tools
 .vscode/
