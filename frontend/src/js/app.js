@@ -2,4 +2,341 @@
 // SPDX-License-Identifier: Apache-2.0
 // https://github.com/AshBuk/FingerGo
 
-console.log('FingerGo initialized');
+/**
+ * Application Controller
+ * Main orchestrator for FingerGo application
+ * Initializes all modules and coordinates lifecycle
+ */
+(() => {
+    // Fallback default text for MVP (hardcoded)
+    const FALLBACK_TEXT = `func fibonacci(n int) int {
+	memo := make(map[int]int)
+	var fib func(int) int
+	fib = func(n int) int {
+		if n <= 1 {
+			return n
+		}
+		if val, exists := memo[n]; exists {
+			return val
+		}
+		memo[n] = fib(n-1) + fib(n-2)
+		return memo[n]
+	}
+	return fib(n)
+}`;
+
+    /**
+     * Get default text (try backend first, fallback to hardcoded)
+     * @returns {Promise<string>} Text to type
+     */
+    async function getDefaultText() {
+        // Try Wails backend first (if available)
+        if (window.go?.app?.App) {
+            try {
+                const text = await window.go.app.App.GetDefaultText();
+                if (text && text.length > 0) {
+                    return text;
+                }
+            } catch (err) {
+                console.warn('Backend unavailable, using hardcoded text:', err);
+            }
+        }
+
+        // Fallback to hardcoded text
+        return FALLBACK_TEXT;
+    }
+
+    /**
+     * Initialize Wails runtime (if available)
+     */
+    async function initializeWails() {
+        if (window.runtime) {
+            try {
+                // Listen for backend ready event
+                await window.runtime.EventsOn('backend:ready', () => {
+                    console.log('Backend ready');
+                });
+            } catch (err) {
+                console.warn('Wails runtime initialization failed:', err);
+            }
+        }
+    }
+
+    /**
+     * Initialize all modules
+     */
+    async function initialize() {
+        // Wait for DOM to be ready
+        if (document.readyState === 'loading') {
+            await new Promise(resolve => {
+                document.addEventListener('DOMContentLoaded', resolve);
+            });
+        }
+
+        // Check required modules
+        if (!window.EventBus) {
+            console.error('EventBus not available. Ensure events.js is loaded.');
+            return;
+        }
+
+        if (!window.TypingEngine) {
+            console.error('TypingEngine not available. Ensure typing.js is loaded.');
+            return;
+        }
+
+        if (!window.UIManager) {
+            console.error('UIManager not available. Ensure ui.js is loaded.');
+            return;
+        }
+
+        if (!window.KeyboardUI) {
+            console.error('KeyboardUI not available. Ensure keyboard.js is loaded.');
+            return;
+        }
+
+        // Initialize Wails runtime (optional)
+        await initializeWails();
+
+        // Load default text
+        const defaultText = await getDefaultText();
+
+        // Render text in UI
+        if (window.UIManager) {
+            window.UIManager.renderText(defaultText);
+        }
+
+        // Set initial keyboard target (typing engine will start on first keystroke)
+        if (defaultText.length > 0 && window.KeyboardUI) {
+            const firstChar = defaultText[0];
+            const firstKey = normalizeTextChar(firstChar);
+            window.KeyboardUI.setTargetKey(firstKey);
+        }
+
+        // Emit app ready event
+        window.EventBus.emit('app:ready', {
+            text: defaultText,
+            timestamp: Date.now(),
+        });
+
+        console.log('FingerGo initialized successfully');
+    }
+
+    /**
+     * Normalize character from text for key comparison
+     * @param {string} char - Character from text
+     * @returns {string} Normalized key representation
+     */
+    function normalizeTextChar(char) {
+        if (char === ' ') return ' ';
+        if (char === '\n') return 'Enter';
+        if (char === '\t') return 'Tab';
+        return char.toLowerCase();
+    }
+
+    /**
+     * Reset current typing session
+     */
+    function reset() {
+        if (window.TypingEngine) {
+            window.TypingEngine.reset();
+        }
+
+        // Reload default text
+        getDefaultText().then(text => {
+            if (window.UIManager) {
+                window.UIManager.renderText(text);
+            }
+
+            if (text.length > 0 && window.KeyboardUI) {
+                const firstChar = text[0];
+                const firstKey = normalizeTextChar(firstChar);
+                window.KeyboardUI.setTargetKey(firstKey);
+            }
+        });
+    }
+
+    /**
+     * Load new text
+     * @param {string} textId - Text identifier (for future backend integration)
+     */
+    async function loadText(textId) {
+        let text = '';
+
+        // Try backend first
+        if (window.go?.app?.App) {
+            try {
+                text = await window.go.app.App.GetText(textId);
+            } catch (err) {
+                console.error('Failed to load text from backend:', err);
+                return;
+            }
+        } else {
+            // Fallback to default
+            text = await getDefaultText();
+        }
+
+        if (!text || text.length === 0) {
+            console.error('No text available');
+            return;
+        }
+
+        // Reset current session
+        if (window.TypingEngine) {
+            window.TypingEngine.reset();
+        }
+
+        // Render new text
+        if (window.UIManager) {
+            window.UIManager.renderText(text);
+        }
+
+        // Set initial target key
+        if (text.length > 0 && window.KeyboardUI) {
+            const firstChar = text[0];
+            const firstKey = normalizeTextChar(firstChar);
+            window.KeyboardUI.setTargetKey(firstKey);
+        }
+    }
+
+    /**
+     * Open settings modal
+     */
+    function openSettings() {
+        if (window.UIManager) {
+            window.UIManager.showModal('settings', {});
+        }
+    }
+
+    /**
+     * Toggle keyboard visibility
+     */
+    function toggleKeyboard() {
+        const keyboardSection = document.getElementById('keyboard-section');
+        if (keyboardSection) {
+            const isHidden = keyboardSection.style.display === 'none';
+            keyboardSection.style.display = isHidden ? 'flex' : 'none';
+        }
+    }
+
+    /**
+     * Get application version
+     * @returns {string} Version string
+     */
+    function getVersion() {
+        // For MVP, return hardcoded version
+        // In future, this can come from backend or package.json
+        return '0.1.0';
+    }
+
+    /**
+     * Handle global keyboard shortcuts
+     */
+    function setupKeyboardShortcuts() {
+        window.addEventListener('keydown', e => {
+            // Esc - Reset session (only if not typing)
+            if (e.key === 'Escape') {
+                // Don't reset if modal is open (let modal handle Esc)
+                const modalOverlay = document.getElementById('modal-overlay');
+                if (modalOverlay && !modalOverlay.classList.contains('modal-hidden')) {
+                    return;
+                }
+
+                // Don't reset if actively typing
+                if (window.TypingEngine) {
+                    const session = window.TypingEngine.getSessionData();
+                    if (session.isActive) {
+                        return; // Let typing engine handle it
+                    }
+                }
+
+                reset();
+            }
+
+            // Ctrl+, - Open settings
+            if (e.key === ',' && (e.ctrlKey || e.metaKey)) {
+                e.preventDefault();
+                openSettings();
+            }
+
+            // Ctrl+H - Toggle keyboard
+            if (e.key === 'h' && (e.ctrlKey || e.metaKey)) {
+                e.preventDefault();
+                toggleKeyboard();
+            }
+        });
+    }
+
+    /**
+     * Start typing session on first keystroke
+     */
+    function setupTypingStart() {
+        if (!window.TypingEngine) return;
+
+        // Preload default text
+        let defaultText = null;
+        getDefaultText().then(text => {
+            defaultText = text;
+        });
+
+        // Listen for first keystroke to start session
+        const startHandler = e => {
+            // Ignore modifier keys and shortcuts
+            if (['Control', 'Alt', 'Meta', 'Shift'].includes(e.key)) return;
+            if (e.ctrlKey || e.metaKey) return; // Ignore shortcuts
+
+            // Ignore if session already active
+            const session = window.TypingEngine.getSessionData();
+            if (session.isActive) {
+                // Remove listener if session is active
+                window.removeEventListener('keydown', startHandler);
+                return;
+            }
+
+            // Wait for text to be loaded if not ready yet
+            if (!defaultText) {
+                getDefaultText().then(text => {
+                    if (text && text.length > 0) {
+                        window.TypingEngine.start(text);
+                        window.removeEventListener('keydown', startHandler);
+                    }
+                });
+                return;
+            }
+
+            // Start session synchronously
+            if (defaultText && defaultText.length > 0) {
+                window.TypingEngine.start(defaultText);
+                // Remove this listener after start
+                window.removeEventListener('keydown', startHandler);
+                // Note: This keydown event will continue to bubble and be handled
+                // by TypingEngine's handler which was just added by start()
+            }
+        };
+
+        window.addEventListener('keydown', startHandler);
+    }
+
+    // Initialize application when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            initialize().then(() => {
+                setupKeyboardShortcuts();
+                setupTypingStart();
+            });
+        });
+    } else {
+        initialize().then(() => {
+            setupKeyboardShortcuts();
+            setupTypingStart();
+        });
+    }
+
+    // Export API
+    window.App = {
+        reset,
+        loadText,
+        openSettings,
+        toggleKeyboard,
+        getVersion,
+    };
+})();
