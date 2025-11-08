@@ -61,9 +61,10 @@
         });
     }
 
-    function normalizeKey(k) {
-        if (k.length === 1) return k.toLowerCase();
-        return k; // Backspace, Enter, Shift, Tab, Space (' ')
+    // Key normalization utilities are now in utils.js (KeyUtils)
+    if (!window.KeyUtils) {
+        console.error('KeyUtils not available. Include utils.js before keyboard.js');
+        return;
     }
 
     function setPressed(key, pressed) {
@@ -96,11 +97,11 @@
     }
 
     function onKeyDown(e) {
-        const k = normalizeKey(e.key);
+        const k = window.KeyUtils.normalizeKey(e.key);
         setPressed(k, true);
     }
     function onKeyUp(e) {
-        const k = normalizeKey(e.key);
+        const k = window.KeyUtils.normalizeKey(e.key);
         setPressed(k, false);
     }
 
@@ -110,10 +111,10 @@
 
     // Expose minimal API
     window.KeyboardUI = {
-        setTargetKey: k => setTarget(normalizeKey(k)),
+        setTargetKey: k => setTarget(window.KeyUtils.normalizeKey(k)),
         clearTarget: () => setTarget(null),
-        setError: k => setErrorState(normalizeKey(k)),
-        clearError: k => clearErrorState(normalizeKey(k)),
+        setError: k => setErrorState(window.KeyUtils.normalizeKey(k)),
+        clearError: k => clearErrorState(window.KeyUtils.normalizeKey(k)),
         getCurrentLayout: () => layout,
     };
 })();

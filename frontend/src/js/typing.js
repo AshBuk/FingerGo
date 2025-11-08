@@ -31,27 +31,10 @@
     let statsUpdateTimer = null;
     const STATS_UPDATE_THROTTLE = 100; // ms
 
-    /**
-     * Normalize key for comparison (matches keyboard.js logic)
-     * @param {string} key - Keyboard event key
-     * @returns {string} Normalized key
-     */
-    function normalizeKey(key) {
-        if (key.length === 1) return key.toLowerCase();
-        return key; // Backspace, Enter, Shift, Tab, Space (' ')
-    }
-
-    /**
-     * Normalize character from text for comparison
-     * Handles special characters: space, newline, tab
-     * @param {string} char - Character from text
-     * @returns {string} Normalized key representation
-     */
-    function normalizeTextChar(char) {
-        if (char === ' ') return ' ';
-        if (char === '\n') return 'Enter';
-        if (char === '\t') return 'Tab';
-        return char.toLowerCase();
+    // Key normalization utilities are now in utils.js (KeyUtils)
+    if (!window.KeyUtils) {
+        console.error('KeyUtils not available. Include utils.js before typing.js');
+        return;
     }
 
     /**
@@ -151,7 +134,7 @@
             e.preventDefault();
         }
 
-        const pressedKey = normalizeKey(e.key);
+        const pressedKey = window.KeyUtils.normalizeKey(e.key);
         const expectedChar = session.text[session.currentIndex];
 
         if (expectedChar === undefined) {
@@ -159,7 +142,7 @@
             return;
         }
 
-        const expectedKey = normalizeTextChar(expectedChar);
+        const expectedKey = window.KeyUtils.normalizeTextChar(expectedChar);
         const isCorrect = pressedKey === expectedKey;
 
         session.totalKeystrokes++;
@@ -195,7 +178,7 @@
             } else {
                 // Update target key
                 const nextChar = session.text[session.currentIndex];
-                const nextKey = normalizeTextChar(nextChar);
+                const nextKey = window.KeyUtils.normalizeTextChar(nextChar);
                 if (window.KeyboardUI) {
                     window.KeyboardUI.setTargetKey(nextKey);
                 }
@@ -273,7 +256,7 @@
 
         // Set initial target key
         const firstChar = text[0];
-        const firstKey = normalizeTextChar(firstChar);
+        const firstKey = window.KeyUtils.normalizeTextChar(firstChar);
         if (window.KeyboardUI) {
             window.KeyboardUI.setTargetKey(firstKey);
         }
