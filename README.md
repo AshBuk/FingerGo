@@ -1,48 +1,39 @@
 <img src="fingergo.png" alt="FingerGo Logo" width="400" align="right">
 
 ### **FingerGo**
-Touch-typing trainer desctop app with real-time keyboard
-visualization and detailed typing analytics (WPM, accuracy, mistakes).
+
+Touch-typing trainer desktop app.
 
 Distributed for Linux (Flatpak).
 
-# Tech Stack
+### Includes
+▸  Real-time visual keyboard with finger mapping  
+▸  Hierarchical text library (plain text and code samples)  
+▸  Detailed stats: WPM, accuracy, per-key mistakes, session history  
+▸  Minimalist UI with the Go gopher mascot  
 
- - Backend: Go 1.25+
- - Desktop: Wails v2
- - Frontend: Vanilla JavaScript (ES6+), HTML5, CSS3
- - Storage: JSON files
- - Platform: Linux
+## Tech Stack
 
-# Key Features
-
- - Real-time visual keyboard with finger mapping
- - Hierarchical text library (plain text and code samples)
- - Detailed stats: WPM, accuracy, per-key mistakes, session history
- - Minimalist UI with the Go gopher mascot
+- Backend: Go 1.25+
+- Desktop: Wails v2
+- Frontend: Vanilla JavaScript (ES6+), HTML5, CSS3
+- Storage: JSON files
+- Platform: Linux
 
 ## For Developers
 
-- [Technical specifications](docs/specs/tech-design/)
-- [CONTRIBUTING.md](docs/CONTRIBUTING.md)
+- [Technical specifications](specs/tech-design/)
+- [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ## Acknowledgments
 
 - Built with [Wails](https://wails.io/)
-- Gopher mascot by Renee French — CC BY 3.0 (modified). See [ATTRIBUTION.md](docs/ATTRIBUTION.md)
 
 ## Apache 2.0 [LICENSE](LICENSE)
 
-**If you use this project, please:**
-- Give credit by linking back to this repository
-- Star ⭐ the project if it helped you
-- Consider contributing back improvements
-
----
+If you use this project, please link back to this repo and ⭐ it if it helped you.
 
 Sharing with the Linux community
-
----
 
 ## Sponsor
 
