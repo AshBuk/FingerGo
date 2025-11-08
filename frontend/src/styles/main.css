@@ -11,7 +11,12 @@ https://github.com/AshBuk/FingerGo
 }
 
 body {
-    font-family: 'Inter', 'SF Pro Display', system-ui, -apple-system, sans-serif;
+    font-family:
+        'Inter',
+        'SF Pro Display',
+        system-ui,
+        -apple-system,
+        sans-serif;
     background: var(--bg);
     color: var(--text-default);
     overflow: hidden;
@@ -71,7 +76,9 @@ body {
 /* Character-level text rendering */
 #text-display .char {
     display: inline;
-    transition: background-color 0.2s ease, color 0.2s ease;
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease;
 }
 
 #text-display .char.typed {
@@ -103,8 +110,13 @@ body {
 }
 
 @keyframes blink {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
 }
 
 #text-display .char.fade-success {
@@ -349,4 +361,3 @@ body {
     color: var(--text-muted);
     margin: 0;
 }
-

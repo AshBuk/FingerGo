@@ -7,7 +7,8 @@ build/
 dist/
 frontend/dist/
 
-# Wails generated
+# Wails auto-generated files (don't format)
+frontend/src/wailsjs/
 wails.json
 
 # Git
@@ -16,6 +17,7 @@ wails.json
 # IDE
 .idea/
 .vscode/
+.cursor/
 
 # OS
 .DS_Store

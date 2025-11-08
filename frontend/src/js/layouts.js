@@ -72,7 +72,10 @@
 
         // Warn if no default layout available
         if (!registry[defaultLayoutId]) {
-            console.warn(`Default layout "${defaultLayoutId}" not registered. Available layouts:`, Object.keys(registry));
+            console.warn(
+                `Default layout "${defaultLayoutId}" not registered. Available layouts:`,
+                Object.keys(registry)
+            );
         }
     }
 
@@ -83,7 +86,7 @@
         getAvailableLayouts,
         getDefaultLayout,
         setDefault,
-        _autoRegister: autoRegister
+        _autoRegister: autoRegister,
     };
 
     // Auto-register immediately after defining the API

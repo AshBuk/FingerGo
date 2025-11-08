@@ -18,7 +18,7 @@
         wpm: document.getElementById('wpm'),
         cpm: document.getElementById('cpm'),
         accuracy: document.getElementById('accuracy'),
-        timer: document.getElementById('timer')
+        timer: document.getElementById('timer'),
     };
 
     const modalOverlay = document.getElementById('modal-overlay');
@@ -79,7 +79,7 @@
         if (index < 0 || index >= characterElements.length) return;
 
         const charEl = characterElements[index];
-        
+
         switch (state) {
             case 'correct':
                 // Remove error and current, add typed and correct
@@ -202,12 +202,16 @@
                             <span class="summary-value">${formatTime(data.duration || 0)}</span>
                         </div>
                     </div>
-                    ${data.totalErrors > 0 ? `
+                    ${
+                        data.totalErrors > 0
+                            ? `
                         <div class="summary-errors">
                             <h3>Errors: ${data.totalErrors}</h3>
                             <p>Total keystrokes: ${data.totalKeystrokes || 0}</p>
                         </div>
-                    ` : ''}
+                    `
+                            : ''
+                    }
                 </div>
             `;
         } else if (type === 'settings') {
@@ -235,7 +239,7 @@
     }
 
     if (modalOverlay) {
-        modalOverlay.addEventListener('click', (e) => {
+        modalOverlay.addEventListener('click', e => {
             if (e.target === modalOverlay) {
                 hideModal();
             }
@@ -243,20 +247,24 @@
     }
 
     // Keyboard shortcut: Escape to close modal
-    window.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modalOverlay && !modalOverlay.classList.contains('modal-hidden')) {
+    window.addEventListener('keydown', e => {
+        if (
+            e.key === 'Escape' &&
+            modalOverlay &&
+            !modalOverlay.classList.contains('modal-hidden')
+        ) {
             hideModal();
         }
     });
 
     // Listen to typing events
-    window.EventBus.on('typing:start', (data) => {
+    window.EventBus.on('typing:start', data => {
         if (data.text) {
             renderText(data.text);
         }
     });
 
-    window.EventBus.on('typing:keystroke', (data) => {
+    window.EventBus.on('typing:keystroke', data => {
         if (data.index !== undefined) {
             // Mark the character we just typed as correct
             updateCharacter(data.index, 'correct');
@@ -267,17 +275,17 @@
         }
     });
 
-    window.EventBus.on('typing:error', (data) => {
+    window.EventBus.on('typing:error', data => {
         if (data.index !== undefined) {
             showError(data.index);
         }
     });
 
-    window.EventBus.on('stats:update', (data) => {
+    window.EventBus.on('stats:update', data => {
         updateStats(data.wpm, data.cpm, data.accuracy, data.time);
     });
 
-    window.EventBus.on('typing:complete', (data) => {
+    window.EventBus.on('typing:complete', data => {
         // Mark all remaining characters as correct
         const currentIndex = data.currentIndex || characterElements.length;
         for (let i = 0; i < currentIndex; i++) {
@@ -303,6 +311,6 @@
         hideModal,
         showError,
         showSuccess,
-        clearHighlights
+        clearHighlights,
     };
 })();

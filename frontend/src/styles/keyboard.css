@@ -75,7 +75,8 @@ https://github.com/AshBuk/FingerGo
 }
 
 @keyframes pulse {
-    0%, 100% {
+    0%,
+    100% {
         box-shadow:
             0 0 16px rgba(var(--accent-rgb), 0.4),
             0 2px 4px rgba(0, 0, 0, 0.2),
@@ -120,39 +121,39 @@ https://github.com/AshBuk/FingerGo
 }
 
 /* Finger color mapping - subtle hints on keys */
-.key[data-finger="left-pinky"] {
+.key[data-finger='left-pinky'] {
     border-left: 3px solid rgba(255, 107, 107, 0.3);
 }
 
-.key[data-finger="left-ring"] {
+.key[data-finger='left-ring'] {
     border-left: 3px solid rgba(255, 159, 64, 0.3);
 }
 
-.key[data-finger="left-middle"] {
+.key[data-finger='left-middle'] {
     border-left: 3px solid rgba(255, 205, 86, 0.3);
 }
 
-.key[data-finger="left-index"] {
+.key[data-finger='left-index'] {
     border-left: 3px solid rgba(75, 192, 192, 0.3);
 }
 
-.key[data-finger="right-index"] {
+.key[data-finger='right-index'] {
     border-left: 3px solid rgba(var(--accent-rgb), 0.4);
 }
 
-.key[data-finger="right-middle"] {
+.key[data-finger='right-middle'] {
     border-left: 3px solid rgba(153, 102, 255, 0.3);
 }
 
-.key[data-finger="right-ring"] {
+.key[data-finger='right-ring'] {
     border-left: 3px solid rgba(201, 203, 207, 0.3);
 }
 
-.key[data-finger="right-pinky"] {
+.key[data-finger='right-pinky'] {
     border-left: 3px solid rgba(255, 99, 132, 0.3);
 }
 
-.key[data-finger="thumb"] {
+.key[data-finger='thumb'] {
     border-top: 3px solid rgba(var(--accent-rgb), 0.4);
 }
 
@@ -167,7 +168,10 @@ https://github.com/AshBuk/FingerGo
 
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
-    .key { transition: none; }
-    .key.target { animation: none; }
+    .key {
+        transition: none;
+    }
+    .key.target {
+        animation: none;
+    }
 }
-

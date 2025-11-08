@@ -63,7 +63,7 @@
      * @param {Function} callback - Callback function to execute once
      */
     function once(event, callback) {
-        const wrapper = (data) => {
+        const wrapper = data => {
             callback(data);
             off(event, wrapper);
         };
@@ -75,7 +75,6 @@
         on,
         off,
         emit,
-        once
+        once,
     };
 })();
-
