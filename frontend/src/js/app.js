@@ -286,6 +286,10 @@
                     if (text && text.length > 0) {
                         window.TypingEngine.start(text);
                         window.removeEventListener('keydown', startHandler);
+                        // Process the current keystroke event that triggered the start
+                        if (window.TypingEngine.handleKeyDown) {
+                            window.TypingEngine.handleKeyDown(e);
+                        }
                     }
                 });
                 return;
@@ -296,8 +300,11 @@
                 window.TypingEngine.start(defaultText);
                 // Remove this listener after start
                 window.removeEventListener('keydown', startHandler);
-                // Note: This keydown event will continue to bubble and be handled
-                // by TypingEngine's handler which was just added by start()
+                // Process the current keystroke event that triggered the start
+                // This ensures the first keystroke is processed immediately
+                if (window.TypingEngine.handleKeyDown) {
+                    window.TypingEngine.handleKeyDown(e);
+                }
             }
         };
 
