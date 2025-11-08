@@ -106,9 +106,9 @@
         }
 
         // Set initial keyboard target (typing engine will start on first keystroke)
-        if (defaultText.length > 0 && window.KeyboardUI) {
+        if (defaultText.length > 0 && window.KeyboardUI && window.KeyUtils) {
             const firstChar = defaultText[0];
-            const firstKey = normalizeTextChar(firstChar);
+            const firstKey = window.KeyUtils.normalizeTextChar(firstChar);
             window.KeyboardUI.setTargetKey(firstKey);
         }
 
@@ -119,18 +119,6 @@
         });
 
         console.log('FingerGo initialized successfully');
-    }
-
-    /**
-     * Normalize character from text for key comparison
-     * @param {string} char - Character from text
-     * @returns {string} Normalized key representation
-     */
-    function normalizeTextChar(char) {
-        if (char === ' ') return ' ';
-        if (char === '\n') return 'Enter';
-        if (char === '\t') return 'Tab';
-        return char.toLowerCase();
     }
 
     /**
@@ -147,9 +135,9 @@
                 window.UIManager.renderText(text);
             }
 
-            if (text.length > 0 && window.KeyboardUI) {
+            if (text.length > 0 && window.KeyboardUI && window.KeyUtils) {
                 const firstChar = text[0];
-                const firstKey = normalizeTextChar(firstChar);
+                const firstKey = window.KeyUtils.normalizeTextChar(firstChar);
                 window.KeyboardUI.setTargetKey(firstKey);
             }
         });
@@ -191,9 +179,9 @@
         }
 
         // Set initial target key
-        if (text.length > 0 && window.KeyboardUI) {
+        if (text.length > 0 && window.KeyboardUI && window.KeyUtils) {
             const firstChar = text[0];
-            const firstKey = normalizeTextChar(firstChar);
+            const firstKey = window.KeyUtils.normalizeTextChar(firstChar);
             window.KeyboardUI.setTargetKey(firstKey);
         }
     }

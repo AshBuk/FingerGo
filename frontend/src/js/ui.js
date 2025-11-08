@@ -26,7 +26,6 @@
     const modalContent = document.getElementById('modal-content');
     const modalClose = document.getElementById('modal-close');
 
-    let currentText = '';
     let characterElements = [];
 
     /**
@@ -47,7 +46,6 @@
     function renderText(text) {
         if (!textDisplay) return;
 
-        currentText = text;
         characterElements = [];
 
         // Clear existing content
@@ -143,7 +141,7 @@
     function updateStats(wpm, cpm, accuracy, time) {
         if (statsBar.wpm) statsBar.wpm.textContent = Math.round(wpm);
         if (statsBar.cpm) statsBar.cpm.textContent = Math.round(cpm);
-        if (statsBar.accuracy) statsBar.accuracy.textContent = accuracy.toFixed(1) + '%';
+        if (statsBar.accuracy) statsBar.accuracy.textContent = `${accuracy.toFixed(1)}%`;
         if (statsBar.timer) statsBar.timer.textContent = formatTime(time);
     }
 

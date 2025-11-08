@@ -74,7 +74,7 @@
         if (!registry[defaultLayoutId]) {
             console.warn(
                 `Default layout "${defaultLayoutId}" not registered. Available layouts:`,
-                Object.keys(registry)
+                Object.keys(registry),
             );
         }
     }
