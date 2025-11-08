@@ -389,5 +389,6 @@
         getSessionData,
         getCurrentIndex,
         getMetrics,
+        handleKeyDown, // Export for app.js to process first keystroke
     };
 })();
