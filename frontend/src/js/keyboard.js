@@ -83,6 +83,18 @@
         }
     }
 
+    function setErrorState(key) {
+        const els = keyToEls.get(key);
+        if (!els) return;
+        els.forEach(el => el.classList.add('error'));
+    }
+
+    function clearErrorState(key) {
+        const els = keyToEls.get(key);
+        if (!els) return;
+        els.forEach(el => el.classList.remove('error'));
+    }
+
     function onKeyDown(e) {
         const k = normalizeKey(e.key);
         setPressed(k, true);
@@ -100,6 +112,8 @@
     window.KeyboardUI = {
         setTargetKey: (k) => setTarget(normalizeKey(k)),
         clearTarget: () => setTarget(null),
+        setError: (k) => setErrorState(normalizeKey(k)),
+        clearError: (k) => clearErrorState(normalizeKey(k)),
         getCurrentLayout: () => layout,
     };
 })();
