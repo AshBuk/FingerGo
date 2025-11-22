@@ -192,26 +192,52 @@
             contentHTML = '<p>Settings panel coming soon...</p>';
         } else if (type === 'color-settings') {
             const theme = data?.theme || 'dark';
-            const colors = window.ColorSettings?.getColors(theme) || {};
+            const savedColors = window.ColorSettings?.getColors(theme) || {};
+
+            // Read current CSS values (from theme or custom overrides)
+            const styleTarget = document.body || document.documentElement;
+            const style = getComputedStyle(styleTarget);
+            const toHex = value => {
+                if (!value) return null;
+                const trimmed = value.trim();
+                if (trimmed.startsWith('#')) return trimmed;
+                const rgbMatch = trimmed.match(
+                    /^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)(?:\s*,\s*(\d+(?:\.\d+)?))?\s*\)$/i,
+                );
+                if (rgbMatch) {
+                    const hex = [rgbMatch[1], rgbMatch[2], rgbMatch[3]]
+                        .map(x => Number(x).toString(16).padStart(2, '0'))
+                        .join('');
+                    return `#${hex}`;
+                }
+                return null;
+            };
+            const getColor = varName => {
+                const saved = savedColors[varName];
+                if (saved) return saved;
+                const computed = style.getPropertyValue(varName);
+                return toHex(computed) || '#000000';
+            };
+
             contentHTML = `
                 <div class="color-settings">
                     <p class="color-theme-label">Editing: <strong>${theme}</strong> theme</p>
                     <div class="color-group">
                         <label class="color-row">
                             <span>Background</span>
-                            <input type="color" data-var="--bg" value="${colors['--bg'] || (theme === 'dark' ? '#0d0b09' : '#f7f1e6')}">
+                            <input type="color" data-var="--bg" value="${getColor('--bg')}">
                         </label>
                         <label class="color-row">
                             <span>Text & Keys</span>
-                            <input type="color" data-var="--accent" value="${colors['--accent'] || (theme === 'dark' ? '#f5f5e9' : '#2a1f15')}">
+                            <input type="color" data-var="--accent" value="${getColor('--accent')}">
                         </label>
                         <label class="color-row">
                             <span>UI Text</span>
-                            <input type="color" data-var="--text-default" value="${colors['--text-default'] || (theme === 'dark' ? '#e8e6e3' : '#1f170f')}">
+                            <input type="color" data-var="--text-default" value="${getColor('--text-default')}">
                         </label>
                         <label class="color-row">
                             <span>Error</span>
-                            <input type="color" data-var="--error-text" value="${colors['--error-text'] || (theme === 'dark' ? '#ff8fa2' : '#a83d27')}">
+                            <input type="color" data-var="--error-text" value="${getColor('--error-text')}">
                         </label>
                     </div>
                     <div class="color-actions">
@@ -275,6 +301,10 @@
     function hideModal() {
         if (modalOverlay) {
             modalOverlay.classList.add('modal-hidden');
+            // Clear any unsaved color preview
+            if (window.ColorSettings?.clearPreview) {
+                window.ColorSettings.clearPreview();
+            }
             window.EventBus.emit('modal:closed');
         }
     }
