@@ -10,11 +10,6 @@ https://github.com/AshBuk/FingerGo
     flex-direction: column;
     gap: 0.5rem;
     padding: 0.75rem 1rem;
-    background: rgba(var(--accent-rgb), 0.08);
-    border-radius: 12px;
-    box-shadow:
-        0 8px 32px var(--shadow-strong),
-        inset 0 1px 0 rgba(var(--accent-rgb), 0.1);
     max-width: 1200px;
     width: 100%;
 }
