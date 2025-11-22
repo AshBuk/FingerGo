@@ -10,6 +10,48 @@
 (() => {
     // Single source of truth for current text displayed/used by TypingEngine
     let currentText = null;
+    let currentTheme = 'dark';
+
+    function setThemeToggleIcon(theme) {
+        const btn = document.getElementById('theme-toggle');
+        if (!btn) return;
+        btn.textContent = theme === 'dark' ? '🌙' : '☀️';
+        btn.setAttribute('aria-label', 'Toggle theme');
+        btn.setAttribute('title', 'Toggle theme');
+    }
+
+    /**
+     * Apply theme and persist preference
+     * @param {'dark'|'light'} theme
+     */
+    function applyTheme(theme) {
+        currentTheme = theme === 'light' ? 'light' : 'dark';
+        try {
+            const body = document.body;
+            const app = document.getElementById('app');
+            // Update classes
+            body.classList.remove('theme-dark', 'theme-light');
+            app?.classList.remove('theme-dark', 'theme-light');
+            body.classList.add(`theme-${currentTheme}`);
+            app?.classList.add(`theme-${currentTheme}`);
+            // Update stylesheet link
+            const themeLink = document.getElementById('theme-css');
+            if (themeLink) {
+                themeLink.setAttribute('href', `styles/theme-${currentTheme}.css`);
+            }
+            // Persist locally
+            try {
+                localStorage.setItem('theme', currentTheme);
+            } catch { /* localStorage unavailable */ }
+            setThemeToggleIcon(currentTheme);
+        } catch (err) {
+            console.warn('Failed to apply theme:', err);
+        }
+    }
+
+    function toggleTheme() {
+        applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
+    }
 
     // Fallback default text for MVP (hardcoded)
     const FALLBACK_TEXT = `func fibonacci(n int) int {
@@ -44,7 +86,6 @@
                 console.warn('Backend unavailable, using hardcoded text:', err);
             }
         }
-
         // Fallback to hardcoded text
         return FALLBACK_TEXT;
     }
@@ -76,27 +117,39 @@
             });
         }
 
+        // Apply stored theme early
+        try {
+            const stored = localStorage.getItem('theme');
+            applyTheme(stored || 'dark');
+        } catch {
+            applyTheme('dark');
+        }
+        // Bind theme toggle (blur after click to prevent Space/Enter activation)
+        const themeBtn = document.getElementById('theme-toggle');
+        if (themeBtn) {
+            themeBtn.addEventListener('click', () => {
+                toggleTheme();
+                themeBtn.blur();
+            });
+        }
+
         // Check required modules
         if (!window.EventBus) {
             console.error('EventBus not available. Ensure events.js is loaded.');
             return;
         }
-
         if (!window.TypingEngine) {
             console.error('TypingEngine not available. Ensure typing.js is loaded.');
             return;
         }
-
         if (!window.UIManager) {
             console.error('UIManager not available. Ensure ui.js is loaded.');
             return;
         }
-
         if (!window.KeyboardUI) {
             console.error('KeyboardUI not available. Ensure keyboard.js is loaded.');
             return;
         }
-
         // Initialize Wails runtime (optional)
         await initializeWails();
 
@@ -121,7 +174,6 @@
             text: defaultText,
             timestamp: Date.now(),
         });
-
         console.log('FingerGo initialized successfully');
     }
 
@@ -133,19 +185,31 @@
             window.TypingEngine.reset();
         }
 
+        // Reset stats display
+        if (window.UIManager) {
+            window.UIManager.updateStats(0, 0, 100, 0);
+        }
+
+        // Clear keyboard heatmap
+        if (window.StatsManager) {
+            window.StatsManager.clearHeatmap();
+        }
+
         // Reload default text
         getDefaultText().then(text => {
             currentText = text;
             if (window.UIManager) {
                 window.UIManager.renderText(text);
             }
-
             if (text.length > 0 && window.KeyboardUI && window.KeyUtils) {
                 const firstChar = text[0];
                 const firstKey = window.KeyUtils.normalizeTextChar(firstChar);
                 window.KeyboardUI.setTargetKey(firstKey);
             }
         });
+
+        // Re-setup typing start listener for next session
+        setupTypingStart();
     }
 
     /**
@@ -167,12 +231,10 @@
             // Fallback to default
             text = await getDefaultText();
         }
-
         if (!text || text.length === 0) {
             console.error('No text available');
             return;
         }
-
         currentText = text;
 
         // Reset current session
@@ -233,13 +295,11 @@
                 e.preventDefault();
                 reset();
             }
-
             // Ctrl+, - Open settings
             if (e.key === ',' && (e.ctrlKey || e.metaKey)) {
                 e.preventDefault();
                 openSettings();
             }
-
             // Ctrl+H - Toggle keyboard
             if (e.key === 'h' && (e.ctrlKey || e.metaKey)) {
                 e.preventDefault();
@@ -324,5 +384,7 @@
         openSettings,
         toggleKeyboard,
         getVersion,
+        toggleTheme,
+        applyTheme,
     };
 })();

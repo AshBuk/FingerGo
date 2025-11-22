@@ -12,11 +12,8 @@ https://github.com/AshBuk/FingerGo
 
 body {
     font-family:
-        'Inter',
-        'SF Pro Display',
-        system-ui,
-        -apple-system,
-        sans-serif;
+        'JetBrains Mono', 'IBM Plex Mono', ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas,
+        'Liberation Mono', monospace;
     background: var(--bg);
     color: var(--text-default);
     overflow: hidden;
@@ -28,6 +25,28 @@ body {
     height: 100vh;
     padding: 0;
     gap: 0;
+}
+
+/* Theme toggle button (top-right) */
+#theme-toggle {
+    position: fixed;
+    top: 10px;
+    left: 14px;
+    z-index: 1100;
+    background: var(--key-bg);
+    color: var(--accent);
+    border: 1px solid var(--key-border);
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 1rem;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: 0 4px 12px var(--shadow-strong);
+}
+
+#theme-toggle:hover {
+    background: var(--key-bg-hover);
+    border-color: var(--key-border-strong);
 }
 
 /* Text Display Area */
