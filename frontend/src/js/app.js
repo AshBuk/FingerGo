@@ -25,6 +25,16 @@
         return overlay && !overlay.classList.contains('modal-hidden');
     }
 
+    /**
+     * Set keyboard target to first character of text
+     * @param {string} text - Text to get first char from
+     */
+    function setInitialTarget(text) {
+        if (text?.length > 0 && window.KeyboardUI && window.KeyUtils) {
+            window.KeyboardUI.setTargetKey(window.KeyUtils.normalizeTextChar(text[0]));
+        }
+    }
+
     function buildLiveSummary() {
         if (!window.TypingEngine) return null;
         const session = window.TypingEngine.getSessionData();
@@ -210,11 +220,7 @@
         }
 
         // Set initial keyboard target (typing engine will start on first keystroke)
-        if (defaultText.length > 0 && window.KeyboardUI && window.KeyUtils) {
-            const firstChar = defaultText[0];
-            const firstKey = window.KeyUtils.normalizeTextChar(firstChar);
-            window.KeyboardUI.setTargetKey(firstKey);
-        }
+        setInitialTarget(defaultText);
 
         // Listen for modal close to resume session
         window.EventBus.on('modal:closed', () => {
@@ -258,11 +264,7 @@
             if (window.UIManager) {
                 window.UIManager.renderText(text);
             }
-            if (text.length > 0 && window.KeyboardUI && window.KeyUtils) {
-                const firstChar = text[0];
-                const firstKey = window.KeyUtils.normalizeTextChar(firstChar);
-                window.KeyboardUI.setTargetKey(firstKey);
-            }
+            setInitialTarget(text);
         });
 
         // Re-setup typing start listener for next session
@@ -304,12 +306,7 @@
             window.UIManager.renderText(text);
         }
 
-        // Set initial target key
-        if (text.length > 0 && window.KeyboardUI && window.KeyUtils) {
-            const firstChar = text[0];
-            const firstKey = window.KeyUtils.normalizeTextChar(firstChar);
-            window.KeyboardUI.setTargetKey(firstKey);
-        }
+        setInitialTarget(text);
     }
 
     /**
@@ -422,18 +419,16 @@
     }
 
     // Initialize application when DOM is ready
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => {
-            initialize().then(() => {
-                setupKeyboardShortcuts();
-                setupTypingStart();
-            });
-        });
-    } else {
+    const boot = () =>
         initialize().then(() => {
             setupKeyboardShortcuts();
             setupTypingStart();
         });
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', boot);
+    } else {
+        boot();
     }
 
     // Export API
