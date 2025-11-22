@@ -69,15 +69,19 @@ body {
 
 /* Text Display Area */
 #text-area {
-    flex: 1;
+    flex: 1 1 auto;
     display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    padding: 2rem 3rem 1rem 3rem;
-    overflow-y: auto;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 2rem 3rem 0 3rem;
+    overflow: hidden;
+    min-height: 0;
 }
 
 #text-display {
+    flex: 1 1 100%;
+    overflow-y: auto;
     font-size: clamp(1rem, 1.2vw + 0.6rem, 1.5rem);
     line-height: 1.8;
     letter-spacing: 0.02em;
@@ -228,7 +232,7 @@ body {
     }
 
     #text-area {
-        padding: 1rem 1.5rem;
+        padding: 1rem 1.5rem 0 1.5rem;
     }
 }
 
