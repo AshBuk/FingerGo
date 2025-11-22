@@ -41,7 +41,7 @@ body {
 }
 
 #text-display {
-    font-size: 1.5rem;
+    font-size: clamp(1rem, 1.2vw + 0.6rem, 1.5rem);
     line-height: 1.8;
     letter-spacing: 0.02em;
     color: var(--accent);
@@ -221,7 +221,7 @@ body {
 
 @media (max-width: 1024px) {
     #text-display {
-        font-size: 1.1rem;
+        font-size: clamp(0.95rem, 1.2vw + 0.4rem, 1.1rem);
         padding: 1rem;
     }
 
@@ -231,6 +231,16 @@ body {
 
     #text-area {
         padding: 1rem 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    #stats-bar {
+        gap: 1.25rem;
+        flex-wrap: wrap;
+    }
+    .stat-item {
+        width: 45%;
     }
 }
 
