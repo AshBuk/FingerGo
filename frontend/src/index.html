@@ -11,10 +11,13 @@ https://github.com/AshBuk/FingerGo
         <title>FingerGo</title>
         <link rel="stylesheet" href="styles/main.css" />
         <link rel="stylesheet" href="styles/keyboard.css" />
-        <link rel="stylesheet" href="styles/theme-dark.css" />
+        <link id="theme-css" rel="stylesheet" href="styles/theme-dark.css" />
     </head>
     <body class="theme-dark">
         <div id="app" class="theme-dark">
+            <button id="theme-toggle" aria-label="Toggle theme" title="Toggle theme" tabindex="-1">
+                🌙
+            </button>
             <!-- Text Display Area -->
             <section id="text-area">
                 <div id="text-display"></div>
@@ -52,7 +55,7 @@ https://github.com/AshBuk/FingerGo
                 <div id="modal-container">
                     <div id="modal-header">
                         <h2 id="modal-title"></h2>
-                        <button id="modal-close" aria-label="Close modal">✕</button>
+                        <button id="modal-close" aria-label="Close modal" tabindex="-1">✕</button>
                     </div>
                     <div id="modal-content">
                         <!-- Dynamic content injected by ui.js -->
