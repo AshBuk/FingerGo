@@ -43,7 +43,8 @@ https://github.com/AshBuk/FingerGo
     user-select: none;
     box-shadow:
         0 2px 4px rgba(0, 0, 0, 0.2),
-        inset 0 1px 0 rgba(var(--accent-rgb), 0.1);
+        inset 0 1px 0 rgba(var(--accent-rgb), 0.1),
+        inset 0 0 20px var(--heatmap-color, rgba(0, 0, 0, 0));
     position: relative;
     line-height: 1.2;
 }
@@ -60,7 +61,8 @@ https://github.com/AshBuk/FingerGo
     transform: translateY(1px);
     box-shadow:
         0 1px 2px rgba(0, 0, 0, 0.3),
-        inset 0 2px 4px rgba(var(--accent-rgb), 0.15);
+        inset 0 2px 4px rgba(var(--accent-rgb), 0.15),
+        inset 0 0 20px var(--heatmap-color, rgba(0, 0, 0, 0));
 }
 
 /* Key highlighted as target */
@@ -70,7 +72,8 @@ https://github.com/AshBuk/FingerGo
     box-shadow:
         0 0 16px rgba(var(--accent-rgb), 0.4),
         0 2px 4px rgba(0, 0, 0, 0.2),
-        inset 0 1px 0 rgba(var(--accent-rgb), 0.2);
+        inset 0 1px 0 rgba(var(--accent-rgb), 0.2),
+        inset 0 0 20px var(--heatmap-color, rgba(0, 0, 0, 0));
     animation: pulse 1.5s ease-in-out infinite;
 }
 
@@ -80,13 +83,15 @@ https://github.com/AshBuk/FingerGo
         box-shadow:
             0 0 16px rgba(var(--accent-rgb), 0.4),
             0 2px 4px rgba(0, 0, 0, 0.2),
-            inset 0 1px 0 rgba(var(--accent-rgb), 0.2);
+            inset 0 1px 0 rgba(var(--accent-rgb), 0.2),
+            inset 0 0 20px var(--heatmap-color, rgba(0, 0, 0, 0));
     }
     50% {
         box-shadow:
             0 0 24px rgba(var(--accent-rgb), 0.6),
             0 2px 4px rgba(0, 0, 0, 0.2),
-            inset 0 1px 0 rgba(var(--accent-rgb), 0.3);
+            inset 0 1px 0 rgba(var(--accent-rgb), 0.3),
+            inset 0 0 20px var(--heatmap-color, rgba(0, 0, 0, 0));
     }
 }
 
