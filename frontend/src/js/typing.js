@@ -30,6 +30,7 @@
 
     let statsUpdateTimer = null;
     const STATS_UPDATE_THROTTLE = 100; // ms
+    let statsIntervalId = null; // 1s background tick for timer/stats
 
     // Key normalization utilities are now in utils.js (KeyUtils)
     if (!window.KeyUtils) {
@@ -43,10 +44,8 @@
      */
     function calculateWPM() {
         if (!session.startTime || session.currentIndex === 0) return 0;
-
         const elapsed = getElapsedTimeSeconds();
         if (elapsed === 0) return 0;
-
         const words = session.currentIndex / 5;
         const minutes = elapsed / 60;
         return words / minutes;
@@ -217,6 +216,12 @@
     function completeSession() {
         session.isActive = false;
 
+        // Stop background stats timer
+        if (statsIntervalId) {
+            clearInterval(statsIntervalId);
+            statsIntervalId = null;
+        }
+
         const sessionData = {
             text: session.text,
             currentIndex: session.currentIndex,
@@ -268,6 +273,12 @@
 
         // Attach keyboard listener
         window.addEventListener('keydown', handleKeyDown);
+
+        // Start background stats/timer tick (1s)
+        if (statsIntervalId) {
+            clearInterval(statsIntervalId);
+        }
+        statsIntervalId = setInterval(emitStatsUpdate, 1000);
     }
 
     /**
@@ -277,6 +288,12 @@
         if (!session.isActive) return;
 
         window.removeEventListener('keydown', handleKeyDown);
+
+        // Stop background stats timer
+        if (statsIntervalId) {
+            clearInterval(statsIntervalId);
+            statsIntervalId = null;
+        }
 
         if (session.currentIndex < session.text.length) {
             // Session incomplete
@@ -316,6 +333,12 @@
      */
     function reset() {
         window.removeEventListener('keydown', handleKeyDown);
+
+        // Stop background stats timer
+        if (statsIntervalId) {
+            clearInterval(statsIntervalId);
+            statsIntervalId = null;
+        }
 
         session.text = '';
         session.currentIndex = 0;
