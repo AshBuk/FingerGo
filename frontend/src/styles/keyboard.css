@@ -16,6 +16,7 @@ https://github.com/AshBuk/FingerGo
         0 8px 32px var(--shadow-strong),
         inset 0 1px 0 rgba(var(--accent-rgb), 0.1);
     max-width: 1200px;
+    width: 100%;
 }
 
 /* Keyboard Rows */
@@ -27,8 +28,9 @@ https://github.com/AshBuk/FingerGo
 
 /* Key Styles */
 .key {
-    min-width: 60px;
-    height: 60px;
+    --key-size: clamp(36px, 5vw, 60px);
+    min-width: var(--key-size);
+    height: var(--key-size);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -103,19 +105,19 @@ https://github.com/AshBuk/FingerGo
 
 /* Special key widths */
 .key-wide {
-    min-width: 96px;
+    min-width: calc(var(--key-size) * 1.6);
 }
 
 .key-wider {
-    min-width: 114px;
+    min-width: calc(var(--key-size) * 1.9);
 }
 
 .key-widest {
-    min-width: 132px;
+    min-width: calc(var(--key-size) * 2.2);
 }
 
 .key-space {
-    min-width: 480px;
+    min-width: calc(var(--key-size) * 8);
 }
 
 /* Special key font size adjustments */
