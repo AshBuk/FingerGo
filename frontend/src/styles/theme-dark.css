@@ -25,4 +25,24 @@ https://github.com/AshBuk/FingerGo
     --key-pressed-bg: rgba(var(--accent-rgb), 0.3);
     --key-pressed-border: rgba(var(--accent-rgb), 0.5);
     --shadow-strong: rgba(0, 0, 0, 0.4);
+
+    /* Error states */
+    --error-bg: rgba(220, 53, 69, 0.3);
+    --error-border: rgba(220, 53, 69, 0.5);
+    --error-surface: rgba(220, 53, 69, 0.18);
+    --error-text: #ff8fa2;
+
+    /* Finger guide colors */
+    --finger-left-pinky: rgba(255, 107, 107, 0.35);
+    --finger-left-ring: rgba(255, 159, 64, 0.35);
+    --finger-left-middle: rgba(255, 205, 86, 0.35);
+    --finger-left-index: rgba(75, 192, 192, 0.35);
+    --finger-right-index: rgba(167, 210, 255, 0.35);
+    --finger-right-middle: rgba(153, 102, 255, 0.35);
+    --finger-right-ring: rgba(201, 203, 207, 0.35);
+    --finger-right-pinky: rgba(255, 99, 132, 0.35);
+    --finger-thumb: rgba(var(--accent-rgb), 0.4);
+
+    /* Modal overlay */
+    --overlay-bg: rgba(0, 0, 0, 0.75);
 }
