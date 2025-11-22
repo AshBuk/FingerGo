@@ -141,22 +141,6 @@
     }
 
     /**
-     * Initialize Wails runtime (if available)
-     */
-    async function initializeWails() {
-        if (window.runtime) {
-            try {
-                // Listen for backend ready event
-                await window.runtime.EventsOn('backend:ready', () => {
-                    console.log('Backend ready');
-                });
-            } catch (err) {
-                console.warn('Wails runtime initialization failed:', err);
-            }
-        }
-    }
-
-    /**
      * Initialize all modules
      */
     async function initialize() {
@@ -207,8 +191,6 @@
             console.error('KeyboardUI not available. Ensure keyboard.js is loaded.');
             return;
         }
-        // Initialize Wails runtime (optional)
-        await initializeWails();
 
         // Load default text
         const defaultText = await getDefaultText();
@@ -330,16 +312,6 @@
     }
 
     /**
-     * Get application version
-     * @returns {string} Version string
-     */
-    function getVersion() {
-        // For MVP, return hardcoded version
-        // In future, this can come from backend or package.json
-        return '0.1.0';
-    }
-
-    /**
      * Handle global keyboard shortcuts
      */
     function setupKeyboardShortcuts() {
@@ -437,7 +409,6 @@
         loadText,
         openSettings,
         toggleKeyboard,
-        getVersion,
         toggleTheme,
         applyTheme,
     };
