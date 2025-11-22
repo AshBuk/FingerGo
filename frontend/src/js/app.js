@@ -30,8 +30,9 @@
      * @param {string} text - Text to get first char from
      */
     function setInitialTarget(text) {
-        if (text?.length > 0 && window.KeyboardUI && window.KeyUtils) {
-            window.KeyboardUI.setTargetKey(window.KeyUtils.normalizeTextChar(text[0]));
+        if (text?.length > 0 && window.KeyboardUI) {
+            // Pass original char for Shift detection
+            window.KeyboardUI.setTargetKey(text[0]);
         }
     }
 
@@ -104,21 +105,14 @@
     }
 
     // Fallback default text for MVP (hardcoded)
-    const FALLBACK_TEXT = `func fibonacci(n int) int {
-	memo := make(map[int]int)
-	var fib func(int) int
-	fib = func(n int) int {
-		if n <= 1 {
-			return n
-		}
-		if val, exists := memo[n]; exists {
-			return val
-		}
-		memo[n] = fib(n-1) + fib(n-2)
-		return memo[n]
-	}
-	return fib(n)
-}`;
+    // Contains: uppercase, symbols, brackets, quotes for testing finger mapping
+    const FALLBACK_TEXT = `Hello, World! Type this: "Test" (1 + 2) = 3.
+Use {braces}, [brackets], and <angles>.
+Special: @email #tag $100 %50 ^power &ref *ptr.
+Questions? Yes! Check: A-Z, a-z, 0-9.
+Code: if (x > 0) { return x * 2; }
+Path: C:\\Users\\Name | pipe | "quoted"
+Final_score = 100; // Done!`;
 
     /**
      * Get default text (try backend first, fallback to hardcoded)

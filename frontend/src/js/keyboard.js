@@ -130,12 +130,25 @@
         if (el) el.classList.toggle('active', active);
     }
 
-    function highlightFinger(fingerId) {
+    /**
+     * Highlight fingers for a given character
+     * @param {string|null} originalChar - Original character from text (not normalized)
+     */
+    function highlightFingers(originalChar) {
+        // Clear previous highlights
         highlightedFingers.forEach(id => toggleFingerActive(id, false));
         highlightedFingers = [];
+        // Clear Shift key highlight
+        keyToEls.get('Shift')?.forEach(el => el.classList.remove('target'));
+
+        if (!originalChar) return;
+
+        const normalizedKey = originalChar.length === 1 ? originalChar.toLowerCase() : originalChar;
+        const fingerId = fingerForKey[normalizedKey] || fingerForKey[originalChar];
 
         if (!fingerId) return;
 
+        // Handle thumb (space)
         if (fingerId === 'thumb') {
             ['left-thumb', 'right-thumb'].forEach(id => {
                 if (!fingerToEl.has(id)) return;
@@ -145,10 +158,48 @@
             return;
         }
 
+        // Check if Shift is needed
+        const needsShift = requiresShift(originalChar);
+
+        if (needsShift) {
+            // Determine which Shift to use (opposite hand)
+            const leftHandKeys = layout.leftHandKeys;
+            const isLeftHandKey =
+                leftHandKeys?.has(originalChar) || leftHandKeys?.has(normalizedKey);
+            const shiftFinger = isLeftHandKey ? 'right-pinky' : 'left-pinky';
+
+            // Highlight Shift finger
+            if (fingerToEl.has(shiftFinger)) {
+                toggleFingerActive(shiftFinger, true);
+                highlightedFingers.push(shiftFinger);
+            }
+
+            // Highlight Shift key on keyboard
+            keyToEls.get('Shift')?.forEach((el, idx) => {
+                // Left Shift is first (idx 0), Right Shift is second (idx 1)
+                if ((isLeftHandKey && idx === 1) || (!isLeftHandKey && idx === 0)) {
+                    el.classList.add('target');
+                }
+            });
+        }
+
+        // Highlight main key finger
         if (fingerToEl.has(fingerId)) {
             toggleFingerActive(fingerId, true);
             highlightedFingers.push(fingerId);
         }
+    }
+
+    /**
+     * Check if character requires Shift key
+     */
+    function requiresShift(char) {
+        if (!char || char.length !== 1) return false;
+        // Uppercase letters
+        if (char >= 'A' && char <= 'Z') return true;
+        // Shift symbols
+        const shiftSymbols = '~!@#$%^&*()_+{}|:"<>?';
+        return shiftSymbols.includes(char);
     }
 
     // Key normalization utilities are now in utils.js (KeyUtils)
@@ -164,15 +215,37 @@
     }
 
     let targetKey = null;
-    function setTarget(key) {
+
+    /**
+     * Set target key with original character for proper Shift handling
+     * @param {string} key - Normalized key
+     * @param {string} originalChar - Original character from text
+     */
+    function setTarget(key, originalChar) {
+        // Clear previous target key
         if (targetKey && keyToEls.get(targetKey)) {
             keyToEls.get(targetKey).forEach(el => el.classList.remove('target'));
         }
-        targetKey = key;
-        if (key && keyToEls.get(key)) {
-            keyToEls.get(key).forEach(el => el.classList.add('target'));
+        // Clear previous Shift highlight
+        keyToEls.get('Shift')?.forEach(el => el.classList.remove('target'));
+
+        // For shift symbols, find the base key to highlight
+        // For uppercase letters, use lowercase; for shift symbols, use the base key
+        const shiftToBaseKey = layout.shiftToBaseKey;
+        let baseKey = key;
+        if (shiftToBaseKey?.[originalChar]) {
+            baseKey = shiftToBaseKey[originalChar];
+        } else if (originalChar && originalChar >= 'A' && originalChar <= 'Z') {
+            baseKey = originalChar.toLowerCase();
         }
-        highlightFinger(key ? fingerForKey[key] : null);
+
+        targetKey = baseKey;
+
+        if (baseKey && keyToEls.get(baseKey)) {
+            keyToEls.get(baseKey).forEach(el => el.classList.add('target'));
+        }
+
+        highlightFingers(originalChar);
     }
 
     function setErrorState(key) {
@@ -195,10 +268,29 @@
 
     function onKeyDown(e) {
         const k = window.KeyUtils.normalizeKey(e.key);
+        // For Shift, use location to determine which one
+        if (e.key === 'Shift') {
+            const shiftEls = keyToEls.get('Shift');
+            if (shiftEls) {
+                // e.location: 1 = left, 2 = right
+                const idx = e.location === 1 ? 0 : 1;
+                shiftEls[idx]?.classList.add('pressed');
+            }
+            return;
+        }
         setPressed(k, true);
     }
     function onKeyUp(e) {
         const k = window.KeyUtils.normalizeKey(e.key);
+        // For Shift, use location to determine which one
+        if (e.key === 'Shift') {
+            const shiftEls = keyToEls.get('Shift');
+            if (shiftEls) {
+                const idx = e.location === 1 ? 0 : 1;
+                shiftEls[idx]?.classList.remove('pressed');
+            }
+            return;
+        }
         setPressed(k, false);
     }
 
@@ -208,8 +300,15 @@
 
     // Expose minimal API
     window.KeyboardUI = {
-        setTargetKey: k => setTarget(window.KeyUtils.normalizeKey(k)),
-        clearTarget: () => setTarget(null),
+        /**
+         * Set target key for highlighting
+         * @param {string} originalChar - Original character from text (for Shift detection)
+         */
+        setTargetKey: originalChar => {
+            const normalizedKey = window.KeyUtils.normalizeKey(originalChar);
+            setTarget(normalizedKey, originalChar);
+        },
+        clearTarget: () => setTarget(null, null),
         setError: k => setErrorState(window.KeyUtils.normalizeKey(k)),
         clearError: k => clearErrorState(window.KeyUtils.normalizeKey(k)),
         clearAllErrors,

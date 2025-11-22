@@ -175,11 +175,10 @@
             if (session.currentIndex >= session.text.length) {
                 completeSession();
             } else {
-                // Update target key
+                // Update target key - pass original char for Shift detection
                 const nextChar = session.text[session.currentIndex];
-                const nextKey = window.KeyUtils.normalizeTextChar(nextChar);
                 if (window.KeyboardUI) {
-                    window.KeyboardUI.setTargetKey(nextKey);
+                    window.KeyboardUI.setTargetKey(nextChar);
                 }
             }
 
@@ -259,11 +258,10 @@
         session.isActive = true;
         session.startTime = Date.now();
 
-        // Set initial target key
+        // Set initial target key - pass original char for Shift detection
         const firstChar = text[0];
-        const firstKey = window.KeyUtils.normalizeTextChar(firstChar);
         if (window.KeyboardUI) {
-            window.KeyboardUI.setTargetKey(firstKey);
+            window.KeyboardUI.setTargetKey(firstChar);
         }
 
         window.EventBus.emit('typing:start', {
