@@ -3,3 +3,26 @@ Copyright 2025 Asher Buk
 SPDX-License-Identifier: Apache-2.0
 https://github.com/AshBuk/FingerGo
 */
+
+/* Light theme tokens */
+.theme-light {
+    /* Base colors with warm tint */
+    --bg: #f7f1e6;
+    --text-default: #1f170f;
+    --text-muted: #6d5f53;
+
+    /* Accent (deep warm brown for text/buttons) */
+    --accent: #2a1f15;
+    --accent-rgb: 42, 31, 21;
+
+    /* UI lines and key colors derived from accent */
+    --line-weak: rgba(var(--accent-rgb), 0.18);
+    --line-strong: rgba(var(--accent-rgb), 0.32);
+    --key-bg: rgba(167, 137, 107, 0.18);
+    --key-bg-hover: rgba(167, 137, 107, 0.24);
+    --key-border: rgba(167, 137, 107, 0.4);
+    --key-border-strong: rgba(167, 137, 107, 0.55);
+    --key-pressed-bg: rgba(167, 137, 107, 0.32);
+    --key-pressed-border: rgba(167, 137, 107, 0.55);
+    --shadow-strong: rgba(0, 0, 0, 0.14);
+}

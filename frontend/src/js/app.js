@@ -42,7 +42,9 @@
             // Persist locally
             try {
                 localStorage.setItem('theme', currentTheme);
-            } catch { /* localStorage unavailable */ }
+            } catch {
+                /* localStorage unavailable */
+            }
             setThemeToggleIcon(currentTheme);
         } catch (err) {
             console.warn('Failed to apply theme:', err);
