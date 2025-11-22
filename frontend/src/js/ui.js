@@ -145,6 +145,9 @@
                 case 'settings':
                     modalTitle.textContent = 'Settings';
                     break;
+                case 'color-settings':
+                    modalTitle.textContent = 'Color Settings';
+                    break;
                 default:
                     modalTitle.textContent = 'Information';
             }
@@ -187,12 +190,83 @@
             `;
         } else if (type === 'settings') {
             contentHTML = '<p>Settings panel coming soon...</p>';
+        } else if (type === 'color-settings') {
+            const theme = data?.theme || 'dark';
+            const colors = window.ColorSettings?.getColors(theme) || {};
+            contentHTML = `
+                <div class="color-settings">
+                    <p class="color-theme-label">Editing: <strong>${theme}</strong> theme</p>
+                    <div class="color-group">
+                        <label class="color-row">
+                            <span>Background</span>
+                            <input type="color" data-var="--bg" value="${colors['--bg'] || (theme === 'dark' ? '#0d0b09' : '#f7f1e6')}">
+                        </label>
+                        <label class="color-row">
+                            <span>Text & Keys</span>
+                            <input type="color" data-var="--accent" value="${colors['--accent'] || (theme === 'dark' ? '#f5f5e9' : '#2a1f15')}">
+                        </label>
+                        <label class="color-row">
+                            <span>UI Text</span>
+                            <input type="color" data-var="--text-default" value="${colors['--text-default'] || (theme === 'dark' ? '#e8e6e3' : '#1f170f')}">
+                        </label>
+                        <label class="color-row">
+                            <span>Error</span>
+                            <input type="color" data-var="--error-text" value="${colors['--error-text'] || (theme === 'dark' ? '#ff8fa2' : '#a83d27')}">
+                        </label>
+                    </div>
+                    <div class="color-actions">
+                        <button type="button" class="color-btn" id="color-reset">Reset</button>
+                        <button type="button" class="color-btn color-btn-primary" id="color-save">Save</button>
+                    </div>
+                </div>
+            `;
         } else {
             contentHTML = '<p>No content available</p>';
         }
 
         modalContent.innerHTML = contentHTML;
         modalOverlay.classList.remove('modal-hidden');
+
+        // Bind color settings handlers after DOM is ready
+        if (type === 'color-settings') {
+            const theme = data?.theme || 'dark';
+            const inputs = modalContent.querySelectorAll('input[type="color"]');
+
+            // Live preview on change
+            inputs.forEach(input => {
+                input.addEventListener('input', () => {
+                    if (window.ColorSettings) {
+                        window.ColorSettings.preview(input.dataset.var, input.value);
+                    }
+                });
+            });
+
+            // Save button
+            const saveBtn = document.getElementById('color-save');
+            if (saveBtn) {
+                saveBtn.addEventListener('click', () => {
+                    const colors = {};
+                    inputs.forEach(input => {
+                        colors[input.dataset.var] = input.value;
+                    });
+                    if (window.ColorSettings) {
+                        window.ColorSettings.save(theme, colors);
+                    }
+                    hideModal();
+                });
+            }
+
+            // Reset button
+            const resetBtn = document.getElementById('color-reset');
+            if (resetBtn) {
+                resetBtn.addEventListener('click', () => {
+                    if (window.ColorSettings) {
+                        window.ColorSettings.reset(theme);
+                    }
+                    hideModal();
+                });
+            }
+        }
     }
 
     /**

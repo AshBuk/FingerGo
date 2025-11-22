@@ -173,6 +173,13 @@
                 resetBtn.blur();
             });
         }
+        const colorBtn = document.getElementById('color-settings');
+        if (colorBtn) {
+            colorBtn.addEventListener('click', () => {
+                openColorSettings();
+                colorBtn.blur();
+            });
+        }
 
         // Check required modules
         if (!window.EventBus) {
@@ -301,6 +308,15 @@
     }
 
     /**
+     * Open color settings modal
+     */
+    function openColorSettings() {
+        if (window.UIManager) {
+            window.UIManager.showModal('color-settings', { theme: currentTheme });
+        }
+    }
+
+    /**
      * Toggle keyboard visibility
      */
     function toggleKeyboard() {
@@ -347,7 +363,6 @@
             // Ignore modifier keys and shortcuts
             if (['Control', 'Alt', 'Meta', 'Shift'].includes(e.key)) return;
             if (e.ctrlKey || e.metaKey) return; // Ignore shortcuts
-
             // Ignore if session already active
             const session = window.TypingEngine.getSessionData();
             if (session.isActive) {
@@ -386,7 +401,6 @@
                 // (removal is handled inside ensureStart)
             }
         };
-
         window.addEventListener('keydown', startHandler);
     }
 
@@ -408,6 +422,7 @@
         reset,
         loadText,
         openSettings,
+        openColorSettings,
         toggleKeyboard,
         toggleTheme,
         applyTheme,
