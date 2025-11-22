@@ -96,6 +96,12 @@
         els.forEach(el => el.classList.remove('error'));
     }
 
+    function clearAllErrors() {
+        keyToEls.forEach(els => {
+            els.forEach(el => el.classList.remove('error'));
+        });
+    }
+
     function onKeyDown(e) {
         const k = window.KeyUtils.normalizeKey(e.key);
         setPressed(k, true);
@@ -115,6 +121,7 @@
         clearTarget: () => setTarget(null),
         setError: k => setErrorState(window.KeyUtils.normalizeKey(k)),
         clearError: k => clearErrorState(window.KeyUtils.normalizeKey(k)),
+        clearAllErrors,
         getCurrentLayout: () => layout,
     };
 })();

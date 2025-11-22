@@ -228,6 +228,7 @@
     function hideModal() {
         if (modalOverlay) {
             modalOverlay.classList.add('modal-hidden');
+            window.EventBus.emit('modal:closed');
         }
     }
 
