@@ -14,6 +14,96 @@ https://github.com/AshBuk/FingerGo
     width: 100%;
 }
 
+/* Embedded hand guides */
+.keyboard-row-space {
+    justify-content: center;
+    align-items: flex-end;
+    gap: clamp(0.4rem, 1vw, 0.85rem);
+    margin-top: 0.25rem;
+}
+
+.hand {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.25rem;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    pointer-events: none;
+}
+
+.hand-left {
+    justify-content: flex-end;
+}
+
+.hand-right {
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+}
+
+.finger {
+    width: clamp(12px, 1.3vw, 22px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--line-weak);
+    border-radius: 10px 10px 8px 8px;
+    background: rgba(var(--accent-rgb), 0.08);
+    color: var(--accent);
+    font-size: 0.5rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    opacity: 0.65;
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease,
+        opacity 0.2s ease;
+}
+
+.finger.pinky {
+    height: clamp(36px, 6vh, 60px);
+}
+
+.finger.ring {
+    height: clamp(42px, 6.5vh, 70px);
+}
+
+.finger.middle {
+    height: clamp(48px, 7vh, 80px);
+}
+
+.finger.index {
+    height: clamp(44px, 6.5vh, 72px);
+}
+
+.finger.thumb {
+    width: clamp(32px, 3.5vw, 54px);
+    height: clamp(24px, 4vh, 40px);
+    border-radius: 18px 18px 12px 12px;
+}
+
+.finger.active {
+    opacity: 1;
+    background: rgba(var(--accent-rgb), 0.35);
+    border-color: rgba(var(--accent-rgb), 0.6);
+    box-shadow:
+        0 0 16px rgba(var(--accent-rgb), 0.4),
+        0 2px 4px rgba(0, 0, 0, 0.2);
+    transform: translateY(-4px);
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@media (max-width: 640px) {
+    .keyboard-row-space {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+}
+
 /* Keyboard Rows */
 .keyboard-row {
     display: flex;
