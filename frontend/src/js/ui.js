@@ -115,23 +115,6 @@
     }
 
     /**
-     * Show success highlight at index
-     * @param {number} index - Character index
-     */
-    function showSuccess(index) {
-        updateCharacter(index, 'fade-success');
-    }
-
-    /**
-     * Clear all highlights
-     */
-    function clearHighlights() {
-        characterElements.forEach(el => {
-            el.classList.remove('typed', 'correct', 'error', 'current', 'fade-success');
-        });
-    }
-
-    /**
      * Update statistics bar
      * @param {number} wpm - Words per minute
      * @param {number} cpm - Characters per minute
@@ -143,16 +126,6 @@
         if (statsBar.cpm) statsBar.cpm.textContent = Math.round(cpm);
         if (statsBar.accuracy) statsBar.accuracy.textContent = `${accuracy.toFixed(1)}%`;
         if (statsBar.timer) statsBar.timer.textContent = formatTime(time);
-    }
-
-    /**
-     * Update timer display
-     * @param {number} seconds - Time in seconds
-     */
-    function updateTimer(seconds) {
-        if (statsBar.timer) {
-            statsBar.timer.textContent = formatTime(seconds);
-        }
     }
 
     /**
@@ -305,11 +278,8 @@
         renderText,
         updateCharacter,
         updateStats,
-        updateTimer,
         showModal,
         hideModal,
         showError,
-        showSuccess,
-        clearHighlights,
     };
 })();
