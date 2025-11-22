@@ -20,6 +20,40 @@
         btn.setAttribute('title', 'Toggle theme');
     }
 
+    function isModalVisible() {
+        const overlay = document.getElementById('modal-overlay');
+        return overlay && !overlay.classList.contains('modal-hidden');
+    }
+
+    function buildLiveSummary() {
+        if (!window.TypingEngine) return null;
+        const session = window.TypingEngine.getSessionData();
+        if (!session || (session.totalKeystrokes === 0 && session.currentIndex === 0)) {
+            return null;
+        }
+        const metrics = window.TypingEngine.getMetrics();
+        return {
+            ...session,
+            wpm: metrics?.wpm ?? 0,
+            cpm: metrics?.cpm ?? 0,
+            accuracy: metrics?.accuracy ?? 100,
+            duration: metrics?.time ?? session.duration ?? 0,
+            totalErrors: session.totalErrors ?? 0,
+            totalKeystrokes: session.totalKeystrokes ?? 0,
+        };
+    }
+
+    function showStatsModal() {
+        if (!window.UIManager) return;
+        const summary =
+            (window.StatsManager && window.StatsManager.getSessionSummary
+                ? window.StatsManager.getSessionSummary()
+                : null) || buildLiveSummary();
+        if (summary) {
+            window.UIManager.showModal('session-summary', summary);
+        }
+    }
+
     /**
      * Apply theme and persist preference
      * @param {'dark'|'light'} theme
@@ -132,6 +166,13 @@
             themeBtn.addEventListener('click', () => {
                 toggleTheme();
                 themeBtn.blur();
+            });
+        }
+        const resetBtn = document.getElementById('reset-session');
+        if (resetBtn) {
+            resetBtn.addEventListener('click', () => {
+                reset();
+                resetBtn.blur();
             });
         }
 
@@ -292,10 +333,12 @@
      */
     function setupKeyboardShortcuts() {
         window.addEventListener('keydown', e => {
-            // Esc - Reset session
+            // Esc - Show stats modal (do not reset session)
             if (e.key === 'Escape') {
+                if (isModalVisible()) return;
                 e.preventDefault();
-                reset();
+                showStatsModal();
+                return;
             }
             // Ctrl+, - Open settings
             if (e.key === ',' && (e.ctrlKey || e.metaKey)) {

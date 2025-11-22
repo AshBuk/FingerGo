@@ -15,9 +15,26 @@ https://github.com/AshBuk/FingerGo
     </head>
     <body class="theme-dark">
         <div id="app" class="theme-dark">
-            <button id="theme-toggle" aria-label="Toggle theme" title="Toggle theme" tabindex="-1">
-                🌙
-            </button>
+            <div id="top-action-bar" role="region" aria-label="Quick actions">
+                <button
+                    id="theme-toggle"
+                    class="top-action-button"
+                    aria-label="Toggle theme"
+                    title="Toggle theme"
+                    type="button"
+                >
+                    🌙
+                </button>
+                <button
+                    id="reset-session"
+                    class="top-action-button"
+                    aria-label="Reset session"
+                    title="Reset current session"
+                    type="button"
+                >
+                    ↻
+                </button>
+            </div>
             <!-- Text Display Area -->
             <section id="text-area">
                 <div id="text-display"></div>
