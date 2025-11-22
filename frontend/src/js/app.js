@@ -45,6 +45,10 @@
 
     function showStatsModal() {
         if (!window.UIManager) return;
+        // Pause session while modal is open to prevent error accumulation
+        if (window.TypingEngine) {
+            window.TypingEngine.pause();
+        }
         const summary =
             (window.StatsManager && window.StatsManager.getSessionSummary
                 ? window.StatsManager.getSessionSummary()
@@ -212,6 +216,13 @@
             window.KeyboardUI.setTargetKey(firstKey);
         }
 
+        // Listen for modal close to resume session
+        window.EventBus.on('modal:closed', () => {
+            if (window.TypingEngine) {
+                window.TypingEngine.resume();
+            }
+        });
+
         // Emit app ready event
         window.EventBus.emit('app:ready', {
             text: defaultText,
@@ -233,9 +244,12 @@
             window.UIManager.updateStats(0, 0, 100, 0);
         }
 
-        // Clear keyboard heatmap
+        // Clear keyboard heatmap and error states
         if (window.StatsManager) {
             window.StatsManager.clearHeatmap();
+        }
+        if (window.KeyboardUI) {
+            window.KeyboardUI.clearAllErrors();
         }
 
         // Reload default text
