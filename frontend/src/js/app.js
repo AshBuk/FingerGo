@@ -8,6 +8,9 @@
  * Initializes all modules and coordinates lifecycle
  */
 (() => {
+    // Single source of truth for current text displayed/used by TypingEngine
+    let currentText = null;
+
     // Fallback default text for MVP (hardcoded)
     const FALLBACK_TEXT = `func fibonacci(n int) int {
 	memo := make(map[int]int)
@@ -99,6 +102,7 @@
 
         // Load default text
         const defaultText = await getDefaultText();
+        currentText = defaultText;
 
         // Render text in UI
         if (window.UIManager) {
@@ -131,6 +135,7 @@
 
         // Reload default text
         getDefaultText().then(text => {
+            currentText = text;
             if (window.UIManager) {
                 window.UIManager.renderText(text);
             }
@@ -167,6 +172,8 @@
             console.error('No text available');
             return;
         }
+
+        currentText = text;
 
         // Reset current session
         if (window.TypingEngine) {
@@ -221,22 +228,9 @@
      */
     function setupKeyboardShortcuts() {
         window.addEventListener('keydown', e => {
-            // Esc - Reset session (only if not typing)
+            // Esc - Reset session
             if (e.key === 'Escape') {
-                // Don't reset if modal is open (let modal handle Esc)
-                const modalOverlay = document.getElementById('modal-overlay');
-                if (modalOverlay && !modalOverlay.classList.contains('modal-hidden')) {
-                    return;
-                }
-
-                // Don't reset if actively typing
-                if (window.TypingEngine) {
-                    const session = window.TypingEngine.getSessionData();
-                    if (session.isActive) {
-                        return; // Let typing engine handle it
-                    }
-                }
-
+                e.preventDefault();
                 reset();
             }
 
@@ -260,12 +254,6 @@
     function setupTypingStart() {
         if (!window.TypingEngine) return;
 
-        // Preload default text
-        let defaultText = null;
-        getDefaultText().then(text => {
-            defaultText = text;
-        });
-
         // Listen for first keystroke to start session
         const startHandler = e => {
             // Ignore modifier keys and shortcuts
@@ -280,31 +268,34 @@
                 return;
             }
 
-            // Wait for text to be loaded if not ready yet
-            if (!defaultText) {
-                getDefaultText().then(text => {
-                    if (text && text.length > 0) {
-                        window.TypingEngine.start(text);
-                        window.removeEventListener('keydown', startHandler);
-                        // Process the current keystroke event that triggered the start
-                        if (window.TypingEngine.handleKeyDown) {
-                            window.TypingEngine.handleKeyDown(e);
-                        }
+            // Ensure text is available
+            const ensureStart = text => {
+                if (text && text.length > 0) {
+                    window.TypingEngine.start(text);
+                    // Remove this listener after start
+                    window.removeEventListener('keydown', startHandler);
+                    // Process the current keystroke event that triggered the start
+                    if (window.TypingEngine.handleKeyDown) {
+                        window.TypingEngine.handleKeyDown(e);
                     }
-                });
-                return;
-            }
-
-            // Start session synchronously
-            if (defaultText && defaultText.length > 0) {
-                window.TypingEngine.start(defaultText);
-                // Remove this listener after start
-                window.removeEventListener('keydown', startHandler);
-                // Process the current keystroke event that triggered the start
-                // This ensures the first keystroke is processed immediately
-                if (window.TypingEngine.handleKeyDown) {
-                    window.TypingEngine.handleKeyDown(e);
                 }
+            };
+
+            if (!currentText) {
+                // Load once if not ready yet, then start
+                getDefaultText().then(text => {
+                    currentText = text;
+                    // Also render to keep UI in sync
+                    if (window.UIManager) {
+                        window.UIManager.renderText(text);
+                    }
+                    ensureStart(text);
+                });
+            } else {
+                // Start session synchronously with currentText
+                ensureStart(currentText);
+                // Remove this listener after start
+                // (removal is handled inside ensureStart)
             }
         };
 
