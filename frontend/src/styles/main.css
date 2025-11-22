@@ -158,8 +158,7 @@ body {
 
 /* Statistics Bar */
 #stats-bar {
-    display: flex !important;
-    visibility: visible !important;
+    display: flex;
     justify-content: center;
     align-items: center;
     gap: 3rem;
@@ -169,8 +168,7 @@ body {
 }
 
 .stat-item {
-    display: flex !important;
-    visibility: visible !important;
+    display: flex;
     flex-direction: column;
     align-items: center;
     gap: 0.2rem;
