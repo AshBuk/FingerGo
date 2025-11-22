@@ -99,8 +99,8 @@ https://github.com/AshBuk/FingerGo
 
 /* Key error state */
 .key.error {
-    background: rgba(220, 53, 69, 0.2);
-    border-color: rgba(220, 53, 69, 0.4);
+    background: var(--error-bg, rgba(220, 53, 69, 0.2));
+    border-color: var(--error-border, rgba(220, 53, 69, 0.4));
 }
 
 /* Special key widths */
@@ -129,39 +129,39 @@ https://github.com/AshBuk/FingerGo
 
 /* Finger color mapping - subtle hints on keys */
 .key[data-finger='left-pinky'] {
-    border-left: 3px solid rgba(255, 107, 107, 0.3);
+    border-left: 3px solid var(--finger-left-pinky, rgba(255, 107, 107, 0.3));
 }
 
 .key[data-finger='left-ring'] {
-    border-left: 3px solid rgba(255, 159, 64, 0.3);
+    border-left: 3px solid var(--finger-left-ring, rgba(255, 159, 64, 0.3));
 }
 
 .key[data-finger='left-middle'] {
-    border-left: 3px solid rgba(255, 205, 86, 0.3);
+    border-left: 3px solid var(--finger-left-middle, rgba(255, 205, 86, 0.3));
 }
 
 .key[data-finger='left-index'] {
-    border-left: 3px solid rgba(75, 192, 192, 0.3);
+    border-left: 3px solid var(--finger-left-index, rgba(75, 192, 192, 0.3));
 }
 
 .key[data-finger='right-index'] {
-    border-left: 3px solid rgba(var(--accent-rgb), 0.4);
+    border-left: 3px solid var(--finger-right-index, rgba(var(--accent-rgb), 0.4));
 }
 
 .key[data-finger='right-middle'] {
-    border-left: 3px solid rgba(153, 102, 255, 0.3);
+    border-left: 3px solid var(--finger-right-middle, rgba(153, 102, 255, 0.3));
 }
 
 .key[data-finger='right-ring'] {
-    border-left: 3px solid rgba(201, 203, 207, 0.3);
+    border-left: 3px solid var(--finger-right-ring, rgba(201, 203, 207, 0.3));
 }
 
 .key[data-finger='right-pinky'] {
-    border-left: 3px solid rgba(255, 99, 132, 0.3);
+    border-left: 3px solid var(--finger-right-pinky, rgba(255, 99, 132, 0.3));
 }
 
 .key[data-finger='thumb'] {
-    border-top: 3px solid rgba(var(--accent-rgb), 0.4);
+    border-top: 3px solid var(--finger-thumb, rgba(var(--accent-rgb), 0.4));
 }
 
 /* Smooth transitions */
