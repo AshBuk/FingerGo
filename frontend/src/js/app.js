@@ -106,13 +106,62 @@
 
     // Fallback default text for MVP (hardcoded)
     // Contains: uppercase, symbols, brackets, quotes for testing finger mapping
-    const FALLBACK_TEXT = `Hello, World! Type this: "Test" (1 + 2) = 3.
-Use {braces}, [brackets], and <angles>.
-Special: @email #tag $100 %50 ^power &ref *ptr.
-Questions? Yes! Check: A-Z, a-z, 0-9.
-Code: if (x > 0) { return x * 2; }
-Path: C:\\Users\\Name | pipe | "quoted"
-Final_score = 100; // Done!`;
+    const FALLBACK_TEXT = `// Go Programming Language - Quick Reference
+
+package main
+
+import (
+	"fmt"
+	"strings"
+)
+
+// Person represents a user in the system.
+type Person struct {
+	Name    string
+	Age     int
+	Email   string
+	IsAdmin bool
+}
+
+// Greet returns a personalized greeting message.
+func (p *Person) Greet() string {
+	if p.IsAdmin {
+		return fmt.Sprintf("Welcome, Admin %s!", p.Name)
+	}
+	return fmt.Sprintf("Hello, %s! You are %d years old.", p.Name, p.Age)
+}
+
+// FilterUsers returns users matching the query (case-insensitive).
+func FilterUsers(users []Person, query string) []Person {
+	result := make([]Person, 0)
+	for _, user := range users {
+		if strings.Contains(strings.ToLower(user.Name), strings.ToLower(query)) {
+			result = append(result, user)
+		}
+	}
+	return result
+}
+
+func main() {
+	users := []Person{
+		{Name: "Alice", Age: 28, Email: "alice@example.com", IsAdmin: true},
+		{Name: "Bob", Age: 35, Email: "bob@test.org", IsAdmin: false},
+		{Name: "Charlie", Age: 22, Email: "charlie@dev.io", IsAdmin: false},
+	}
+
+	// Print greetings for each user
+	for i := 0; i < len(users); i++ {
+		fmt.Println(users[i].Greet())
+	}
+
+	// Filter and display results
+	filtered := FilterUsers(users, "al")
+	fmt.Printf("Found %d user(s) matching 'al'\\n", len(filtered))
+
+	// Special characters test: @#$%^&*(){}[]|\\:;"'<>,.?/~!
+	total := (100 + 50) * 2 / 4 - 25 // = 50
+	fmt.Printf("Calculation: %d\\n", total)
+}`;
 
     /**
      * Get default text (try backend first, fallback to hardcoded)

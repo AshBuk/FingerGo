@@ -128,8 +128,8 @@
         if (['Control', 'Alt', 'Meta', 'Shift'].includes(e.key)) return;
 
         // Prevent default behavior for special keys during active session
-        // to avoid browser navigation (Tab, Enter, etc.)
-        if (['Tab', 'Enter'].includes(e.key)) {
+        // to avoid browser navigation (Tab, Enter) and scrolling (Space)
+        if (['Tab', 'Enter', ' '].includes(e.key)) {
             e.preventDefault();
         }
 

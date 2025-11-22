@@ -143,8 +143,13 @@
 
         if (!originalChar) return;
 
-        const normalizedKey = originalChar.length === 1 ? originalChar.toLowerCase() : originalChar;
-        const fingerId = fingerForKey[normalizedKey] || fingerForKey[originalChar];
+        // Normalize special text characters to key names
+        let keyName = originalChar;
+        if (originalChar === '\n') keyName = 'Enter';
+        else if (originalChar === '\t') keyName = 'Tab';
+
+        const normalizedKey = keyName.length === 1 ? keyName.toLowerCase() : keyName;
+        const fingerId = fingerForKey[normalizedKey] || fingerForKey[keyName];
 
         if (!fingerId) return;
 
@@ -229,14 +234,21 @@
         // Clear previous Shift highlight
         keyToEls.get('Shift')?.forEach(el => el.classList.remove('target'));
 
+        // Normalize special text characters to key names
+        let keyName = originalChar;
+        if (originalChar === '\n') keyName = 'Enter';
+        else if (originalChar === '\t') keyName = 'Tab';
+
         // For shift symbols, find the base key to highlight
         // For uppercase letters, use lowercase; for shift symbols, use the base key
         const shiftToBaseKey = layout.shiftToBaseKey;
         let baseKey = key;
-        if (shiftToBaseKey?.[originalChar]) {
-            baseKey = shiftToBaseKey[originalChar];
-        } else if (originalChar && originalChar >= 'A' && originalChar <= 'Z') {
-            baseKey = originalChar.toLowerCase();
+        if (shiftToBaseKey?.[keyName]) {
+            baseKey = shiftToBaseKey[keyName];
+        } else if (keyName && keyName >= 'A' && keyName <= 'Z') {
+            baseKey = keyName.toLowerCase();
+        } else if (keyName === 'Enter' || keyName === 'Tab') {
+            baseKey = keyName;
         }
 
         targetKey = baseKey;
