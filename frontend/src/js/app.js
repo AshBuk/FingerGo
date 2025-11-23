@@ -275,12 +275,10 @@ func main() {
         if (window.TypingEngine) {
             window.TypingEngine.reset();
         }
-
         // Reset stats display
         if (window.UIManager) {
             window.UIManager.updateStats(0, 0, 100, 0);
         }
-
         // Clear keyboard heatmap and error states
         if (window.StatsManager) {
             window.StatsManager.clearHeatmap();
@@ -331,7 +329,6 @@ func main() {
         if (window.TypingEngine) {
             window.TypingEngine.reset();
         }
-
         // Render new text
         if (window.UIManager) {
             window.UIManager.renderText(text);
@@ -395,59 +392,45 @@ func main() {
     }
 
     /**
+     * Check if key event should trigger session start
+     */
+    function shouldStartSession(e) {
+        if (['Control', 'Alt', 'Meta', 'Shift'].includes(e.key)) return false;
+        if (e.ctrlKey || e.metaKey) return false;
+        if (window.KeyUtils?.isNavigationKey?.(e.key)) return false;
+        return true;
+    }
+
+    /**
      * Start typing session on first keystroke
      */
     function setupTypingStart() {
         if (!window.TypingEngine) return;
 
-        // Listen for first keystroke to start session
-        const startHandler = e => {
-            // Ignore modifier keys and shortcuts
-            if (['Control', 'Alt', 'Meta', 'Shift'].includes(e.key)) return;
-            if (e.ctrlKey || e.metaKey) return; // Ignore shortcuts
-            if (window.KeyUtils?.isNavigationKey?.(e.key)) return;
-            // Ignore if session already active
+        const startHandler = async e => {
+            if (!shouldStartSession(e)) return;
+
+            // Remove listener early to prevent double-start
             const session = window.TypingEngine.getSessionData();
             if (session.isActive) {
-                // Remove listener if session is active
                 window.removeEventListener('keydown', startHandler);
                 return;
             }
 
-            // Get current cursor position from textarea
+            // Load text if needed
+            if (!currentText) {
+                currentText = await getDefaultText();
+                window.UIManager?.renderText(currentText);
+            }
+            if (!currentText?.length) return;
+
+            // Get cursor position and start session
             const textInput = document.getElementById('text-input');
             const cursorPos = textInput?.selectionStart ?? 0;
 
-            // Ensure text is available
-            const ensureStart = text => {
-                if (text && text.length > 0) {
-                    // Start session at current cursor position
-                    window.TypingEngine.start(text, cursorPos);
-                    // Remove this listener after start
-                    window.removeEventListener('keydown', startHandler);
-                    // Process the current keystroke event that triggered the start
-                    if (window.TypingEngine.handleKeyDown) {
-                        window.TypingEngine.handleKeyDown(e);
-                    }
-                }
-            };
-
-            if (!currentText) {
-                // Load once if not ready yet, then start
-                getDefaultText().then(text => {
-                    currentText = text;
-                    // Also render to keep UI in sync
-                    if (window.UIManager) {
-                        window.UIManager.renderText(text);
-                    }
-                    ensureStart(text);
-                });
-            } else {
-                // Start session synchronously with currentText
-                ensureStart(currentText);
-                // Remove this listener after start
-                // (removal is handled inside ensureStart)
-            }
+            window.removeEventListener('keydown', startHandler);
+            window.TypingEngine.start(currentText, cursorPos);
+            window.TypingEngine.handleKeyDown?.(e);
         };
         window.addEventListener('keydown', startHandler);
     }
