@@ -19,17 +19,6 @@
     const modalClose = document.getElementById('modal-close');
 
     /**
-     * Format time in mm:ss format
-     * @param {number} seconds - Time in seconds
-     * @returns {string} Formatted time string
-     */
-    function formatTime(seconds) {
-        const mins = Math.floor(seconds / 60);
-        const secs = Math.floor(seconds % 60);
-        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-    }
-
-    /**
      * Convert CSS color value to hex
      * @param {string} value - CSS color value
      * @returns {string|null} Hex color or null
@@ -116,7 +105,7 @@
                     </div>
                     <div class="summary-stat">
                         <span class="summary-label">Time</span>
-                        <span class="summary-value">${formatTime(data.duration || 0)}</span>
+                        <span class="summary-value">${window.AppUtils?.formatTime?.(data.duration || 0) ?? '00:00'}</span>
                     </div>
                 </div>
                 ${

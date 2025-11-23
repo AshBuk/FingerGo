@@ -55,17 +55,6 @@
     }
 
     /**
-     * Format time in mm:ss format
-     * @param {number} seconds - Time in seconds
-     * @returns {string} Formatted time string
-     */
-    function formatTime(seconds) {
-        const mins = Math.floor(seconds / 60);
-        const secs = Math.floor(seconds % 60);
-        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-    }
-
-    /**
      * Render text with character-level elements
      * @param {string} text - Text to render
      */
@@ -259,7 +248,10 @@
         if (statsBar.wpm) statsBar.wpm.textContent = Math.round(wpm);
         if (statsBar.cpm) statsBar.cpm.textContent = Math.round(cpm);
         if (statsBar.accuracy) statsBar.accuracy.textContent = `${accuracy.toFixed(1)}%`;
-        if (statsBar.timer) statsBar.timer.textContent = formatTime(time);
+        if (statsBar.timer) {
+            const formatter = window.AppUtils?.formatTime;
+            statsBar.timer.textContent = formatter ? formatter(time) : `${Math.floor(time ?? 0)}`;
+        }
     }
 
     /**
