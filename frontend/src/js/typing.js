@@ -26,7 +26,18 @@
         totalKeystrokes: 0,
         pausedTime: 0,
         pauseStartTime: null,
+        typedChars: new Set(), // Track which characters have been typed (by index)
     };
+
+    const IGNORED_KEYS = new Set([
+        'Escape',
+        'CapsLock',
+        'NumLock',
+        'ScrollLock',
+        'Insert',
+        'ContextMenu',
+        'Dead',
+    ]);
 
     let statsUpdateTimer = null;
     const STATS_UPDATE_THROTTLE = 100; // ms
@@ -43,10 +54,11 @@
      * WPM = (characters_typed / 5) / (elapsed_time_minutes)
      */
     function calculateWPM() {
-        if (!session.startTime || session.currentIndex === 0) return 0;
+        const typedCount = session.typedChars.size;
+        if (!session.startTime || typedCount === 0) return 0;
         const elapsed = getElapsedTimeSeconds();
         if (elapsed === 0) return 0;
-        const words = session.currentIndex / 5;
+        const words = typedCount / 5;
         const minutes = elapsed / 60;
         return words / minutes;
     }
@@ -56,13 +68,14 @@
      * CPM = characters_typed / elapsed_time_minutes
      */
     function calculateCPM() {
-        if (!session.startTime || session.currentIndex === 0) return 0;
+        const typedCount = session.typedChars.size;
+        if (!session.startTime || typedCount === 0) return 0;
 
         const elapsed = getElapsedTimeSeconds();
         if (elapsed === 0) return 0;
 
         const minutes = elapsed / 60;
-        return session.currentIndex / minutes;
+        return typedCount / minutes;
     }
 
     /**
@@ -118,11 +131,60 @@
     }
 
     /**
+     * Move cursor to next untyped character (forward from current position)
+     */
+    function moveToNextUntyped() {
+        // First, try to find next untyped character forward
+        for (let i = session.currentIndex + 1; i < session.text.length; i++) {
+            if (!session.typedChars.has(i)) {
+                session.currentIndex = i;
+                updateTargetKey();
+                return;
+            }
+        }
+        // If none found forward, check from beginning
+        for (let i = 0; i < session.currentIndex; i++) {
+            if (!session.typedChars.has(i)) {
+                session.currentIndex = i;
+                updateTargetKey();
+                return;
+            }
+        }
+        // All typed - session complete
+    }
+
+    /**
+     * Update keyboard target key based on current index
+     */
+    function updateTargetKey() {
+        const nextChar = session.text[session.currentIndex];
+        if (window.KeyboardUI && nextChar) {
+            window.KeyboardUI.setTargetKey(nextChar);
+        }
+        // Emit cursor position for UI sync
+        window.EventBus.emit('cursor:sync', { index: session.currentIndex });
+    }
+
+    /**
      * Handle keydown event
      */
     function handleKeyDown(e) {
         // Ignore if session not active or paused
         if (!session.isActive || session.isPaused) return;
+
+        // Ignore navigation keys (with or without modifiers)
+        if (window.KeyUtils.isNavigationKey?.(e.key)) {
+            return;
+        }
+
+        // Ignore shortcuts using control/meta modifiers
+        if (e.ctrlKey || e.metaKey) {
+            return;
+        }
+
+        if (IGNORED_KEYS.has(e.key)) {
+            return;
+        }
 
         // Ignore modifier keys
         if (['Control', 'Alt', 'Meta', 'Shift'].includes(e.key)) return;
@@ -141,6 +203,13 @@
             return;
         }
 
+        // Skip already typed characters
+        if (session.typedChars.has(session.currentIndex)) {
+            // Move to next untyped character
+            moveToNextUntyped();
+            return;
+        }
+
         const expectedKey = window.KeyUtils.normalizeTextChar(expectedChar);
         const isCorrect = pressedKey === expectedKey;
 
@@ -156,6 +225,9 @@
         });
 
         if (isCorrect) {
+            // Mark this character as typed
+            session.typedChars.add(session.currentIndex);
+
             // Correct key pressed
             window.EventBus.emit('typing:keystroke', {
                 char: expectedChar,
@@ -169,17 +241,12 @@
                 window.KeyboardUI.clearError(expectedKey);
             }
 
-            session.currentIndex++;
+            // Move to next untyped character
+            moveToNextUntyped();
 
-            // Check if session complete
-            if (session.currentIndex >= session.text.length) {
+            // Check if session complete (all characters typed)
+            if (session.typedChars.size >= session.text.length) {
                 completeSession();
-            } else {
-                // Update target key - pass original char for Shift detection
-                const nextChar = session.text[session.currentIndex];
-                if (window.KeyboardUI) {
-                    window.KeyboardUI.setTargetKey(nextChar);
-                }
             }
 
             emitStatsUpdate();
@@ -349,6 +416,7 @@
         session.totalKeystrokes = 0;
         session.pausedTime = 0;
         session.pauseStartTime = null;
+        session.typedChars.clear();
 
         if (statsUpdateTimer) {
             clearTimeout(statsUpdateTimer);
@@ -400,6 +468,27 @@
         };
     }
 
+    /**
+     * Set current index (for cursor navigation)
+     * @param {number} index - New cursor position
+     */
+    function setCurrentIndex(index) {
+        if (index < 0 || index > session.text.length) return;
+        session.currentIndex = index;
+        updateTargetKey();
+    }
+
+    // Listen for cursor move events from UI
+    window.EventBus.on('cursor:move', data => {
+        if (data.index !== undefined) {
+            // Clear keyboard error highlights on navigation
+            if (window.KeyboardUI) {
+                window.KeyboardUI.clearAllErrors();
+            }
+            setCurrentIndex(data.index);
+        }
+    });
+
     // Export API
     window.TypingEngine = {
         start,
@@ -409,6 +498,7 @@
         reset,
         getSessionData,
         getCurrentIndex,
+        setCurrentIndex,
         getMetrics,
         handleKeyDown, // Export for app.js to process first keystroke
     };

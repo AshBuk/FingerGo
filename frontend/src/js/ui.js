@@ -14,6 +14,7 @@
     }
 
     const textDisplay = document.getElementById('text-display');
+    const textInput = document.getElementById('text-input');
     const statsBar = {
         wpm: document.getElementById('wpm'),
         cpm: document.getElementById('cpm'),
@@ -27,6 +28,8 @@
     const modalClose = document.getElementById('modal-close');
 
     let characterElements = [];
+    let cursorIndex = 0;
+    let suppressSelectionSync = false;
 
     /**
      * Format time in mm:ss format
@@ -47,6 +50,7 @@
         if (!textDisplay) return;
 
         characterElements = [];
+        cursorIndex = -1;
 
         // Clear existing content
         textDisplay.innerHTML = '';
@@ -62,10 +66,120 @@
             textDisplay.appendChild(span);
         }
 
-        // Set first character as current
-        if (characterElements.length > 0) {
-            characterElements[0].classList.add('current');
+        // Sync textarea with text content
+        if (textInput) {
+            textInput.value = text;
         }
+
+        // Ensure caret starts at beginning
+        setCursorPosition(0, { emit: false });
+    }
+
+    /**
+     * Update cursor position and notify typing engine
+     * @param {number} index - Character index (allows length for end-of-text)
+     * @param {Object} options - Control sync behavior
+     * @param {boolean} [options.syncInput=true] - Sync textarea selection
+     * @param {boolean} [options.emit=true] - Emit cursor move event
+     */
+    function setCursorPosition(index, options = {}) {
+        const { syncInput = true, emit = true } = options;
+        const length = characterElements.length;
+        if (length === 0) {
+            cursorIndex = 0;
+            if (syncInput && textInput && textInput.selectionStart !== 0) {
+                suppressSelectionSync = true;
+                textInput.setSelectionRange(0, 0);
+                suppressSelectionSync = false;
+            }
+            if (emit) {
+                window.EventBus.emit('cursor:move', { index: 0 });
+            }
+            return;
+        }
+
+        const clamped = Math.max(0, Math.min(index, length));
+        if (cursorIndex !== clamped) {
+            if (cursorIndex >= 0 && cursorIndex < length) {
+                characterElements[cursorIndex].classList.remove('current');
+            }
+            if (clamped < length) {
+                characterElements[clamped].classList.add('current');
+            }
+            cursorIndex = clamped;
+        }
+
+        if (syncInput && textInput && textInput.selectionStart !== clamped) {
+            suppressSelectionSync = true;
+            textInput.setSelectionRange(clamped, clamped);
+            suppressSelectionSync = false;
+        }
+
+        if (emit) {
+            window.EventBus.emit('cursor:move', { index: clamped });
+        }
+    }
+
+    // Handle textarea cursor changes (arrow keys)
+    // Note: textarea has pointer-events: none, so mouse events go to textDisplay
+    if (textInput) {
+        const scheduleCursorSync = () => {
+            requestAnimationFrame(() => {
+                if (suppressSelectionSync) return;
+                const pos = textInput.selectionStart;
+                if (pos === null || pos === undefined) return;
+                setCursorPosition(pos, { syncInput: false });
+            });
+        };
+
+        textInput.addEventListener('select', () => {
+            if (suppressSelectionSync) return;
+            const pos = textInput.selectionStart;
+            if (pos === null || pos === undefined) return;
+            setCursorPosition(pos, { syncInput: false });
+        });
+
+        textInput.addEventListener('keydown', e => {
+            if (window.KeyUtils?.isNavigationKey?.(e.key)) {
+                scheduleCursorSync();
+            }
+            if (e.key === 'Tab') {
+                e.preventDefault();
+            }
+        });
+
+        // Prevent actual text input in textarea (typing engine handles input)
+        textInput.addEventListener('beforeinput', e => {
+            e.preventDefault();
+        });
+
+        // Prevent context menu on right-click
+        textInput.addEventListener('contextmenu', e => {
+            e.preventDefault();
+        });
+    }
+
+    if (textDisplay) {
+        textDisplay.addEventListener('mousedown', e => {
+            const element = e.target instanceof Element ? e.target : null;
+            const target = element?.closest('.char');
+            if (!target) {
+                textInput?.focus();
+                setCursorPosition(characterElements.length, { syncInput: true });
+                return;
+            }
+            e.preventDefault();
+            const index = Number(target.dataset.index);
+            textInput?.focus();
+            if (!Number.isNaN(index)) {
+                setCursorPosition(index, { syncInput: true });
+            }
+        });
+
+        // Prevent context menu on right-click
+        textDisplay.addEventListener('contextmenu', e => {
+            e.preventDefault();
+        });
     }
 
     /**
@@ -344,10 +458,13 @@
         if (data.index !== undefined) {
             // Mark the character we just typed as correct
             updateCharacter(data.index, 'correct');
-            // Set next character as current (if exists)
-            if (data.index + 1 < characterElements.length) {
-                updateCharacter(data.index + 1, 'current');
-            }
+        }
+    });
+
+    // Sync cursor position from typing engine
+    window.EventBus.on('cursor:sync', data => {
+        if (typeof data.index === 'number') {
+            setCursorPosition(data.index, { syncInput: true, emit: false });
         }
     });
 
