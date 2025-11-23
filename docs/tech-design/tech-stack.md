@@ -63,7 +63,7 @@ fingergo/
 │   │   │   ├── modals.js       # Modal dialogs (session summary, color settings)
 │   │   │   ├── ui.js           # Text rendering and stats updates
 │   │   │   ├── stats.js        # Statistics visualization
-│   │   │   ├── settings.js     # Settings management
+│   │   │   ├── colors.js       # Color customization manager
 │   │   │   └── app.js          # Main app controller (orchestration)
 │   │   ├── wailsjs/            # Auto-generated Wails runtime (not in repo)
 │   │   │   └── runtime/
@@ -108,7 +108,7 @@ fingergo/
         │  ├─ ModalManager (modals.js)               │  └─ stats.go
         │  ├─ UIManager (ui.js)                      │
         │  ├─ StatsManager (stats.js)                ├─ Managers
-        │  └─ SettingsManager (settings.js)          │
+        │  └─ ColorManager (colors.js)               │
         │                                            │  ├─ TextManager
         ├─ Layout Data                               │  ├─ StatsManager
         │  └─ layouts/en-qwerty.js                   │  └─ KeyboardLayouts
