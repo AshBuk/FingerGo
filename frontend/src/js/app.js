@@ -11,6 +11,7 @@
     // Single source of truth for current text displayed/used by TypingEngine
     let currentText = null;
     let currentTheme = 'dark';
+    let isZenMode = false;
 
     function setThemeToggleIcon(theme) {
         const btn = document.getElementById('theme-toggle');
@@ -18,6 +19,15 @@
         btn.textContent = theme === 'dark' ? '🌙' : '☀️';
         btn.setAttribute('aria-label', 'Toggle theme');
         btn.setAttribute('title', 'Toggle theme');
+    }
+
+    function setZenToggleState(enabled) {
+        const btn = document.getElementById('zen-toggle');
+        if (!btn) return;
+        btn.setAttribute('aria-pressed', enabled ? 'true' : 'false');
+        btn.textContent = enabled ? '🧘‍♂️' : '🧘';
+        btn.setAttribute('title', enabled ? 'Exit Zen mode' : 'Enter Zen mode');
+        btn.setAttribute('aria-label', enabled ? 'Exit Zen mode' : 'Enter Zen mode');
     }
 
     function isModalVisible() {
@@ -101,6 +111,26 @@
 
     function toggleTheme() {
         applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
+    }
+
+    function applyZenMode(enabled) {
+        const next = Boolean(enabled);
+        isZenMode = next;
+        const body = document.body;
+        const app = document.getElementById('app');
+        body?.classList.toggle('zen-mode', next);
+        app?.classList.toggle('zen-mode', next);
+        setZenToggleState(next);
+        try {
+            localStorage.setItem('zenMode', next ? 'true' : 'false');
+        } catch {
+            /* localStorage unavailable */
+        }
+        window.EventBus?.emit('app:zen-mode', { enabled: next });
+    }
+
+    function toggleZenMode() {
+        applyZenMode(!isZenMode);
     }
 
     // Fallback default text for MVP (hardcoded)
@@ -208,18 +238,31 @@ func main() {
                 themeBtn.blur();
             });
         }
-        const resetBtn = document.getElementById('reset-session');
-        if (resetBtn) {
-            resetBtn.addEventListener('click', () => {
-                reset();
-                resetBtn.blur();
-            });
-        }
         const colorBtn = document.getElementById('color-settings');
         if (colorBtn) {
             colorBtn.addEventListener('click', () => {
                 openColorSettings();
                 colorBtn.blur();
+            });
+        }
+        const zenBtn = document.getElementById('zen-toggle');
+        if (zenBtn) {
+            zenBtn.addEventListener('click', () => {
+                toggleZenMode();
+                zenBtn.blur();
+            });
+        }
+        try {
+            const storedZen = localStorage.getItem('zenMode');
+            applyZenMode(storedZen === 'true');
+        } catch {
+            applyZenMode(false);
+        }
+        const resetBtn = document.getElementById('reset-session');
+        if (resetBtn) {
+            resetBtn.addEventListener('click', () => {
+                reset();
+                resetBtn.blur();
             });
         }
 
@@ -475,5 +518,7 @@ func main() {
         toggleKeyboard,
         toggleTheme,
         applyTheme,
+        toggleZenMode,
+        applyZenMode,
     };
 })();

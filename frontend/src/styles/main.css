@@ -58,6 +58,14 @@ body {
     border-color: var(--key-border-strong);
 }
 
+.top-action-button[aria-pressed='true'] {
+    background: var(--key-pressed-bg);
+    border-color: var(--key-pressed-border);
+    box-shadow:
+        0 2px 6px rgba(0, 0, 0, 0.35),
+        inset 0 2px 4px rgba(var(--accent-rgb), 0.2);
+}
+
 .top-action-button:focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 2px;
@@ -230,6 +238,18 @@ body {
     gap: 0.75rem;
     padding-bottom: 1.5rem;
     position: relative;
+}
+
+#app.zen-mode #stats-bar,
+#app.zen-mode #keyboard-section,
+body.zen-mode #stats-bar,
+body.zen-mode #keyboard-section {
+    display: none;
+}
+
+#app.zen-mode #text-area,
+body.zen-mode #text-area {
+    padding-bottom: 1.5rem;
 }
 
 /* Responsive adjustments */
