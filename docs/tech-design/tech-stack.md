@@ -48,6 +48,7 @@ fingergo/
 │   │   ├── index.html
 │   │   ├── styles/
 │   │   │   ├── main.css
+│   │   │   ├── modals.css
 │   │   │   ├── keyboard.css
 │   │   │   ├── theme-dark.css
 │   │   │   └── theme-light.css
