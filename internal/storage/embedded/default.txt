@@ -1,0 +1,38 @@
+// Source: https://github.com/AshBuk/ALgoDSgo
+
+// Depth-First Search (DFS) - File Finder
+// Time: O(n) - where n is total number of files and directories
+// Space: O(h) - where h (height) is maximum depth of directory tree (call stack for recursion)
+
+package main
+
+import (
+	"fmt"
+	"os"
+	"path/filepath"
+	"strings"
+)
+
+func FindFileDFS(dirName string, fileName string) (string, bool) {
+	files, _ := os.ReadDir(dirName)
+
+	for _, file := range files {
+		fullPath := filepath.Join(dirName, file.Name())
+		if file.IsDir() {
+			if path, found := FindFileDFS(fullPath, fileName); found {
+				return path, true
+			}
+		} else if strings.Contains(file.Name(), fileName) {
+			return fullPath, true
+		}
+	}
+	return "", false
+}
+
+func main() {
+	// Placeholder: replace with actual directory path and file name
+	path, found := FindFileDFS("/path/to/dir", "file.txt")
+	if found {
+		fmt.Println(path)
+	}
+}
