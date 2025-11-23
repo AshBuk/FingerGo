@@ -28,12 +28,6 @@
         return key; // Backspace, Enter, Shift, Tab, Space (' ')
     }
 
-    /**
-     * Normalize character from text for key comparison
-     * Handles special characters: space, newline, tab
-     * @param {string} char - Character from text
-     * @returns {string} Normalized key representation
-     */
     function normalizeTextChar(char) {
         if (char === ' ') return ' ';
         if (char === '\n') return 'Enter';
@@ -50,10 +44,20 @@
         return NAVIGATION_KEYS.has(key);
     }
 
-    // Export API
+    function formatTime(seconds) {
+        const total = Number.isFinite(seconds) ? Math.max(seconds, 0) : 0;
+        const mins = Math.floor(total / 60);
+        const secs = Math.floor(total % 60);
+        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+
     window.KeyUtils = {
         normalizeKey,
         normalizeTextChar,
         isNavigationKey,
+    };
+
+    window.AppUtils = {
+        formatTime,
     };
 })();
