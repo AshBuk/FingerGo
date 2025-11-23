@@ -1,0 +1,22 @@
+{
+  "defaultTextId": "dfs-file-finder",
+  "categories": [
+    {
+      "id": "algorithms-go",
+      "name": "Algorithms (Go)",
+      "icon": "go"
+    }
+  ],
+  "texts": [
+    {
+      "createdAt": "2025-01-01T00:00:00Z",
+      "id": "dfs-file-finder",
+      "title": "DFS File Finder (Go)",
+      "content": "",
+      "categoryId": "algorithms-go",
+      "language": "go",
+      "isFavorite": false
+    }
+  ]
+}
+
