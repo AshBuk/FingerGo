@@ -70,10 +70,8 @@
     function calculateCPM() {
         const typedCount = session.typedChars.size;
         if (!session.startTime || typedCount === 0) return 0;
-
         const elapsed = getElapsedTimeSeconds();
         if (elapsed === 0) return 0;
-
         const minutes = elapsed / 60;
         return typedCount / minutes;
     }
@@ -95,15 +93,12 @@
 
         const now = Date.now();
         let elapsed = now - session.startTime;
-
         // Subtract paused time
         elapsed -= session.pausedTime;
-
         // If currently paused, subtract current pause duration
         if (session.isPaused && session.pauseStartTime) {
             elapsed -= now - session.pauseStartTime;
         }
-
         return elapsed / 1000; // Convert to seconds
     }
 
@@ -125,7 +120,6 @@
                 accuracy,
                 time,
             });
-
             statsUpdateTimer = null;
         }, STATS_UPDATE_THROTTLE);
     }
@@ -171,38 +165,30 @@
     function handleKeyDown(e) {
         // Ignore if session not active or paused
         if (!session.isActive || session.isPaused) return;
-
         // Ignore navigation keys (with or without modifiers)
         if (window.KeyUtils.isNavigationKey?.(e.key)) {
             return;
         }
-
         // Ignore shortcuts using control/meta modifiers
         if (e.ctrlKey || e.metaKey) {
             return;
         }
-
         if (IGNORED_KEYS.has(e.key)) {
             return;
         }
-
         // Ignore modifier keys
         if (['Control', 'Alt', 'Meta', 'Shift'].includes(e.key)) return;
-
         // Prevent default behavior for special keys during active session
         // to avoid browser navigation (Tab, Enter) and scrolling (Space)
         if (['Tab', 'Enter', ' '].includes(e.key)) {
             e.preventDefault();
         }
-
         const pressedKey = window.KeyUtils.normalizeKey(e.key);
         const expectedChar = session.text[session.currentIndex];
-
         if (expectedChar === undefined) {
             // Session already complete
             return;
         }
-
         // Skip already typed characters
         if (session.typedChars.has(session.currentIndex)) {
             // Move to next untyped character
@@ -223,11 +209,9 @@
             index: session.currentIndex,
             timestamp: Date.now(),
         });
-
         if (isCorrect) {
             // Mark this character as typed
             session.typedChars.add(session.currentIndex);
-
             // Correct key pressed
             window.EventBus.emit('typing:keystroke', {
                 char: expectedChar,
@@ -235,15 +219,12 @@
                 isCorrect: true,
                 index: session.currentIndex,
             });
-
             // Clear error state if it was set
             if (window.KeyboardUI) {
                 window.KeyboardUI.clearError(expectedKey);
             }
-
             // Move to next untyped character
             moveToNextUntyped();
-
             // Check if session complete (all characters typed)
             if (session.typedChars.size >= session.text.length) {
                 completeSession();
@@ -253,7 +234,6 @@
         } else {
             // Wrong key pressed
             session.totalErrors++;
-
             // Track mistake by key
             if (!session.mistakes[expectedKey]) {
                 session.mistakes[expectedKey] = 0;
@@ -266,12 +246,10 @@
                 pressed: pressedKey,
                 index: session.currentIndex,
             });
-
             // Apply visual error feedback
             if (window.KeyboardUI) {
                 window.KeyboardUI.setError(expectedKey);
             }
-
             emitStatsUpdate();
         }
     }
@@ -287,7 +265,6 @@
             clearInterval(statsIntervalId);
             statsIntervalId = null;
         }
-
         const sessionData = {
             text: session.text,
             currentIndex: session.currentIndex,
@@ -302,11 +279,9 @@
             cpm: calculateCPM(),
             accuracy: calculateAccuracy(),
         };
-
         if (window.KeyboardUI) {
             window.KeyboardUI.clearTarget();
         }
-
         window.EventBus.emit('typing:complete', sessionData);
     }
 
@@ -320,7 +295,6 @@
             console.error('TypingEngine.start: text cannot be empty');
             return;
         }
-
         reset();
         session.text = text;
         session.isActive = true;
@@ -334,7 +308,6 @@
         if (window.KeyboardUI && targetChar) {
             window.KeyboardUI.setTargetKey(targetChar);
         }
-
         window.EventBus.emit('typing:start', {
             text,
             timestamp: session.startTime,
@@ -366,7 +339,6 @@
             clearInterval(statsIntervalId);
             statsIntervalId = null;
         }
-
         if (session.currentIndex < session.text.length) {
             // Session incomplete
             session.isActive = false;
@@ -380,7 +352,6 @@
      */
     function pause() {
         if (!session.isActive || session.isPaused) return;
-
         session.isPaused = true;
         session.pauseStartTime = Date.now();
     }
@@ -396,7 +367,6 @@
             session.pausedTime += pauseDuration;
             session.pauseStartTime = null;
         }
-
         session.isPaused = false;
     }
 
@@ -429,7 +399,6 @@
             clearTimeout(statsUpdateTimer);
             statsUpdateTimer = null;
         }
-
         if (window.KeyboardUI) {
             window.KeyboardUI.clearTarget();
         }
