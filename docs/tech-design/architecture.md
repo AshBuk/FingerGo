@@ -29,12 +29,12 @@ fingergo/
 │   ├── stats_manager.go        # Statistics tracking
 │   └── keyboard_layouts.go     # Keyboard layout data (EN only)
 │
-├── internal/
-│   └── models/
-│       ├── text.go             # Text, Category structs
-│       ├── session.go          # TypingSession struct
-│       ├── keyboard.go         # KeyboardLayout struct
-│       └── stats.go            # Statistics models
+├── internal/                    # Domain types and storage layer
+│   ├── text.go                 # Text, Category, TextLibrary structs
+│   ├── session.go              # TypingSession struct
+│   ├── keyboard.go             # KeyboardLayout struct
+│   ├── stats.go                # Statistics models
+│   └── storage/                # Repository implementations
 │
 ├── data/                        # User data (runtime, not in repo)
 │   ├── texts/                  # User's text library (folders/subfolders)
@@ -101,12 +101,12 @@ fingergo/
         ├─ Core Infrastructure                       ├─ App Layer
         │  ├─ EventBus (events.js)                   │  └─ app.go (Wails bindings)
         │  └─ LayoutRegistry (layouts.js)            │
-        │                                            ├─ Models (internal/models/)
+        │                                            ├─ Domain Types (internal/)
         ├─ UI Components                             │  ├─ text.go
         │  ├─ KeyboardUI (keyboard.js)               │  ├─ session.go
         │  ├─ TypingEngine (typing.js)               │  ├─ keyboard.go
-        │  ├─ ModalManager (modals.js)               │  └─ stats.go
-        │  ├─ UIManager (ui.js)                      │
+        │  ├─ ModalManager (modals.js)               │  ├─ stats.go
+        │  ├─ UIManager (ui.js)                      │  └─ storage/
         │  ├─ StatsManager (stats.js)                ├─ Managers
         │  └─ ColorManager (colors.js)               │
         │                                            │  ├─ TextManager
