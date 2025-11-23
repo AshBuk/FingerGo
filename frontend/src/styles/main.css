@@ -147,7 +147,7 @@ body {
 
 #text-display .char.typed.correct {
     color: var(--accent);
-    opacity: 0.7;
+    opacity: 0.4;
 }
 
 #text-display .char.typed.error {
@@ -191,7 +191,7 @@ body {
     100% {
         background: transparent;
         color: var(--accent);
-        opacity: 0.7;
+        opacity: 0.4;
     }
 }
 
