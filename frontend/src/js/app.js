@@ -406,6 +406,7 @@ func main() {
             // Ignore modifier keys and shortcuts
             if (['Control', 'Alt', 'Meta', 'Shift'].includes(e.key)) return;
             if (e.ctrlKey || e.metaKey) return; // Ignore shortcuts
+            if (window.KeyUtils?.isNavigationKey?.(e.key)) return;
             // Ignore if session already active
             const session = window.TypingEngine.getSessionData();
             if (session.isActive) {

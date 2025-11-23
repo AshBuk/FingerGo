@@ -7,6 +7,17 @@
  * Shared across keyboard.js, typing.js, and app.js
  */
 (() => {
+    const NAVIGATION_KEYS = new Set([
+        'ArrowLeft',
+        'ArrowRight',
+        'ArrowUp',
+        'ArrowDown',
+        'Home',
+        'End',
+        'PageUp',
+        'PageDown',
+    ]);
+
     /**
      * Normalize keyboard event key for comparison
      * @param {string} key - Keyboard event key (e.g., 'a', 'A', 'Enter', 'Tab')
@@ -30,9 +41,19 @@
         return char.toLowerCase();
     }
 
+    /**
+     * Detect navigation keys (arrows, Home/End, PageUp/PageDown)
+     * @param {string} key - Keyboard event key
+     * @returns {boolean} Whether key is navigation control
+     */
+    function isNavigationKey(key) {
+        return NAVIGATION_KEYS.has(key);
+    }
+
     // Export API
     window.KeyUtils = {
         normalizeKey,
         normalizeTextChar,
+        isNavigationKey,
     };
 })();
