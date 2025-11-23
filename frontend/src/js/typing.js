@@ -313,8 +313,9 @@
     /**
      * Start typing session with text
      * @param {string} text - Text to type
+     * @param {number} [startIndex=0] - Starting cursor position
      */
-    function start(text) {
+    function start(text, startIndex = 0) {
         if (!text || text.length === 0) {
             console.error('TypingEngine.start: text cannot be empty');
             return;
@@ -325,16 +326,22 @@
         session.isActive = true;
         session.startTime = Date.now();
 
-        // Set initial target key - pass original char for Shift detection
-        const firstChar = text[0];
-        if (window.KeyboardUI) {
-            window.KeyboardUI.setTargetKey(firstChar);
+        // Set initial cursor position (clamped to valid range)
+        session.currentIndex = Math.max(0, Math.min(startIndex, text.length - 1));
+
+        // Set initial target key at cursor position
+        const targetChar = text[session.currentIndex];
+        if (window.KeyboardUI && targetChar) {
+            window.KeyboardUI.setTargetKey(targetChar);
         }
 
         window.EventBus.emit('typing:start', {
             text,
             timestamp: session.startTime,
         });
+
+        // Sync cursor position with UI
+        window.EventBus.emit('cursor:sync', { index: session.currentIndex });
 
         // Attach keyboard listener
         window.addEventListener('keydown', handleKeyDown);
