@@ -253,13 +253,21 @@ func main() {
         // Set initial keyboard target (typing engine will start on first keystroke)
         setInitialTarget(defaultText);
 
-        // Listen for modal close to resume session
+        // Listen for modal close to resume session or prepare restart
         window.EventBus.on('modal:closed', () => {
-            if (window.TypingEngine) {
+            if (!window.TypingEngine) return;
+            const session = window.TypingEngine.getSessionData();
+            if (session.isActive && session.isPaused) {
                 window.TypingEngine.resume();
+                return;
+            }
+            if (!session.isActive) {
+                setupTypingStart();
             }
         });
-
+        window.EventBus.on('typing:complete', () => {
+            setupTypingStart();
+        });
         // Emit app ready event
         window.EventBus.emit('app:ready', {
             text: defaultText,
@@ -367,6 +375,21 @@ func main() {
     }
 
     /**
+     * Check if key event should trigger session start
+     */
+    function shouldStartSession(e) {
+        if (['Control', 'Alt', 'Meta', 'Shift'].includes(e.key)) return false;
+        if (e.ctrlKey || e.metaKey) return false;
+        if (window.KeyUtils?.isNavigationKey?.(e.key)) return false;
+        return true;
+    }
+
+    /**
+     * Start typing session on first keystroke
+     */
+    let startHandlerRef = null;
+
+    /**
      * Handle global keyboard shortcuts
      */
     function setupKeyboardShortcuts() {
@@ -391,21 +414,13 @@ func main() {
         });
     }
 
-    /**
-     * Check if key event should trigger session start
-     */
-    function shouldStartSession(e) {
-        if (['Control', 'Alt', 'Meta', 'Shift'].includes(e.key)) return false;
-        if (e.ctrlKey || e.metaKey) return false;
-        if (window.KeyUtils?.isNavigationKey?.(e.key)) return false;
-        return true;
-    }
-
-    /**
-     * Start typing session on first keystroke
-     */
     function setupTypingStart() {
         if (!window.TypingEngine) return;
+
+        if (startHandlerRef) {
+            window.removeEventListener('keydown', startHandlerRef);
+            startHandlerRef = null;
+        }
 
         const startHandler = async e => {
             if (!shouldStartSession(e)) return;
@@ -414,6 +429,7 @@ func main() {
             const session = window.TypingEngine.getSessionData();
             if (session.isActive) {
                 window.removeEventListener('keydown', startHandler);
+                startHandlerRef = null;
                 return;
             }
 
@@ -429,9 +445,11 @@ func main() {
             const cursorPos = textInput?.selectionStart ?? 0;
 
             window.removeEventListener('keydown', startHandler);
+            startHandlerRef = null;
             window.TypingEngine.start(currentText, cursorPos);
             window.TypingEngine.handleKeyDown?.(e);
         };
+        startHandlerRef = startHandler;
         window.addEventListener('keydown', startHandler);
     }
 
