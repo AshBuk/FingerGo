@@ -414,10 +414,15 @@ func main() {
                 return;
             }
 
+            // Get current cursor position from textarea
+            const textInput = document.getElementById('text-input');
+            const cursorPos = textInput?.selectionStart ?? 0;
+
             // Ensure text is available
             const ensureStart = text => {
                 if (text && text.length > 0) {
-                    window.TypingEngine.start(text);
+                    // Start session at current cursor position
+                    window.TypingEngine.start(text, cursorPos);
                     // Remove this listener after start
                     window.removeEventListener('keydown', startHandler);
                     // Process the current keystroke event that triggered the start
