@@ -27,6 +27,34 @@
     let suppressSelectionSync = false;
 
     /**
+     * Ensure the cursor position is visible within the text container
+     * @param {number} index - Character index (allows length for end-of-text)
+     */
+    function ensureCursorVisible(index) {
+        if (!textDisplay || characterElements.length === 0) return;
+        const lastIndex = characterElements.length - 1;
+        const targetIndex = index <= lastIndex ? Math.max(index, 0) : lastIndex;
+        if (targetIndex < 0 || targetIndex > lastIndex) return;
+
+        const target = characterElements[targetIndex];
+        const containerRect = textDisplay.getBoundingClientRect();
+        const targetRect = target.getBoundingClientRect();
+        const padding = 12;
+
+        const isAbove = targetRect.top < containerRect.top + padding;
+        const isBelow = targetRect.bottom > containerRect.bottom - padding;
+        if (!isAbove && !isBelow) return;
+
+        requestAnimationFrame(() => {
+            target.scrollIntoView({
+                block: isAbove ? 'start' : 'end',
+                inline: 'nearest',
+                behavior: 'smooth',
+            });
+        });
+    }
+
+    /**
      * Format time in mm:ss format
      * @param {number} seconds - Time in seconds
      * @returns {string} Formatted time string
@@ -102,6 +130,7 @@
                 characterElements[clamped].classList.add('current');
             }
             cursorIndex = clamped;
+            ensureCursorVisible(clamped);
         }
 
         if (syncInput && textInput && textInput.selectionStart !== clamped) {
@@ -126,14 +155,12 @@
                 setCursorPosition(pos, { syncInput: false });
             });
         };
-
         textInput.addEventListener('select', () => {
             if (suppressSelectionSync) return;
             const pos = textInput.selectionStart;
             if (pos === null || pos === undefined) return;
             setCursorPosition(pos, { syncInput: false });
         });
-
         textInput.addEventListener('keydown', e => {
             if (window.KeyUtils?.isNavigationKey?.(e.key)) {
                 scheduleCursorSync();
@@ -142,12 +169,10 @@
                 e.preventDefault();
             }
         });
-
         // Prevent actual text input in textarea (typing engine handles input)
         textInput.addEventListener('beforeinput', e => {
             e.preventDefault();
         });
-
         // Prevent context menu on right-click
         textInput.addEventListener('contextmenu', e => {
             e.preventDefault();
@@ -256,38 +281,32 @@
             window.ModalManager.hide();
         }
     }
-
     // Listen to typing events
     window.EventBus.on('typing:start', data => {
         if (data.text) {
             renderText(data.text);
         }
     });
-
     window.EventBus.on('typing:keystroke', data => {
         if (data.index !== undefined) {
             // Mark the character we just typed as correct
             updateCharacter(data.index, 'correct');
         }
     });
-
     // Sync cursor position from typing engine
     window.EventBus.on('cursor:sync', data => {
         if (typeof data.index === 'number') {
             setCursorPosition(data.index, { syncInput: true, emit: false });
         }
     });
-
     window.EventBus.on('typing:error', data => {
         if (data.index !== undefined) {
             showError(data.index);
         }
     });
-
     window.EventBus.on('stats:update', data => {
         updateStats(data.wpm, data.cpm, data.accuracy, data.time);
     });
-
     window.EventBus.on('typing:complete', data => {
         // Mark all remaining characters as correct
         const currentIndex = data.currentIndex || characterElements.length;
