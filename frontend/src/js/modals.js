@@ -82,8 +82,7 @@
         if (!mistakes) return '';
         const entries = Object.entries(mistakes)
             .filter(([, count]) => count > 0)
-            .sort((a, b) => b[1] - a[1])
-            .slice(0, 5);
+            .sort((a, b) => b[1] - a[1]);
         if (entries.length === 0) return '';
         const items = entries
             .map(
