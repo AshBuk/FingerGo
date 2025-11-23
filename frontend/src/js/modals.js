@@ -51,6 +51,50 @@
     }
 
     /**
+     * Return readable label for a key identifier
+     * @param {string} key
+     * @returns {string}
+     */
+    function formatKeyLabel(key) {
+        if (!key) return 'Unknown';
+        switch (key) {
+            case ' ':
+                return 'Space';
+            case '\n':
+            case 'Enter':
+                return 'Enter';
+            case '\t':
+            case 'Tab':
+                return 'Tab';
+            case 'Backspace':
+                return 'Backspace';
+            default:
+                return key.length === 1 ? key : key;
+        }
+    }
+
+    /**
+     * Render list of most frequent mistakes
+     * @param {Record<string, number>} mistakes
+     * @returns {string}
+     */
+    function renderMistakeList(mistakes) {
+        if (!mistakes) return '';
+        const entries = Object.entries(mistakes)
+            .filter(([, count]) => count > 0)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 5);
+        if (entries.length === 0) return '';
+        const items = entries
+            .map(
+                ([key, count]) =>
+                    `<li><span class="mistake-key">${formatKeyLabel(key)}</span><span class="mistake-count">${count}</span></li>`,
+            )
+            .join('');
+        return `<div class="summary-mistakes"><h4>Mistyped characters</h4><ul class="mistake-list">${items}</ul></div>`;
+    }
+
+    /**
      * Generate session summary HTML
      * @param {Object} data - Session data
      * @returns {string} HTML content
@@ -82,6 +126,7 @@
                     <div class="summary-errors">
                         <h3>Errors: ${data.totalErrors}</h3>
                         <p>Total keystrokes: ${data.totalKeystrokes || 0}</p>
+                        ${renderMistakeList(data.mistakes)}
                     </div>
                 `
                         : ''

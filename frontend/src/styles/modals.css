@@ -135,6 +135,46 @@ https://github.com/AshBuk/FingerGo
     margin: 0;
 }
 
+.summary-mistakes {
+    margin-top: 0.75rem;
+}
+
+.summary-mistakes h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-default);
+}
+
+.mistake-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+}
+
+.mistake-list li {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 0.6rem;
+    background: rgba(var(--accent-rgb), 0.08);
+    border-radius: 6px;
+    border: 1px solid var(--line-weak);
+}
+
+.mistake-key {
+    font-weight: 600;
+    color: var(--accent);
+}
+
+.mistake-count {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
 /* Color Settings Modal */
 .color-settings {
     display: flex;
