@@ -53,15 +53,17 @@ fingergo/
 │   │   │   └── theme-light.css
 │   │   ├── js/
 │   │   │   ├── events.js       # Event bus (pub/sub for module communication)
+│   │   │   ├── utils.js        # Key normalization utilities
 │   │   │   ├── layouts.js      # Keyboard layout registry system
 │   │   │   ├── layouts/        # Modular keyboard layout definitions
 │   │   │   │   └── en-qwerty.js  # EN QWERTY layout data
-│   │   │   ├── app.js          # Main app controller
 │   │   │   ├── keyboard.js     # Keyboard highlighting + finger mapping
 │   │   │   ├── typing.js       # Typing engine (WPM, accuracy, mistakes)
-│   │   │   ├── ui.js           # UI rendering and updates
+│   │   │   ├── modals.js       # Modal dialogs (session summary, color settings)
+│   │   │   ├── ui.js           # Text rendering and stats updates
 │   │   │   ├── stats.js        # Statistics visualization
-│   │   │   └── settings.js     # Settings management
+│   │   │   ├── settings.js     # Settings management
+│   │   │   └── app.js          # Main app controller (orchestration)
 │   │   ├── wailsjs/            # Auto-generated Wails runtime (not in repo)
 │   │   │   └── runtime/
 │   │   │       └── runtime.js  # Wails Go-JS bridge
@@ -102,9 +104,10 @@ fingergo/
         ├─ UI Components                             │  ├─ text.go
         │  ├─ KeyboardUI (keyboard.js)               │  ├─ session.go
         │  ├─ TypingEngine (typing.js)               │  ├─ keyboard.go
-        │  ├─ UIManager (ui.js)                      │  └─ stats.go
-        │  ├─ StatsManager (stats.js)                │
-        │  └─ SettingsManager (settings.js)          ├─ Managers
+        │  ├─ ModalManager (modals.js)               │  └─ stats.go
+        │  ├─ UIManager (ui.js)                      │
+        │  ├─ StatsManager (stats.js)                ├─ Managers
+        │  └─ SettingsManager (settings.js)          │
         │                                            │  ├─ TextManager
         ├─ Layout Data                               │  ├─ StatsManager
         │  └─ layouts/en-qwerty.js                   │  └─ KeyboardLayouts

@@ -21,8 +21,7 @@
     }
 
     function isModalVisible() {
-        const overlay = document.getElementById('modal-overlay');
-        return overlay && !overlay.classList.contains('modal-hidden');
+        return window.ModalManager?.isVisible() || false;
     }
 
     /**
