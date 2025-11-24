@@ -1,7 +1,7 @@
 # Wails
 build/
-frontend/dist/
-frontend/src/wailsjs/
+gui/dist/
+gui/src/wailsjs/
 wails_build_*
 *.syso
 FingerGo

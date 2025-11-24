@@ -5,10 +5,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "lint": "eslint frontend/src/**/*.js",
-    "lint:fix": "eslint frontend/src/**/*.js --fix",
-    "format": "prettier --write 'frontend/src/**/*.{js,html,css}'",
-    "format:check": "prettier --check 'frontend/src/**/*.{js,html,css}'"
+    "lint": "eslint gui/src/**/*.js",
+    "lint:fix": "eslint gui/src/**/*.js --fix",
+    "format": "prettier --write 'gui/src/**/*.{js,html,css}'",
+    "format:check": "prettier --check 'gui/src/**/*.{js,html,css}'"
   },
   "devDependencies": {
     "eslint": "^9.17.0",

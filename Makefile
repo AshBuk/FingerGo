@@ -40,7 +40,7 @@ generate:                 # Generate Wails bindings
 
 # === Utility Targets ===
 clean:                    # Remove build artifacts
-	rm -rf build/bin dist frontend/src/wailsjs node_modules || true
+	rm -rf build/bin dist gui/src/wailsjs node_modules || true
 license:                  # Check license headers
 	bash scripts/check-licenses.sh
 
