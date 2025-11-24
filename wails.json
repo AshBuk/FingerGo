@@ -15,8 +15,8 @@
     "copyright": "Copyright 2025 Asher Buk",
     "comments": "Touch typing trainer with visual keyboard feedback"
   },
-  "wailsjsdir": "./frontend/src/wailsjs",
-  "assetdir": "./frontend/src",
+  "wailsjsdir": "./gui/src/wailsjs",
+  "assetdir": "./gui/src",
   "reloaddirs": "./app,./internal",
   "debounceMS": 100
 }

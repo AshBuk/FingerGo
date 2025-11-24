@@ -14,9 +14,9 @@ Distributed for Linux (Flatpak).
 
 ## Tech Stack
 
-- Backend: Go 1.25+
+- Internal: Go 1.25+
 - Desktop: Wails v2
-- Frontend: Vanilla JavaScript (ES6+), HTML5, CSS3
+- GUI: Vanilla JavaScript (ES6+), HTML5, CSS3
 - Storage: JSON files
 - Platform: Linux
 

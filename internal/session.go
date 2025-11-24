@@ -33,7 +33,7 @@ type TypingSession struct {
 	CharacterCount  int `json:"characterCount"`
 }
 
-// SessionTextMeta aggregates textual metadata provided by the frontend payload.
+// SessionTextMeta aggregates textual metadata provided by the GUI payload.
 type SessionTextMeta struct {
 	Text       string `json:"text"`
 	TextTitle  string `json:"textTitle"`
@@ -41,7 +41,7 @@ type SessionTextMeta struct {
 	TextID     string `json:"textId"`
 }
 
-// SessionPayload mirrors the structure sent from the frontend when a session completes.
+// SessionPayload mirrors the structure sent from the GUI when a session completes.
 type SessionPayload struct {
 	*SessionTextMeta
 
