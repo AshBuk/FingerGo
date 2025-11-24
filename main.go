@@ -15,7 +15,7 @@ import (
 	"github.com/AshBuk/FingerGo/app"
 )
 
-//go:embed frontend/src
+//go:embed gui/src
 var assets embed.FS
 
 func main() {

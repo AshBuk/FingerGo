@@ -3,12 +3,12 @@ Copyright 2025 Asher Buk
 SPDX-License-Identifier: Apache-2.0
 -->
 
-## Backend:  Go 1.25+ (goroutines, embed, encoding/json)
-## Frontend: HTML5 + CSS3 + Vanilla JavaScript (ES6+)
-## Desktop:  Wails v2 (webview wrapper, Go-JS bridge)
-## Storage:  JSON files (texts, stats, config)
-## Package:  Flatpak (Linux native distribution)
-## Language: English (UI and documentation)
+## Internal Layer: Go 1.25+ (goroutines, embed, encoding/json)
+## GUI Layer:      HTML5 + CSS3 + Vanilla JavaScript (ES6+)
+## Desktop:        Wails v2 (webview wrapper, Go-JS bridge)
+## Storage:        JSON files (texts, stats, config)
+## Package:        Flatpak (Linux native distribution)
+## Language:       English (UI and documentation)
 
 
 ---
@@ -23,18 +23,21 @@ fingergo/
 ├── README.md
 ├── LICENSE
 │
-├── app/                         # Go backend logic
-│   ├── app.go                  # Main app struct (Wails bindings)
-│   ├── text_manager.go         # Text loading/saving/import
-│   ├── stats_manager.go        # Statistics tracking
-│   └── keyboard_layouts.go     # Keyboard layout data (EN only)
+├── app/                         # Application layer (Wails bindings)
+│   └── app.go                  # Main app struct (exports to GUI via Wails)
 │
-├── internal/                    # Domain types and storage layer
-│   ├── text.go                 # Text, Category, TextLibrary structs
-│   ├── session.go              # TypingSession struct
-│   ├── keyboard.go             # KeyboardLayout struct
-│   ├── stats.go                # Statistics models
-│   └── storage/                # Repository implementations
+├── internal/                    # Internal layer (domain + storage)
+│   ├── domain/                 # Core domain models
+│   │   ├── text.go            # Text, Category models
+│   │   ├── session.go         # TypingSession model
+│   │   ├── keyboard.go        # KeyboardLayout model
+│   │   └── stats.go           # Statistics models
+│   └── storage/                # Persistence layer
+│       ├── manager.go         # Storage manager
+│       ├── texts.go           # Text repository
+│       ├── sessions.go        # Session repository
+│       ├── paths.go           # Data directory paths
+│       └── defaults.go        # Embedded defaults
 │
 ├── data/                        # User data (runtime, not in repo)
 │   ├── texts/                  # User's text library (folders/subfolders)
@@ -42,7 +45,7 @@ fingergo/
 │   ├── stats.json              # All typing sessions
 │   └── config.json             # User settings
 │
-├── frontend/                    # Web UI
+├── gui/                         # GUI Layer
 │   ├── dist/                   # Built assets (Wails embeds this, auto-generated)
 │   ├── src/
 │   │   ├── index.html
@@ -93,25 +96,25 @@ fingergo/
         │                                            │
         ▼                                            ▼
 ┌──────────────────┐                     ┌──────────────────────┐
-│  FRONTEND (UI)   │◄──── Wails ────────►│   BACKEND (Go)       │
+│   GUI LAYER      │◄──── Wails ────────►│  INTERNAL LAYER      │
 │  HTML/CSS/JS     │      Bridge         │   Business Logic     │
 └──────────────────┘                     └──────────────────────┘
         │                                            │
         │                                            │
-        ├─ Core Infrastructure                       ├─ App Layer
+        ├─ Core Infrastructure                       ├─ App API
         │  ├─ EventBus (events.js)                   │  └─ app.go (Wails bindings)
         │  └─ LayoutRegistry (layouts.js)            │
-        │                                            ├─ Domain Types (internal/)
-        ├─ UI Components                             │  ├─ text.go
-        │  ├─ KeyboardUI (keyboard.js)               │  ├─ session.go
-        │  ├─ TypingEngine (typing.js)               │  ├─ keyboard.go
-        │  ├─ ModalManager (modals.js)               │  ├─ stats.go
-        │  ├─ UIManager (ui.js)                      │  └─ storage/
-        │  ├─ StatsManager (stats.js)                ├─ Managers
-        │  └─ ColorManager (colors.js)               │
-        │                                            │  ├─ TextManager
-        ├─ Layout Data                               │  ├─ StatsManager
-        │  └─ layouts/en-qwerty.js                   │  └─ KeyboardLayouts
+        │                                            ├─ Domain Models
+        ├─ UI Components                             │  ├─ domain/text.go
+        │  ├─ KeyboardUI (keyboard.js)               │  ├─ domain/session.go
+        │  ├─ TypingEngine (typing.js)               │  ├─ domain/keyboard.go
+        │  ├─ ModalManager (modals.js)               │  └─ domain/stats.go
+        │  ├─ UIManager (ui.js)                      │
+        │  ├─ StatsManager (stats.js)                ├─ Storage Layer
+        │  └─ ColorManager (colors.js)               │  ├─ storage/manager.go
+        │                                            │  ├─ storage/texts.go
+        ├─ Layout Data                               │  └─ storage/sessions.go
+        │  └─ layouts/en-qwerty.js                   │
         │                                            │
         └─ Orchestration                             ▼
            └─ app.js (main controller)   ┌────────────────────────┐
