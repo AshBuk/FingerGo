@@ -11,7 +11,7 @@
 //	│   ├── index.json           # metadata: categories, text entries
 //	│   └── content/
 //	│       └── {id}.txt         # actual text content by ID
-//	├── stats.json               # (future) session history
+//	├── sessions.json            # typing session history
 //	└── config.json              # (future) user settings
 //
 // On first run, embedded defaults are copied to {root}/.
@@ -33,6 +33,7 @@ const (
 	textsContentDir     = "texts/content"
 	textsIndexFile      = "texts/index.json"
 	fallbackContentFile = "texts/content/dfs-file-finder.txt"
+	sessionsFile        = "sessions.json"
 )
 
 // Paths inside the embedded filesystem.
@@ -73,6 +74,7 @@ func (m *Manager) Root() string {
 //   - {root}/texts/content/
 //   - {root}/texts/index.json       (from embedded)
 //   - {root}/texts/content/{id}.txt (from embedded)
+//   - {root}/sessions.json          (empty array)
 func (m *Manager) Init() error {
 	if err := m.ensureDir(m.root); err != nil {
 		return err
@@ -87,6 +89,9 @@ func (m *Manager) Init() error {
 		return err
 	}
 	if err := m.ensureFile(fallbackContentFile, embeddedDefaultPath); err != nil {
+		return err
+	}
+	if err := m.ensureJSONFile(sessionsFile, nil); err != nil {
 		return err
 	}
 	return nil
@@ -122,6 +127,24 @@ func (m *Manager) ensureFile(relPath, embeddedPath string) error {
 		return fmt.Errorf("storage: read embedded %q: %w", embeddedPath, err)
 	}
 	if err := os.WriteFile(target, data, 0o600); err != nil {
+		return fmt.Errorf("storage: write %q: %w", target, err)
+	}
+	return nil
+}
+
+func (m *Manager) ensureJSONFile(relPath string, defaultContent []byte) error {
+	target := m.join(relPath)
+	if _, err := os.Stat(target); err == nil {
+		return nil
+	} else if !errors.Is(err, os.ErrNotExist) {
+		return fmt.Errorf("storage: stat %q: %w", target, err)
+	}
+
+	content := defaultContent
+	if len(content) == 0 {
+		content = []byte("[]\n")
+	}
+	if err := os.WriteFile(target, content, 0o600); err != nil {
 		return fmt.Errorf("storage: write %q: %w", target, err)
 	}
 	return nil

@@ -4,6 +4,7 @@ frontend/dist/
 frontend/src/wailsjs/
 wails_build_*
 *.syso
+FingerGo
 
 # Go
 *.exe
