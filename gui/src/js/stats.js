@@ -16,20 +16,37 @@
     let lastSessionSummary = null;
 
     /**
-     * Persist session to backend (if available) and cache summary locally.
-     * @param {Object} sessionData
+     * Persist session to internal layer and cache summary locally.
+     * @param {Object} sessionData - Session data from TypingEngine
      */
     async function recordSession(sessionData) {
         if (!sessionData) return;
         lastSessionSummary = { ...sessionData };
 
-        // Persist to backend if Wails bridge is available
+        // Persist via Wails bridge if available
         try {
             if (window.go?.app?.App?.SaveSession) {
-                await window.go.app.App.SaveSession(sessionData);
+                // Build payload matching SessionPayload struct
+                const textMeta = window.App?.getTextMeta?.() || {};
+                const payload = {
+                    text: sessionData.text || '',
+                    textId: textMeta.textId || '',
+                    textTitle: textMeta.textTitle || '',
+                    categoryId: textMeta.categoryId || '',
+                    mistakes: sessionData.mistakes || {},
+                    wpm: sessionData.wpm || 0,
+                    cpm: sessionData.cpm || 0,
+                    accuracy: sessionData.accuracy || 100,
+                    duration: sessionData.duration || 0,
+                    startTime: sessionData.startTime || 0,
+                    endTime: sessionData.endTime || Date.now(),
+                    totalErrors: sessionData.totalErrors || 0,
+                    totalKeystrokes: sessionData.totalKeystrokes || 0,
+                };
+                await window.go.app.App.SaveSession(payload);
             }
         } catch (err) {
-            console.warn('StatsManager: failed to save session to backend:', err);
+            console.warn('StatsManager: failed to save session:', err);
         }
     }
 

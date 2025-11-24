@@ -9,7 +9,8 @@
  */
 (() => {
     // Single source of truth for current text displayed/used by TypingEngine
-    let currentText = null;
+    let currentText = null; // string content for typing
+    let currentTextMeta = null; // {id, title, categoryId} for session persistence
     let currentTheme = 'dark';
     let isZenMode = false;
 
@@ -133,83 +134,32 @@
         applyZenMode(!isZenMode);
     }
 
-    // Fallback default text for MVP (hardcoded)
-    // Contains: uppercase, symbols, brackets, quotes for testing finger mapping
-    const FALLBACK_TEXT = `// Go Programming Language - Quick Reference
-
-package main
-
-import (
-	"fmt"
-	"strings"
-)
-
-// Person represents a user in the system.
-type Person struct {
-	Name    string
-	Age     int
-	Email   string
-	IsAdmin bool
-}
-
-// Greet returns a personalized greeting message.
-func (p *Person) Greet() string {
-	if p.IsAdmin {
-		return fmt.Sprintf("Welcome, Admin %s!", p.Name)
-	}
-	return fmt.Sprintf("Hello, %s! You are %d years old.", p.Name, p.Age)
-}
-
-// FilterUsers returns users matching the query (case-insensitive).
-func FilterUsers(users []Person, query string) []Person {
-	result := make([]Person, 0)
-	for _, user := range users {
-		if strings.Contains(strings.ToLower(user.Name), strings.ToLower(query)) {
-			result = append(result, user)
-		}
-	}
-	return result
-}
-
-func main() {
-	users := []Person{
-		{Name: "Alice", Age: 28, Email: "alice@example.com", IsAdmin: true},
-		{Name: "Bob", Age: 35, Email: "bob@test.org", IsAdmin: false},
-		{Name: "Charlie", Age: 22, Email: "charlie@dev.io", IsAdmin: false},
-	}
-
-	// Print greetings for each user
-	for i := 0; i < len(users); i++ {
-		fmt.Println(users[i].Greet())
-	}
-
-	// Filter and display results
-	filtered := FilterUsers(users, "al")
-	fmt.Printf("Found %d user(s) matching 'al'\\n", len(filtered))
-
-	// Special characters test: @#$%^&*(){}[]|\\:;"'<>,.?/~!
-	total := (100 + 50) * 2 / 4 - 25 // = 50
-	fmt.Printf("Calculation: %d\\n", total)
-}`;
-
     /**
-     * Get default text (try backend first, fallback to hardcoded)
-     * @returns {Promise<string>} Text to type
+     * Get default text from internal layer
+     * @returns {Promise<string>} Text content to type
      */
     async function getDefaultText() {
-        // Try Wails backend first (if available)
-        if (window.go?.app?.App) {
-            try {
-                const text = await window.go.app.App.DefaultText();
-                if (text && text.length > 0) {
-                    return text;
-                }
-            } catch (err) {
-                console.warn('Backend unavailable, using hardcoded text:', err);
-            }
+        if (!window.go?.app?.App?.DefaultText) {
+            console.error('Internal layer not available');
+            return '';
         }
-        // Fallback to hardcoded text
-        return FALLBACK_TEXT;
+        try {
+            const textObj = await window.go.app.App.DefaultText();
+            // Returns Text struct: {id, title, content, categoryId, language, ...}
+            if (textObj && textObj.content && textObj.content.length > 0) {
+                currentTextMeta = {
+                    textId: textObj.id || '',
+                    textTitle: textObj.title || '',
+                    categoryId: textObj.categoryId || '',
+                };
+                return textObj.content;
+            }
+            console.error('Internal layer returned empty text');
+            return '';
+        } catch (err) {
+            console.error('Failed to load text:', err);
+            return '';
+        }
     }
 
     /**
@@ -284,14 +234,16 @@ func main() {
             return;
         }
 
-        // Load default text
+        // Load default text from internal layer
         const defaultText = await getDefaultText();
+        if (!defaultText || defaultText.length === 0) {
+            console.error('No text available. Check internal layer connection.');
+            return;
+        }
         currentText = defaultText;
 
         // Render text in UI
-        if (window.UIManager) {
-            window.UIManager.renderText(defaultText);
-        }
+        window.UIManager.renderText(defaultText);
 
         // Set initial keyboard target (typing engine will start on first keystroke)
         setInitialTarget(defaultText);
@@ -340,10 +292,9 @@ func main() {
 
         // Reload default text
         getDefaultText().then(text => {
+            if (!text || text.length === 0) return;
             currentText = text;
-            if (window.UIManager) {
-                window.UIManager.renderText(text);
-            }
+            window.UIManager?.renderText(text);
             setInitialTarget(text);
         });
 
@@ -352,40 +303,35 @@ func main() {
     }
 
     /**
-     * Load new text
-     * @param {string} textId - Text identifier (for future backend integration)
+     * Load text by ID from internal layer
+     * @param {string} textId - Text identifier
      */
     async function loadText(textId) {
-        let text = '';
-
-        // Try backend first
-        if (window.go?.app?.App) {
-            try {
-                text = await window.go.app.App.Text(textId);
-            } catch (err) {
-                console.error('Failed to load text from backend:', err);
-                return;
-            }
-        } else {
-            // Fallback to default
-            text = await getDefaultText();
-        }
-        if (!text || text.length === 0) {
-            console.error('No text available');
+        if (!window.go?.app?.App?.Text) {
+            console.error('Internal layer not available');
             return;
         }
-        currentText = text;
+        try {
+            const textObj = await window.go.app.App.Text(textId);
+            if (!textObj || !textObj.content || textObj.content.length === 0) {
+                console.error('Text not found:', textId);
+                return;
+            }
+            currentTextMeta = {
+                textId: textObj.id || '',
+                textTitle: textObj.title || '',
+                categoryId: textObj.categoryId || '',
+            };
+            currentText = textObj.content;
 
-        // Reset current session
-        if (window.TypingEngine) {
-            window.TypingEngine.reset();
+            // Reset current session
+            window.TypingEngine?.reset();
+            // Render new text
+            window.UIManager?.renderText(currentText);
+            setInitialTarget(currentText);
+        } catch (err) {
+            console.error('Failed to load text:', err);
         }
-        // Render new text
-        if (window.UIManager) {
-            window.UIManager.renderText(text);
-        }
-
-        setInitialTarget(text);
     }
 
     /**
@@ -476,12 +422,12 @@ func main() {
                 return;
             }
 
-            // Load text if needed
-            if (!currentText) {
+            // Ensure text is loaded
+            if (!currentText || currentText.length === 0) {
                 currentText = await getDefaultText();
+                if (!currentText || currentText.length === 0) return;
                 window.UIManager?.renderText(currentText);
             }
-            if (!currentText?.length) return;
 
             // Get cursor position and start session
             const textInput = document.getElementById('text-input');
@@ -509,6 +455,14 @@ func main() {
         boot();
     }
 
+    /**
+     * Get current text metadata for session persistence
+     * @returns {{textId: string, textTitle: string, categoryId: string}|null}
+     */
+    function getTextMeta() {
+        return currentTextMeta ? { ...currentTextMeta } : null;
+    }
+
     // Export API
     window.App = {
         reset,
@@ -520,5 +474,6 @@ func main() {
         applyTheme,
         toggleZenMode,
         applyZenMode,
+        getTextMeta,
     };
 })();

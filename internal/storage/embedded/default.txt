@@ -1,8 +1,6 @@
-// Source: https://github.com/AshBuk/ALgoDSgo
-
 // Depth-First Search (DFS) - File Finder
-// Time: O(n) - where n is total number of files and directories
-// Space: O(h) - where h (height) is maximum depth of directory tree (call stack for recursion)
+// Time: O(n) where n is total number of files and directories
+// Space: O(h) where h (height) is maximum depth of directory tree (call stack for recursion)
 
 package main
 
@@ -36,3 +34,5 @@ func main() {
 		fmt.Println(path)
 	}
 }
+
+// Source: https://github.com/AshBuk/ALgoDSgo

@@ -30,6 +30,7 @@ func main() {
 		AssetServer:              &assetserver.Options{Assets: assets},
 		OnStartup:                appInstance.Startup,
 		OnShutdown:               appInstance.Shutdown,
+		Bind:                     []interface{}{appInstance},
 		Frameless:                false,
 		EnableDefaultContextMenu: true,
 	}); err != nil {
