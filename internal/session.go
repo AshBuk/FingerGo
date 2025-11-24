@@ -13,43 +13,55 @@ import (
 
 // TypingSession captures a completed typing attempt for historical analytics.
 type TypingSession struct {
-	ID              string         `json:"id"`               // stable identifier (UUID)
-	TextID          string         `json:"textId,omitempty"` // optional reference to text catalog
-	TextTitle       string         `json:"textTitle"`        // human readable label
-	TextPreview     string         `json:"textPreview"`      // excerpt from the source text
-	CategoryID      string         `json:"categoryId,omitempty"`
-	StartedAt       time.Time      `json:"startedAt"`       // session start time (UTC)
-	CompletedAt     time.Time      `json:"completedAt"`     // session end time (UTC)
-	DurationSeconds int            `json:"durationSeconds"` // whole seconds spent typing
-	WPM             float64        `json:"wpm"`
-	CPM             float64        `json:"cpm"`
-	Accuracy        float64        `json:"accuracy"`
-	TotalKeystrokes int            `json:"totalKeystrokes"`
-	TotalErrors     int            `json:"totalErrors"`
-	CharacterCount  int            `json:"characterCount"`
-	Mistakes        map[string]int `json:"mistakes,omitempty"` // per-key mistake counters
+	StartedAt   time.Time      `json:"startedAt"`   // session start time (UTC)
+	CompletedAt time.Time      `json:"completedAt"` // session end time (UTC)
+	Mistakes    map[string]int `json:"mistakes,omitempty"`
+
+	TextPreview string `json:"textPreview"` // excerpt from the source text
+	TextTitle   string `json:"textTitle"`   // human readable label
+	CategoryID  string `json:"categoryId,omitempty"`
+	TextID      string `json:"textId,omitempty"` // optional reference to text catalog
+	ID          string `json:"id"`               // stable identifier (UUID)
+
+	WPM      float64 `json:"wpm"`
+	CPM      float64 `json:"cpm"`
+	Accuracy float64 `json:"accuracy"`
+
+	DurationSeconds int `json:"durationSeconds"` // whole seconds spent typing
+	TotalKeystrokes int `json:"totalKeystrokes"`
+	TotalErrors     int `json:"totalErrors"`
+	CharacterCount  int `json:"characterCount"`
+}
+
+// SessionTextMeta aggregates textual metadata provided by the frontend payload.
+type SessionTextMeta struct {
+	Text       string `json:"text"`
+	TextTitle  string `json:"textTitle"`
+	CategoryID string `json:"categoryId"`
+	TextID     string `json:"textId"`
 }
 
 // SessionPayload mirrors the structure sent from the frontend when a session completes.
 type SessionPayload struct {
-	Text            string         `json:"text"`
-	TextID          string         `json:"textId"`
-	TextTitle       string         `json:"textTitle"`
-	CategoryID      string         `json:"categoryId"`
-	StartTime       int64          `json:"startTime"` // milliseconds since epoch
-	EndTime         int64          `json:"endTime"`   // milliseconds since epoch
-	Duration        float64        `json:"duration"`  // seconds (approximation)
-	Mistakes        map[string]int `json:"mistakes"`  // key → mistake count
-	TotalErrors     int            `json:"totalErrors"`
-	TotalKeystrokes int            `json:"totalKeystrokes"`
-	WPM             float64        `json:"wpm"`
-	CPM             float64        `json:"cpm"`
-	Accuracy        float64        `json:"accuracy"`
+	*SessionTextMeta
+
+	Mistakes map[string]int `json:"mistakes"` // key → mistake count
+
+	WPM      float64 `json:"wpm"`
+	CPM      float64 `json:"cpm"`
+	Accuracy float64 `json:"accuracy"`
+	Duration float64 `json:"duration"` // seconds (approximation)
+
+	StartTime int64 `json:"startTime"` // milliseconds since epoch
+	EndTime   int64 `json:"endTime"`   // milliseconds since epoch
+
+	TotalErrors     int `json:"totalErrors"`
+	TotalKeystrokes int `json:"totalKeystrokes"`
 }
 
 // ToTypingSession converts the payload to a normalized TypingSession.
 // Any missing temporal information falls back to the provided fallback time.
-func (p SessionPayload) ToTypingSession(fallback time.Time) TypingSession {
+func (p *SessionPayload) ToTypingSession(fallback time.Time) TypingSession {
 	now := fallback.UTC()
 	start := fromMillis(p.StartTime, now)
 	end := fromMillis(p.EndTime, start)
@@ -66,20 +78,31 @@ func (p SessionPayload) ToTypingSession(fallback time.Time) TypingSession {
 		}
 	}
 
-	title := strings.TrimSpace(p.TextTitle)
-	if title == "" {
-		title = deriveTitle(p.Text)
+	rawText := ""
+	rawTitle := ""
+	rawCategory := ""
+	rawTextID := ""
+	if p.SessionTextMeta != nil {
+		rawText = p.Text
+		rawTitle = p.TextTitle
+		rawCategory = p.CategoryID
+		rawTextID = p.TextID
 	}
-	preview := derivePreview(p.Text)
+
+	title := strings.TrimSpace(rawTitle)
+	if title == "" {
+		title = deriveTitle(rawText)
+	}
+	preview := derivePreview(rawText)
 	mistakes := cloneMistakes(p.Mistakes)
 
-	charCount := utf8.RuneCountInString(p.Text)
+	charCount := utf8.RuneCountInString(rawText)
 
 	return TypingSession{
-		TextID:          strings.TrimSpace(p.TextID),
+		TextID:          strings.TrimSpace(rawTextID),
 		TextTitle:       title,
 		TextPreview:     preview,
-		CategoryID:      strings.TrimSpace(p.CategoryID),
+		CategoryID:      strings.TrimSpace(rawCategory),
 		StartedAt:       start,
 		CompletedAt:     end,
 		DurationSeconds: int(math.Round(duration.Seconds())),
