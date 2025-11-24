@@ -15,9 +15,9 @@ import (
 )
 
 type App struct {
-	storage      *storage.Manager
-	textsRepo    *storage.TextRepository
-	sessionsRepo *storage.SessionRepository
+	storage      *storage.Manager           // Manages the application's data storage on disk
+	textsRepo    *storage.TextRepository    // Handles operations related to typing texts
+	sessionsRepo *storage.SessionRepository // Manages the persistence of typing session data
 }
 
 func New() *App { return &App{} }
@@ -27,20 +27,20 @@ func (a *App) Startup(ctx context.Context) {
 		root := storage.DefaultRoot()
 		manager, err := storage.New(root)
 		if err != nil {
-			log.Printf("storage: failed to create manager: %v", err)
-			return
+			log.Fatalf("storage: failed to create manager: %v", err)
 		}
 		a.storage = manager
 	}
 	if err := a.storage.Init(); err != nil {
-		log.Printf("storage: initialization failed: %v", err)
-		return
+		log.Fatalf("storage: initialization failed: %v", err)
 	}
+	// Text repository is critical — app is useless without it
 	if err := a.ensureTextRepository(); err != nil {
-		log.Printf("storage: text repository init failed: %v", err)
+		log.Fatalf("storage: text repository init failed: %v", err)
 	}
+	// Session repository is not critical — app can run, but won't save sessions
 	if err := a.ensureSessionRepository(); err != nil {
-		log.Printf("storage: session repository init failed: %v", err)
+		log.Printf("WARNING: session repository init failed, sessions will not be saved: %v", err)
 	}
 }
 
