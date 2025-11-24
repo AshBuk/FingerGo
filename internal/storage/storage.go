@@ -112,18 +112,15 @@ func (m *Manager) ensureDir(path string) error {
 // Permissions: 0o600 (rw-------) — owner-only access.
 func (m *Manager) ensureFile(relPath, embeddedPath string) error {
 	target := m.join(relPath)
-
 	if _, err := os.Stat(target); err == nil {
 		return nil // file exists, skip
 	} else if !errors.Is(err, os.ErrNotExist) {
 		return fmt.Errorf("storage: stat %q: %w", target, err)
 	}
-	// Read from embedded filesystem (compiled into binary)
 	data, err := fs.ReadFile(embeddedFiles, embeddedPath)
 	if err != nil {
 		return fmt.Errorf("storage: read embedded %q: %w", embeddedPath, err)
 	}
-	// Write to disk
 	if err := os.WriteFile(target, data, 0o600); err != nil {
 		return fmt.Errorf("storage: write %q: %w", target, err)
 	}
