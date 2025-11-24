@@ -74,7 +74,7 @@ func (a *App) TextLibrary() (domain.TextLibrary, error) {
 }
 
 // SaveSession persists a completed typing session.
-func (a *App) SaveSession(payload domain.SessionPayload) error {
+func (a *App) SaveSession(payload *domain.SessionPayload) error {
 	repo, err := a.getSessionRepository()
 	if err != nil {
 		return err

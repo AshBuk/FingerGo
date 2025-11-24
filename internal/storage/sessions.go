@@ -24,9 +24,9 @@ const (
 
 // SessionRepository persists typing sessions in sessions.json.
 type SessionRepository struct {
-	mu       sync.RWMutex
 	storage  *Manager
 	sessions []domain.TypingSession
+	mu       sync.RWMutex
 	loaded   bool
 }
 
@@ -41,7 +41,7 @@ func NewSessionRepository(mgr *Manager) (*SessionRepository, error) {
 }
 
 // Record persists a session payload and returns the stored session.
-func (r *SessionRepository) Record(payload domain.SessionPayload) (domain.TypingSession, error) {
+func (r *SessionRepository) Record(payload *domain.SessionPayload) (domain.TypingSession, error) {
 	if err := r.ensureLoaded(); err != nil {
 		return domain.TypingSession{}, err
 	}
@@ -85,7 +85,7 @@ func (r *SessionRepository) List(limit int) ([]domain.TypingSession, error) {
 
 	result := make([]domain.TypingSession, 0, limit)
 	for i := total - 1; i >= total-limit; i-- {
-		result = append(result, cloneSession(r.sessions[i]))
+		result = append(result, cloneSession(&r.sessions[i]))
 	}
 	return result, nil
 }
@@ -143,8 +143,8 @@ func (r *SessionRepository) persist(items []domain.TypingSession) error {
 	return nil
 }
 
-func cloneSession(src domain.TypingSession) domain.TypingSession {
-	out := src
+func cloneSession(src *domain.TypingSession) domain.TypingSession {
+	out := *src
 	if len(src.Mistakes) > 0 {
 		out.Mistakes = make(map[string]int, len(src.Mistakes))
 		for k, v := range src.Mistakes {
