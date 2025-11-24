@@ -82,31 +82,28 @@
     /**
      * Apply theme and persist preference
      * @param {'dark'|'light'} theme
+     * @param {boolean} [persist=true] - Whether to persist to backend
      */
-    function applyTheme(theme) {
+    function applyTheme(theme, persist = true) {
         currentTheme = theme === 'light' ? 'light' : 'dark';
-        try {
-            const body = document.body;
-            const app = document.getElementById('app');
-            // Update classes
-            body.classList.remove('theme-dark', 'theme-light');
-            app?.classList.remove('theme-dark', 'theme-light');
-            body.classList.add(`theme-${currentTheme}`);
-            app?.classList.add(`theme-${currentTheme}`);
-            // Update stylesheet link
-            const themeLink = document.getElementById('theme-css');
-            if (themeLink) {
-                themeLink.setAttribute('href', `styles/theme-${currentTheme}.css`);
-            }
-            // Persist locally
-            try {
-                localStorage.setItem('theme', currentTheme);
-            } catch {
-                /* localStorage unavailable */
-            }
-            setThemeToggleIcon(currentTheme);
-        } catch (err) {
-            console.warn('Failed to apply theme:', err);
+        const body = document.body;
+        const app = document.getElementById('app');
+        // Update classes
+        body.classList.remove('theme-dark', 'theme-light');
+        app?.classList.remove('theme-dark', 'theme-light');
+        body.classList.add(`theme-${currentTheme}`);
+        app?.classList.add(`theme-${currentTheme}`);
+        // Update stylesheet link
+        const themeLink = document.getElementById('theme-css');
+        if (themeLink) {
+            themeLink.setAttribute('href', `styles/theme-${currentTheme}.css`);
+        }
+        setThemeToggleIcon(currentTheme);
+        // Persist to backend
+        if (persist && window.go?.app?.App?.UpdateSetting) {
+            window.go.app.App.UpdateSetting('theme', currentTheme).catch(err => {
+                console.warn('Failed to persist theme:', err);
+            });
         }
     }
 
@@ -114,7 +111,12 @@
         applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
     }
 
-    function applyZenMode(enabled) {
+    /**
+     * Apply zen mode and persist preference
+     * @param {boolean} enabled
+     * @param {boolean} [persist=true] - Whether to persist to backend
+     */
+    function applyZenMode(enabled, persist = true) {
         const next = Boolean(enabled);
         isZenMode = next;
         const body = document.body;
@@ -122,12 +124,13 @@
         body?.classList.toggle('zen-mode', next);
         app?.classList.toggle('zen-mode', next);
         setZenToggleState(next);
-        try {
-            localStorage.setItem('zenMode', next ? 'true' : 'false');
-        } catch {
-            /* localStorage unavailable */
-        }
         window.EventBus?.emit('app:zen-mode', { enabled: next });
+        // Persist to backend
+        if (persist && window.go?.app?.App?.UpdateSetting) {
+            window.go.app.App.UpdateSetting('zenMode', next).catch(err => {
+                console.warn('Failed to persist zenMode:', err);
+            });
+        }
     }
 
     function toggleZenMode() {
@@ -163,6 +166,22 @@
     }
 
     /**
+     * Load settings from backend
+     * @returns {Promise<{theme: string, zenMode: boolean, showKeyboard: boolean}>}
+     */
+    async function loadSettings() {
+        if (!window.go?.app?.App?.GetSettings) {
+            return { theme: 'dark', zenMode: false, showKeyboard: true };
+        }
+        try {
+            return await window.go.app.App.GetSettings();
+        } catch (err) {
+            console.warn('Failed to load settings:', err);
+            return { theme: 'dark', zenMode: false, showKeyboard: true };
+        }
+    }
+
+    /**
      * Initialize all modules
      */
     async function initialize() {
@@ -173,13 +192,11 @@
             });
         }
 
-        // Apply stored theme early
-        try {
-            const stored = localStorage.getItem('theme');
-            applyTheme(stored || 'dark');
-        } catch {
-            applyTheme('dark');
-        }
+        // Load and apply settings from backend
+        const settings = await loadSettings();
+        applyTheme(settings.theme, false);
+        applyZenMode(settings.zenMode, false);
+
         // Bind theme toggle (blur after click to prevent Space/Enter activation)
         const themeBtn = document.getElementById('theme-toggle');
         if (themeBtn) {
@@ -201,12 +218,6 @@
                 toggleZenMode();
                 zenBtn.blur();
             });
-        }
-        try {
-            const storedZen = localStorage.getItem('zenMode');
-            applyZenMode(storedZen === 'true');
-        } catch {
-            applyZenMode(false);
         }
         const resetBtn = document.getElementById('reset-session');
         if (resetBtn) {
