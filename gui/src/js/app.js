@@ -13,6 +13,8 @@
     let currentTextMeta = null; // {id, title, categoryId} for session persistence
     let currentTheme = 'dark';
     let isZenMode = false;
+    let isKeyboardVisible = true;
+    let isStatsBarVisible = true;
 
     function setThemeToggleIcon(theme) {
         const btn = document.getElementById('theme-toggle');
@@ -113,6 +115,7 @@
 
     /**
      * Apply zen mode and persist preference
+     * When Zen Mode is disabled, restore keyboard/stats bar visibility
      * @param {boolean} enabled
      * @param {boolean} [persist=true] - Whether to persist to backend
      */
@@ -124,6 +127,13 @@
         body?.classList.toggle('zen-mode', next);
         app?.classList.toggle('zen-mode', next);
         setZenToggleState(next);
+        // When exiting Zen Mode, restore keyboard/stats bar to their saved states
+        if (!next) {
+            const keyboardSection = document.getElementById('keyboard-section');
+            const statsBar = document.getElementById('stats-bar');
+            keyboardSection?.classList.toggle('hidden', !isKeyboardVisible);
+            statsBar?.classList.toggle('hidden', !isStatsBarVisible);
+        }
         window.EventBus?.emit('app:zen-mode', { enabled: next });
         // Persist to backend
         if (persist && window.go?.app?.App?.UpdateSetting) {
@@ -170,14 +180,15 @@
      * @returns {Promise<{theme: string, zenMode: boolean, showKeyboard: boolean}>}
      */
     async function loadSettings() {
+        const defaults = { theme: 'dark', zenMode: false, showKeyboard: true, showStatsBar: true };
         if (!window.go?.app?.App?.GetSettings) {
-            return { theme: 'dark', zenMode: false, showKeyboard: true };
+            return defaults;
         }
         try {
             return await window.go.app.App.GetSettings();
         } catch (err) {
             console.warn('Failed to load settings:', err);
-            return { theme: 'dark', zenMode: false, showKeyboard: true };
+            return defaults;
         }
     }
 
@@ -196,6 +207,8 @@
         const settings = await loadSettings();
         applyTheme(settings.theme, false);
         applyZenMode(settings.zenMode, false);
+        applyKeyboardVisibility(settings.showKeyboard, false);
+        applyStatsBarVisibility(settings.showStatsBar, false);
 
         // Bind theme toggle (blur after click to prevent Space/Enter activation)
         const themeBtn = document.getElementById('theme-toggle');
@@ -217,6 +230,20 @@
             zenBtn.addEventListener('click', () => {
                 toggleZenMode();
                 zenBtn.blur();
+            });
+        }
+        const statsBtn = document.getElementById('stats-toggle');
+        if (statsBtn) {
+            statsBtn.addEventListener('click', () => {
+                toggleStatsBar();
+                statsBtn.blur();
+            });
+        }
+        const keyboardBtn = document.getElementById('keyboard-toggle');
+        if (keyboardBtn) {
+            keyboardBtn.addEventListener('click', () => {
+                toggleKeyboard();
+                keyboardBtn.blur();
             });
         }
         const resetBtn = document.getElementById('reset-session');
@@ -364,14 +391,51 @@
     }
 
     /**
-     * Toggle keyboard visibility
+     * Apply keyboard visibility and persist preference
+     * @param {boolean} visible
+     * @param {boolean} [persist=true] - Whether to persist to backend
      */
-    function toggleKeyboard() {
+    function applyKeyboardVisibility(visible, persist = true) {
+        const next = Boolean(visible);
+        isKeyboardVisible = next;
         const keyboardSection = document.getElementById('keyboard-section');
         if (keyboardSection) {
-            const isHidden = keyboardSection.style.display === 'none';
-            keyboardSection.style.display = isHidden ? 'flex' : 'none';
+            keyboardSection.classList.toggle('hidden', !next);
         }
+        // Persist to backend
+        if (persist && window.go?.app?.App?.UpdateSetting) {
+            window.go.app.App.UpdateSetting('showKeyboard', next).catch(err => {
+                console.warn('Failed to persist showKeyboard:', err);
+            });
+        }
+    }
+
+    function toggleKeyboard() {
+        applyKeyboardVisibility(!isKeyboardVisible);
+    }
+
+    /**
+     * Apply stats bar visibility and persist preference
+     * @param {boolean} visible
+     * @param {boolean} [persist=true] - Whether to persist to backend
+     */
+    function applyStatsBarVisibility(visible, persist = true) {
+        const next = Boolean(visible);
+        isStatsBarVisible = next;
+        const statsBar = document.getElementById('stats-bar');
+        if (statsBar) {
+            statsBar.classList.toggle('hidden', !next);
+        }
+        // Persist to backend
+        if (persist && window.go?.app?.App?.UpdateSetting) {
+            window.go.app.App.UpdateSetting('showStatsBar', next).catch(err => {
+                console.warn('Failed to persist showStatsBar:', err);
+            });
+        }
+    }
+
+    function toggleStatsBar() {
+        applyStatsBarVisibility(!isStatsBarVisible);
     }
 
     /**
@@ -406,10 +470,20 @@
                 e.preventDefault();
                 openSettings();
             }
-            // Ctrl+H - Toggle keyboard
-            if (e.key === 'h' && (e.ctrlKey || e.metaKey)) {
+            // Ctrl+Alt+H - Toggle keyboard
+            if (e.key === 'h' && (e.ctrlKey || e.metaKey) && e.altKey) {
                 e.preventDefault();
                 toggleKeyboard();
+            }
+            // Ctrl+Alt+J - Toggle stats bar
+            if (e.key === 'j' && (e.ctrlKey || e.metaKey) && e.altKey) {
+                e.preventDefault();
+                toggleStatsBar();
+            }
+            // Ctrl+Alt+Z - Toggle Zen mode
+            if (e.key === 'z' && (e.ctrlKey || e.metaKey) && e.altKey) {
+                e.preventDefault();
+                toggleZenMode();
             }
         });
     }
@@ -481,6 +555,9 @@
         openSettings,
         openColorSettings,
         toggleKeyboard,
+        applyKeyboardVisibility,
+        toggleStatsBar,
+        applyStatsBarVisibility,
         toggleTheme,
         applyTheme,
         toggleZenMode,

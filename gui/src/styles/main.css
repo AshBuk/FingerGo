@@ -240,6 +240,12 @@ body {
     position: relative;
 }
 
+/* Element visibility toggles */
+#stats-bar.hidden,
+#keyboard-section.hidden {
+    display: none;
+}
+
 #app.zen-mode #stats-bar,
 #app.zen-mode #keyboard-section,
 body.zen-mode #stats-bar,

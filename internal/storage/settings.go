@@ -56,7 +56,7 @@ func (r *SettingsRepository) Save(s domain.Settings) error {
 }
 
 // Update modifies a single setting by key and persists the change.
-// Supported keys: "theme", "showKeyboard", "zenMode".
+// Supported keys: "theme", "showKeyboard", "showStatsBar", "zenMode".
 func (r *SettingsRepository) Update(key string, value any) error {
 	if err := r.ensureLoaded(); err != nil {
 		return err
@@ -81,6 +81,12 @@ func (r *SettingsRepository) Update(key string, value any) error {
 			return fmt.Errorf("settings: showKeyboard expects bool, got %T", value)
 		}
 		updated.ShowKeyboard = v
+	case "showStatsBar":
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("settings: showStatsBar expects bool, got %T", value)
+		}
+		updated.ShowStatsBar = v
 	case "zenMode":
 		v, ok := value.(bool)
 		if !ok {
