@@ -10,9 +10,9 @@ export default [
       // Build outputs
       'build/**',
       'dist/**',
-      'frontend/dist/**',
+      'gui/dist/**',
       // Wails auto-generated files (don't lint)
-      'frontend/src/wailsjs/**',
+      'gui/src/wailsjs/**',
       'wails.json',
       // Git
       '.git/**',
@@ -23,7 +23,7 @@ export default [
     ],
   },
   {
-    files: ["frontend/src/**/*.js"],
+    files: ["gui/src/**/*.js"],
     languageOptions: {
       ecmaVersion: 2022,
       sourceType: "module",
