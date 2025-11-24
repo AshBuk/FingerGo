@@ -15,8 +15,9 @@ import (
 )
 
 type App struct {
-	storage   *storage.Manager
-	textsRepo *storage.TextRepository
+	storage      *storage.Manager
+	textsRepo    *storage.TextRepository
+	sessionsRepo *storage.SessionRepository
 }
 
 func New() *App { return &App{} }
@@ -37,6 +38,9 @@ func (a *App) Startup(ctx context.Context) {
 	}
 	if err := a.ensureTextRepository(); err != nil {
 		log.Printf("storage: text repository init failed: %v", err)
+	}
+	if err := a.ensureSessionRepository(); err != nil {
+		log.Printf("storage: session repository init failed: %v", err)
 	}
 }
 
@@ -69,6 +73,25 @@ func (a *App) GetTextLibrary() (domain.TextLibrary, error) {
 	return repo.Library()
 }
 
+// SaveSession persists a completed typing session.
+func (a *App) SaveSession(payload domain.SessionPayload) error {
+	repo, err := a.getSessionRepository()
+	if err != nil {
+		return err
+	}
+	_, err = repo.Record(payload)
+	return err
+}
+
+// ListSessions returns recent typing sessions (newest first).
+func (a *App) ListSessions(limit int) ([]domain.TypingSession, error) {
+	repo, err := a.getSessionRepository()
+	if err != nil {
+		return nil, err
+	}
+	return repo.List(limit)
+}
+
 func (a *App) ensureTextRepository() error {
 	if a.storage == nil {
 		return errors.New("storage manager not initialized")
@@ -92,4 +115,29 @@ func (a *App) getTextRepository() (*storage.TextRepository, error) {
 		return nil, fmt.Errorf("text repository unavailable")
 	}
 	return a.textsRepo, nil
+}
+
+func (a *App) ensureSessionRepository() error {
+	if a.storage == nil {
+		return errors.New("storage manager not initialized")
+	}
+	if a.sessionsRepo != nil {
+		return nil
+	}
+	repo, err := storage.NewSessionRepository(a.storage)
+	if err != nil {
+		return err
+	}
+	a.sessionsRepo = repo
+	return nil
+}
+
+func (a *App) getSessionRepository() (*storage.SessionRepository, error) {
+	if err := a.ensureSessionRepository(); err != nil {
+		return nil, err
+	}
+	if a.sessionsRepo == nil {
+		return nil, fmt.Errorf("session repository unavailable")
+	}
+	return a.sessionsRepo, nil
 }
