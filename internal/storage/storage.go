@@ -12,7 +12,7 @@
 //	│   └── content/
 //	│       └── {id}.txt         # actual text content by ID
 //	├── sessions.json            # typing session history
-//	└── config.json              # (future) user settings
+//	└── settings.json            # user preferences
 //
 // On first run, embedded defaults are copied to {root}/.
 // Existing files are never overwritten (idempotent).

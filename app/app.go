@@ -15,9 +15,10 @@ import (
 )
 
 type App struct {
-	storage      *storage.Manager           // Manages the application's data storage on disk
-	textsRepo    *storage.TextRepository    // Handles operations related to typing texts
-	sessionsRepo *storage.SessionRepository // Manages the persistence of typing session data
+	storage      *storage.Manager            // Manages the application's data storage on disk
+	textsRepo    *storage.TextRepository     // Handles operations related to typing texts
+	sessionsRepo *storage.SessionRepository  // Manages the persistence of typing session data
+	settingsRepo *storage.SettingsRepository // Handles user preferences persistence
 }
 
 func New() *App { return &App{} }
@@ -41,6 +42,10 @@ func (a *App) Startup(ctx context.Context) {
 	// Session repository is not critical — app can run, but won't save sessions
 	if err := a.ensureSessionRepository(); err != nil {
 		log.Printf("WARNING: session repository init failed, sessions will not be saved: %v", err)
+	}
+	// Settings repository is not critical — app can run with defaults
+	if err := a.ensureSettingsRepository(); err != nil {
+		log.Printf("WARNING: settings repository init failed, using defaults: %v", err)
 	}
 }
 
@@ -92,6 +97,24 @@ func (a *App) ListSessions(limit int) ([]domain.TypingSession, error) {
 	return repo.List(limit)
 }
 
+// GetSettings returns current user settings.
+func (a *App) GetSettings() (domain.Settings, error) {
+	repo, err := a.getSettingsRepository()
+	if err != nil {
+		return domain.DefaultSettings(), err
+	}
+	return repo.Load()
+}
+
+// UpdateSetting modifies a single setting by key and persists the change.
+func (a *App) UpdateSetting(key string, value any) error {
+	repo, err := a.getSettingsRepository()
+	if err != nil {
+		return err
+	}
+	return repo.Update(key, value)
+}
+
 func (a *App) ensureTextRepository() error {
 	if a.storage == nil {
 		return errors.New("storage manager not initialized")
@@ -140,4 +163,29 @@ func (a *App) getSessionRepository() (*storage.SessionRepository, error) {
 		return nil, fmt.Errorf("session repository unavailable")
 	}
 	return a.sessionsRepo, nil
+}
+
+func (a *App) ensureSettingsRepository() error {
+	if a.storage == nil {
+		return errors.New("storage manager not initialized")
+	}
+	if a.settingsRepo != nil {
+		return nil
+	}
+	repo, err := storage.NewSettingsRepository(a.storage)
+	if err != nil {
+		return err
+	}
+	a.settingsRepo = repo
+	return nil
+}
+
+func (a *App) getSettingsRepository() (*storage.SettingsRepository, error) {
+	if err := a.ensureSettingsRepository(); err != nil {
+		return nil, err
+	}
+	if a.settingsRepo == nil {
+		return nil, fmt.Errorf("settings repository unavailable")
+	}
+	return a.settingsRepo, nil
 }
