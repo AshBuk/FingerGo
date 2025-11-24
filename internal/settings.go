@@ -7,8 +7,9 @@ package internal
 // Settings holds user preferences persisted in settings.json.
 type Settings struct {
 	Theme        string `json:"theme"`        // "dark" | "light"
-	ShowKeyboard bool   `json:"showKeyboard"` // keyboard visibility
-	ZenMode      bool   `json:"zenMode"`      // hide stats bar
+	ShowKeyboard bool   `json:"showKeyboard"` // keyboard section visibility
+	ShowStatsBar bool   `json:"showStatsBar"` // stats bar visibility
+	ZenMode      bool   `json:"zenMode"`      // focus mode (hides both keyboard and stats)
 }
 
 // DefaultSettings returns factory defaults for new installations.
@@ -16,6 +17,7 @@ func DefaultSettings() Settings {
 	return Settings{
 		Theme:        "dark",
 		ShowKeyboard: true,
+		ShowStatsBar: true,
 		ZenMode:      false,
 	}
 }
