@@ -45,9 +45,9 @@ func NewTextRepository(mgr *Manager) (*TextRepository, error) {
 		return nil, errNilManager
 	}
 	return &TextRepository{
-		storage:      mgr,
-		contentCache: make(map[string]string),
-		textIndex:    make(map[string]domain.Text),
+		storage:      mgr,                          // file system access
+		contentCache: make(map[string]string),      // empty content cache
+		textIndex:    make(map[string]domain.Text), // empty lookup index
 	}, nil
 }
 
