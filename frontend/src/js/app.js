@@ -200,7 +200,7 @@ func main() {
         // Try Wails backend first (if available)
         if (window.go?.app?.App) {
             try {
-                const text = await window.go.app.App.GetDefaultText();
+                const text = await window.go.app.App.DefaultText();
                 if (text && text.length > 0) {
                     return text;
                 }
@@ -361,7 +361,7 @@ func main() {
         // Try backend first
         if (window.go?.app?.App) {
             try {
-                text = await window.go.app.App.GetText(textId);
+                text = await window.go.app.App.Text(textId);
             } catch (err) {
                 console.error('Failed to load text from backend:', err);
                 return;

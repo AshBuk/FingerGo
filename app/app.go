@@ -46,8 +46,8 @@ func (a *App) Startup(ctx context.Context) {
 
 func (a *App) Shutdown(ctx context.Context) {}
 
-// GetDefaultText returns the default text entry (metadata + content).
-func (a *App) GetDefaultText() (domain.Text, error) {
+// DefaultText returns the default text entry (metadata + content).
+func (a *App) DefaultText() (domain.Text, error) {
 	repo, err := a.getTextRepository()
 	if err != nil {
 		return domain.Text{}, err
@@ -55,8 +55,8 @@ func (a *App) GetDefaultText() (domain.Text, error) {
 	return repo.DefaultText()
 }
 
-// GetText returns text content by identifier.
-func (a *App) GetText(id string) (domain.Text, error) {
+// Text returns text content by identifier.
+func (a *App) Text(id string) (domain.Text, error) {
 	repo, err := a.getTextRepository()
 	if err != nil {
 		return domain.Text{}, err
@@ -64,8 +64,8 @@ func (a *App) GetText(id string) (domain.Text, error) {
 	return repo.Text(id)
 }
 
-// GetTextLibrary returns library metadata for UI navigation.
-func (a *App) GetTextLibrary() (domain.TextLibrary, error) {
+// TextLibrary returns library metadata for UI navigation.
+func (a *App) TextLibrary() (domain.TextLibrary, error) {
 	repo, err := a.getTextRepository()
 	if err != nil {
 		return domain.TextLibrary{}, err
