@@ -48,7 +48,7 @@ func (a *App) GetDefaultText() (domain.Text, error) {
 	if err != nil {
 		return domain.Text{}, err
 	}
-	return repo.GetDefaultText()
+	return repo.DefaultText()
 }
 
 // GetText returns text content by identifier.
@@ -57,7 +57,7 @@ func (a *App) GetText(id string) (domain.Text, error) {
 	if err != nil {
 		return domain.Text{}, err
 	}
-	return repo.GetText(id)
+	return repo.Text(id)
 }
 
 // GetTextLibrary returns library metadata for UI navigation.
@@ -66,7 +66,7 @@ func (a *App) GetTextLibrary() (domain.TextLibrary, error) {
 	if err != nil {
 		return domain.TextLibrary{}, err
 	}
-	return repo.GetLibrary()
+	return repo.Library()
 }
 
 func (a *App) ensureTextRepository() error {

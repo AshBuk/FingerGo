@@ -51,8 +51,8 @@ func NewTextRepository(mgr *Manager) (*TextRepository, error) {
 	}, nil
 }
 
-// GetLibrary returns metadata for texts and categories (content stripped).
-func (r *TextRepository) GetLibrary() (domain.TextLibrary, error) {
+// Library returns metadata for texts and categories (content stripped).
+func (r *TextRepository) Library() (domain.TextLibrary, error) {
 	if err := r.ensureLoaded(); err != nil {
 		return domain.TextLibrary{}, err
 	}
@@ -61,20 +61,20 @@ func (r *TextRepository) GetLibrary() (domain.TextLibrary, error) {
 	return cloneLibrary(r.library), nil
 }
 
-// GetDefaultText resolves and returns the configured default text with content.
-func (r *TextRepository) GetDefaultText() (domain.Text, error) {
-	lib, err := r.GetLibrary()
+// DefaultText resolves and returns the configured default text with content.
+func (r *TextRepository) DefaultText() (domain.Text, error) {
+	lib, err := r.Library()
 	if err != nil {
 		return domain.Text{}, err
 	}
 	if lib.DefaultTextID == "" {
 		return domain.Text{}, errDefaultTextUnset
 	}
-	return r.GetText(lib.DefaultTextID)
+	return r.Text(lib.DefaultTextID)
 }
 
-// GetText returns a text (metadata + content) by identifier.
-func (r *TextRepository) GetText(id string) (domain.Text, error) {
+// Text returns a text (metadata + content) by identifier.
+func (r *TextRepository) Text(id string) (domain.Text, error) {
 	if id == "" {
 		return domain.Text{}, ErrTextNotFound
 	}
