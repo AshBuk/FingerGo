@@ -120,18 +120,22 @@ func (r *TextRepository) SaveText(text *domain.Text) error {
 	}
 	content := text.Content
 	entry := *text
-	entry.Content = "" // strip content from metadata
-
-	// Update in-memory state
+	entry.Content = ""
+	if err := r.persistContent(entry.ID, content); err != nil {
+		return err
+	}
+	oldLen := len(r.library.Texts)
 	r.library.Texts = append(r.library.Texts, entry)
 	r.textIndex[entry.ID] = entry
 	r.contentCache[entry.ID] = content
-
-	// Persist to disk
 	if err := r.persistIndex(); err != nil {
+		r.library.Texts = r.library.Texts[:oldLen]
+		delete(r.textIndex, entry.ID)
+		delete(r.contentCache, entry.ID)
+		_ = r.deleteContent(entry.ID) //nolint:errcheck // best-effort rollback
 		return err
 	}
-	return r.persistContent(entry.ID, content)
+	return nil
 }
 
 // UpdateText modifies an existing text entry.
@@ -149,9 +153,19 @@ func (r *TextRepository) UpdateText(text *domain.Text) error {
 	}
 	content := text.Content
 	entry := *text
-	entry.Content = "" // strip content from metadata
-
-	// Update in-memory state
+	entry.Content = ""
+	prevContent, hadFile, err := r.getPrevContent(entry.ID)
+	if err != nil {
+		return err
+	}
+	if err := r.persistContent(entry.ID, content); err != nil {
+		return err
+	}
+	oldEntry := r.textIndex[entry.ID]
+	oldCache, hadCache := "", false
+	if r.contentCache != nil {
+		oldCache, hadCache = r.contentCache[entry.ID]
+	}
 	for i, t := range r.library.Texts {
 		if t.ID == entry.ID {
 			r.library.Texts[i] = entry
@@ -160,12 +174,11 @@ func (r *TextRepository) UpdateText(text *domain.Text) error {
 	}
 	r.textIndex[entry.ID] = entry
 	r.contentCache[entry.ID] = content
-
-	// Persist to disk
 	if err := r.persistIndex(); err != nil {
+		r.rollbackUpdate(entry.ID, &oldEntry, oldCache, hadCache, prevContent, hadFile)
 		return err
 	}
-	return r.persistContent(entry.ID, content)
+	return nil
 }
 
 // DeleteText removes a text entry by ID.
@@ -181,20 +194,42 @@ func (r *TextRepository) DeleteText(id string) error {
 	if _, exists := r.textIndex[id]; !exists {
 		return fmt.Errorf("%w: %s", ErrTextNotFound, id)
 	}
-	// Update in-memory state
-	delete(r.textIndex, id)
-	delete(r.contentCache, id)
+	prevContent, hadFile, err := r.readContent(id)
+	if err != nil {
+		return err
+	}
+	if err := r.deleteContent(id); err != nil {
+		return err
+	}
+	oldEntry := r.textIndex[id]
+	oldCache, hadCache := "", false
+	if r.contentCache != nil {
+		oldCache, hadCache = r.contentCache[id]
+	}
+	var oldIdx int
 	for i, t := range r.library.Texts {
 		if t.ID == id {
+			oldIdx = i
 			r.library.Texts = append(r.library.Texts[:i], r.library.Texts[i+1:]...)
 			break
 		}
 	}
-	// Persist index and remove content file
+	delete(r.textIndex, id)
+	delete(r.contentCache, id)
 	if err := r.persistIndex(); err != nil {
+		r.library.Texts = append(r.library.Texts[:oldIdx], append([]domain.Text{oldEntry}, r.library.Texts[oldIdx:]...)...)
+		r.textIndex[id] = oldEntry
+		if hadCache {
+			r.contentCache[id] = oldCache
+		} else {
+			delete(r.contentCache, id)
+		}
+		if hadFile {
+			_ = r.persistContent(id, prevContent) //nolint:errcheck // best-effort rollback
+		}
 		return err
 	}
-	return r.deleteContent(id)
+	return nil
 }
 
 // persistIndex writes the current library metadata to disk.
@@ -219,6 +254,38 @@ func (r *TextRepository) persistContent(id, content string) error {
 	return nil
 }
 
+func (r *TextRepository) getPrevContent(id string) (content string, hadFile bool, err error) {
+	if r.contentCache != nil {
+		if cached, ok := r.contentCache[id]; ok {
+			content = cached
+			hadFile = true
+			return
+		}
+	}
+	content, hadFile, err = r.readContent(id)
+	return
+}
+
+func (r *TextRepository) rollbackUpdate(id string, oldEntry *domain.Text, oldCache string, hadCache bool, prevContent string, hadFile bool) {
+	for i, t := range r.library.Texts {
+		if t.ID == id {
+			r.library.Texts[i] = *oldEntry
+			break
+		}
+	}
+	r.textIndex[id] = *oldEntry
+	if hadCache {
+		r.contentCache[id] = oldCache
+	} else {
+		delete(r.contentCache, id)
+	}
+	if hadFile {
+		_ = r.persistContent(id, prevContent) //nolint:errcheck // best-effort rollback
+	} else {
+		_ = r.deleteContent(id) //nolint:errcheck // best-effort rollback
+	}
+}
+
 // deleteContent removes the content file for a text.
 func (r *TextRepository) deleteContent(id string) error {
 	contentPath := r.storage.join(textsContentDir, fmt.Sprintf("%s.txt", id))
@@ -226,6 +293,21 @@ func (r *TextRepository) deleteContent(id string) error {
 		return fmt.Errorf("storage: delete content %q: %w", contentPath, err)
 	}
 	return nil
+}
+
+func (r *TextRepository) readContent(id string) (content string, exists bool, err error) {
+	contentPath := r.storage.join(textsContentDir, fmt.Sprintf("%s.txt", id))
+	data, readErr := os.ReadFile(contentPath)
+	if readErr != nil {
+		if errors.Is(readErr, os.ErrNotExist) {
+			return "", false, nil
+		}
+		err = fmt.Errorf("storage: read content %q: %w", contentPath, readErr)
+		return "", false, err
+	}
+	content = string(data)
+	exists = true
+	return
 }
 
 func (r *TextRepository) ensureLoaded() error {
@@ -272,20 +354,17 @@ func (r *TextRepository) lookupTextLocked(id string) (domain.Text, bool) {
 }
 
 func (r *TextRepository) loadContent(id string) (string, error) {
-	candidate := r.storage.join(textsContentDir, fmt.Sprintf("%s.txt", id))
-	data, err := os.ReadFile(candidate)
-	if err == nil {
-		return string(data), nil
+	if content, ok, err := r.readContent(id); err != nil {
+		return "", err
+	} else if ok {
+		return content, nil
 	}
-	if errors.Is(err, os.ErrNotExist) {
-		fallback := r.storage.join(fallbackContentFile)
-		data, ferr := os.ReadFile(fallback)
-		if ferr != nil {
-			return "", fmt.Errorf("%w: %s", ErrContentUnavailable, id)
-		}
-		return string(data), nil
+	fallbackPath := r.storage.join(fallbackContentFile)
+	data, err := os.ReadFile(fallbackPath)
+	if err != nil {
+		return "", fmt.Errorf("%w: %s", ErrContentUnavailable, id)
 	}
-	return "", fmt.Errorf("storage: read content %q: %w", candidate, err)
+	return string(data), nil
 }
 
 func cloneLibrary(src domain.TextLibrary) domain.TextLibrary {
