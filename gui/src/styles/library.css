@@ -44,6 +44,12 @@
     outline-offset: 2px;
 }
 
+/* Zen mode: hide library controls and sidebar */
+body.zen-mode #library-controls,
+body.zen-mode #library-sidebar {
+    display: none;
+}
+
 /* Sidebar slide-in panel */
 #library-sidebar {
     position: fixed;
