@@ -142,6 +142,20 @@ func (a *App) DeleteText(id string) error {
 	return repo.DeleteText(id)
 }
 
+// SaveCategory creates a new category entry.
+func (a *App) SaveCategory(cat *domain.Category) error {
+	repo, err := a.getTextRepository()
+	if err != nil {
+		return err
+	}
+	return repo.SaveCategory(cat)
+}
+
+// SupportedLanguages returns the list of supported programming languages.
+func (a *App) SupportedLanguages() []domain.LanguageInfo {
+	return domain.SupportedLanguages()
+}
+
 func (a *App) ensureTextRepository() error {
 	if a.storage == nil {
 		return errors.New("storage manager not initialized")
