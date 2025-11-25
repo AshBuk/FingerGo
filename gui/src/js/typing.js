@@ -163,8 +163,7 @@
      * Handle keydown event
      */
     function handleKeyDown(e) {
-        // Ignore if session not active or paused
-        if (!session.isActive || session.isPaused) return;
+        if (!session.isActive) return;
         // Ignore navigation keys (with or without modifiers)
         if (window.KeyUtils.isNavigationKey?.(e.key)) {
             return;
@@ -178,6 +177,8 @@
         }
         // Ignore modifier keys
         if (['Control', 'Alt', 'Meta', 'Shift'].includes(e.key)) return;
+        // Auto-resume on first valid keystroke after pause
+        if (session.isPaused) resume();
         // Prevent default behavior for special keys during active session
         // to avoid browser navigation (Tab, Enter) and scrolling (Space)
         if (['Tab', 'Enter', ' '].includes(e.key)) {
