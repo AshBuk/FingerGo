@@ -67,22 +67,37 @@
         // Clear existing content
         textDisplay.innerHTML = '';
 
+        let lineStartIndex = 0;
+
         // Create character elements
         for (let i = 0; i < text.length; i++) {
             const char = text[i];
             const span = document.createElement('span');
             span.className = 'char';
-            span.textContent = char === ' ' ? '\u00A0' : char; // Non-breaking space for regular space
+            // Render character
+            if (char === ' ') {
+                const lockSpace = i === lineStartIndex + 1 && text[lineStartIndex] === '-';
+                span.textContent = lockSpace ? '\u00A0' : ' ';
+            } else if (char === '\r') {
+                // Skip carriage returns (CRLF handling)
+                span.textContent = '';
+            } else {
+                span.textContent = char;
+            }
+
             span.dataset.index = i;
             characterElements.push(span);
             textDisplay.appendChild(span);
-        }
 
+            // Track line boundaries
+            if (char === '\n') {
+                lineStartIndex = i + 1;
+            }
+        }
         // Sync textarea with text content
         if (textInput) {
             textInput.value = text;
         }
-
         // Ensure caret starts at beginning
         setCursorPosition(0, { emit: false });
     }
@@ -127,12 +142,10 @@
             textInput.setSelectionRange(clamped, clamped);
             suppressSelectionSync = false;
         }
-
         if (emit) {
             window.EventBus.emit('cursor:move', { index: clamped });
         }
     }
-
     // Handle textarea cursor changes (arrow keys)
     // Note: textarea has pointer-events: none, so mouse events go to textDisplay
     if (textInput) {
@@ -167,7 +180,6 @@
             e.preventDefault();
         });
     }
-
     if (textDisplay) {
         textDisplay.addEventListener('mousedown', e => {
             const element = e.target instanceof Element ? e.target : null;
@@ -184,7 +196,6 @@
                 setCursorPosition(index, { syncInput: true });
             }
         });
-
         // Prevent context menu on right-click
         textDisplay.addEventListener('contextmenu', e => {
             e.preventDefault();
