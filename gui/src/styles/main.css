@@ -80,6 +80,11 @@ body {
     font-weight: 700;
 }
 
+/* Zen mode: hide all buttons except zen toggle */
+body.zen-mode .top-action-button:not(#zen-toggle) {
+    display: none;
+}
+
 /* Text Display Area */
 #text-area {
     flex: 1 1 0%;
