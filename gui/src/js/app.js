@@ -68,6 +68,8 @@
         if (document.readyState === 'loading') {
             await new Promise(r => document.addEventListener('DOMContentLoaded', r));
         }
+        // Load languages from internal layer (single source of truth)
+        await window.SupportedLanguages?.load?.();
         // Load and apply settings
         const settings = await window.SettingsManager.load();
         window.SettingsManager.applyTheme(settings.theme, false);
