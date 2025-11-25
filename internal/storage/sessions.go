@@ -19,6 +19,8 @@ import (
 )
 
 const (
+	// maxStoredSessions limits session history to prevent unbounded disk growth.
+	// At ~1KB per session JSON, 500 sessions ≈ 500KB disk space.
 	maxStoredSessions = 500
 )
 

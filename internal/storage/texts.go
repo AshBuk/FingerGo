@@ -35,6 +35,9 @@ var (
 const (
 	maxTitleLength   = 200       // Maximum title length in characters
 	maxContentLength = 1_000_000 // Maximum content length (1MB of text)
+	// maxCachedTexts limits in-memory content cache to prevent unbounded growth.
+	// At ~100KB average per text, 50 texts ≈ 5MB RAM maximum.
+	maxCachedTexts = 50
 )
 
 // validateText checks text field constraints.
@@ -135,6 +138,9 @@ func (r *TextRepository) Text(id string) (domain.Text, error) {
 		return domain.Text{}, err
 	}
 	r.mu.Lock()
+	if len(r.contentCache) >= maxCachedTexts {
+		clear(r.contentCache) // evict all to prevent unbounded growth
+	}
 	r.contentCache[id] = content
 	r.mu.Unlock()
 	text.Content = content
