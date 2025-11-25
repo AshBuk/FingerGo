@@ -46,14 +46,14 @@
                 window.UIManager?.showModal('settings', {});
                 return;
             }
-            // Ctrl+Alt+H - Toggle keyboard
-            if (e.key === 'h' && (e.ctrlKey || e.metaKey) && e.altKey) {
+            // Ctrl+Alt+K - Toggle keyboard
+            if (e.key === 'k' && (e.ctrlKey || e.metaKey) && e.altKey) {
                 e.preventDefault();
                 window.SettingsManager?.toggleKeyboard();
                 return;
             }
-            // Ctrl+Alt+J - Toggle stats bar
-            if (e.key === 'j' && (e.ctrlKey || e.metaKey) && e.altKey) {
+            // Ctrl+Alt+S - Toggle stats bar
+            if (e.key === 's' && (e.ctrlKey || e.metaKey) && e.altKey) {
                 e.preventDefault();
                 window.SettingsManager?.toggleStatsBar();
                 return;
@@ -62,6 +62,12 @@
             if (e.key === 'z' && (e.ctrlKey || e.metaKey) && e.altKey) {
                 e.preventDefault();
                 window.SettingsManager?.toggleZenMode();
+                return;
+            }
+            // Ctrl+Alt+R - Reset session
+            if (e.key === 'r' && (e.ctrlKey || e.metaKey) && e.altKey) {
+                e.preventDefault();
+                window.SessionManager?.reset();
                 return;
             }
             // Ctrl+Alt+L - Toggle library sidebar
