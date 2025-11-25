@@ -339,7 +339,7 @@
                     modalTitle.textContent = 'Color Settings';
                     break;
                 case 'text-editor':
-                    modalTitle.textContent = data?.mode === 'edit' ? 'Edit Text' : 'New Text';
+                    modalTitle.textContent = data?.mode === 'edit' ? 'Edit' : 'Add New';
                     break;
                 default:
                     modalTitle.textContent = 'Information';

@@ -57,7 +57,7 @@
         let html = `<ul class="category-list">
             <li class="category-item${!state.selectedCategory ? ' active' : ''}" data-category="">
                 <span class="icon">📚</span>
-                <span>All Texts</span>
+                <span>All</span>
                 <span class="count">${allCount}</span>
             </li>`;
         categories.forEach(cat => {
