@@ -407,13 +407,6 @@
         });
     }
 
-    // Keyboard shortcut: Escape to close modal
-    window.addEventListener('keydown', e => {
-        if (e.key === 'Escape' && isVisible()) {
-            hideModal();
-        }
-    });
-
     // Export API
     window.ModalManager = {
         show: showModal,

@@ -168,14 +168,20 @@
         window.UIManager?.updateStats(0, 0, 100, 0);
         window.StatsManager?.clearHeatmap();
         window.KeyboardUI?.clearAllErrors();
-        // Reload default text
-        getDefaultText().then(text => {
-            if (!text?.length) return;
-            currentText = text;
-            window.UIManager?.renderText(text);
-            setInitialTarget(text);
-        });
-        setupTypingStart();
+        // Rerender current text or load default
+        if (currentText?.length) {
+            window.UIManager?.renderText(currentText);
+            setInitialTarget(currentText);
+            setupTypingStart();
+        } else {
+            getDefaultText().then(text => {
+                if (!text?.length) return;
+                currentText = text;
+                window.UIManager?.renderText(text);
+                setInitialTarget(text);
+                setupTypingStart();
+            });
+        }
     }
 
     /**

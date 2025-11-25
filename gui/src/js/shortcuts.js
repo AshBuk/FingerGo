@@ -35,9 +35,12 @@
                     window.LibraryManager?.hide();
                     return;
                 }
-                if (isModalVisible()) return;
                 e.preventDefault();
-                window.SessionManager?.showStatsModal();
+                if (isModalVisible()) {
+                    window.ModalManager?.hide();
+                } else {
+                    window.SessionManager?.showStatsModal();
+                }
                 return;
             }
             // Ctrl+, - Open settings
