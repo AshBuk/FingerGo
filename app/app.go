@@ -115,6 +115,33 @@ func (a *App) UpdateSetting(key string, value any) error {
 	return repo.Update(key, value)
 }
 
+// SaveText creates a new text entry.
+func (a *App) SaveText(text *domain.Text) error {
+	repo, err := a.getTextRepository()
+	if err != nil {
+		return err
+	}
+	return repo.SaveText(text)
+}
+
+// UpdateText modifies an existing text entry.
+func (a *App) UpdateText(text *domain.Text) error {
+	repo, err := a.getTextRepository()
+	if err != nil {
+		return err
+	}
+	return repo.UpdateText(text)
+}
+
+// DeleteText removes a text entry by ID.
+func (a *App) DeleteText(id string) error {
+	repo, err := a.getTextRepository()
+	if err != nil {
+		return err
+	}
+	return repo.DeleteText(id)
+}
+
 func (a *App) ensureTextRepository() error {
 	if a.storage == nil {
 		return errors.New("storage manager not initialized")
