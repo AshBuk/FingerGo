@@ -14,54 +14,17 @@ import (
 	domain "github.com/AshBuk/FingerGo/internal"
 )
 
+// Internal errors (not exported).
 var (
-	errNilManager          = errors.New("storage: manager is nil")
-	errDefaultTextUnset    = errors.New("storage: default text id is not configured")
-	ErrTextNotFound        = errors.New("storage: text not found")
-	ErrContentUnavailable  = errors.New("storage: text content unavailable")
-	ErrTextExists          = errors.New("storage: text already exists")
-	ErrEmptyTextID         = errors.New("storage: text id is empty")
-	ErrEmptyTextTitle      = errors.New("storage: text title is empty")
-	ErrTextTitleTooLong    = errors.New("storage: text title too long")
-	ErrEmptyTextContent    = errors.New("storage: text content is empty")
-	ErrTextContentTooLarge = errors.New("storage: text content too large")
-	ErrInvalidLanguage     = errors.New("storage: invalid language")
-	ErrCategoryExists      = errors.New("storage: category already exists")
-	ErrEmptyCategoryID     = errors.New("storage: category id is empty")
-	ErrEmptyCategoryName   = errors.New("storage: category name is empty")
-	ErrCategoryNameTooLong = errors.New("storage: category name too long")
+	errNilManager       = errors.New("storage: manager is nil")
+	errDefaultTextUnset = errors.New("storage: default text id is not configured")
 )
 
 const (
-	maxTitleLength   = 200       // Maximum title length in characters
-	maxContentLength = 1_000_000 // Maximum content length (1MB of text)
 	// maxCachedTexts limits in-memory content cache to prevent unbounded growth.
 	// At ~100KB average per text, 50 texts ≈ 5MB RAM maximum.
 	maxCachedTexts = 50
 )
-
-// validateText checks text field constraints.
-func validateText(text *domain.Text) error {
-	if text.Title == "" {
-		return ErrEmptyTextTitle
-	}
-	if len(text.Title) > maxTitleLength {
-		return ErrTextTitleTooLong
-	}
-	if text.Content == "" {
-		return ErrEmptyTextContent
-	}
-	if len(text.Content) > maxContentLength {
-		return ErrTextContentTooLarge
-	}
-	if text.Language == "" {
-		text.Language = "text" // default to plain text
-	}
-	if !domain.IsValidLanguage(text.Language) {
-		return fmt.Errorf("%w: %s", ErrInvalidLanguage, text.Language)
-	}
-	return nil
-}
 
 // TextRepository manages the text library with lazy loading and caching.
 //
@@ -70,12 +33,14 @@ func validateText(text *domain.Text) error {
 //   - Content files loaded on demand and cached in memory
 //   - All public methods are thread-safe (guarded by RWMutex)
 //   - Writes persist both in-memory state and disk atomically
+//   - O(1) lookups via textIndex and sliceIndex maps
 type TextRepository struct {
 	contentCache map[string]string      // id → full text content
 	textIndex    map[string]domain.Text // id → metadata (O(1) lookup)
+	sliceIndex   map[string]int         // id → position in library.Texts slice
 	storage      *Manager               // underlying file manager
 	library      domain.TextLibrary     // categories + text metadata
-	mu           sync.RWMutex           // guards all fields below
+	mu           sync.RWMutex           // guards all fields
 	loaded       bool                   // true after first load
 }
 
@@ -85,9 +50,10 @@ func NewTextRepository(mgr *Manager) (*TextRepository, error) {
 		return nil, errNilManager
 	}
 	return &TextRepository{
-		storage:      mgr,                          // file system access
-		contentCache: make(map[string]string),      // empty content cache
-		textIndex:    make(map[string]domain.Text), // empty lookup index
+		storage:      mgr,
+		contentCache: make(map[string]string),
+		textIndex:    make(map[string]domain.Text),
+		sliceIndex:   make(map[string]int),
 	}, nil
 }
 
@@ -170,13 +136,15 @@ func (r *TextRepository) SaveText(text *domain.Text) error {
 	if err := r.persistContent(entry.ID, content); err != nil {
 		return err
 	}
-	oldLen := len(r.library.Texts)
+	idx := len(r.library.Texts)
 	r.library.Texts = append(r.library.Texts, entry)
 	r.textIndex[entry.ID] = entry
+	r.sliceIndex[entry.ID] = idx
 	r.contentCache[entry.ID] = content
 	if err := r.persistIndex(); err != nil {
-		r.library.Texts = r.library.Texts[:oldLen]
+		r.library.Texts = r.library.Texts[:idx]
 		delete(r.textIndex, entry.ID)
+		delete(r.sliceIndex, entry.ID)
 		delete(r.contentCache, entry.ID)
 		_ = r.deleteContent(entry.ID) //nolint:errcheck // best-effort rollback
 		return err
@@ -197,7 +165,8 @@ func (r *TextRepository) UpdateText(text *domain.Text) error {
 	}
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	if _, exists := r.textIndex[text.ID]; !exists {
+	idx, exists := r.sliceIndex[text.ID]
+	if !exists {
 		return fmt.Errorf("%w: %s", ErrTextNotFound, text.ID)
 	}
 	content := text.Content
@@ -211,20 +180,23 @@ func (r *TextRepository) UpdateText(text *domain.Text) error {
 		return err
 	}
 	oldEntry := r.textIndex[entry.ID]
-	oldCache, hadCache := "", false
-	if r.contentCache != nil {
-		oldCache, hadCache = r.contentCache[entry.ID]
-	}
-	for i, t := range r.library.Texts {
-		if t.ID == entry.ID {
-			r.library.Texts[i] = entry
-			break
-		}
-	}
+	oldCache, hadCache := r.contentCache[entry.ID]
+	r.library.Texts[idx] = entry // O(1) update via sliceIndex
 	r.textIndex[entry.ID] = entry
 	r.contentCache[entry.ID] = content
 	if err := r.persistIndex(); err != nil {
-		r.rollbackUpdate(entry.ID, &oldEntry, oldCache, hadCache, prevContent, hadFile)
+		r.library.Texts[idx] = oldEntry
+		r.textIndex[entry.ID] = oldEntry
+		if hadCache {
+			r.contentCache[entry.ID] = oldCache
+		} else {
+			delete(r.contentCache, entry.ID)
+		}
+		if hadFile {
+			_ = r.persistContent(entry.ID, prevContent) //nolint:errcheck // best-effort rollback
+		} else {
+			_ = r.deleteContent(entry.ID) //nolint:errcheck // best-effort rollback
+		}
 		return err
 	}
 	return nil
@@ -233,14 +205,8 @@ func (r *TextRepository) UpdateText(text *domain.Text) error {
 // SaveCategory creates a new category entry.
 // Returns ErrCategoryExists if a category with the same ID or name already exists.
 func (r *TextRepository) SaveCategory(cat *domain.Category) error {
-	if cat == nil || cat.ID == "" {
-		return ErrEmptyCategoryID
-	}
-	if cat.Name == "" {
-		return ErrEmptyCategoryName
-	}
-	if len(cat.Name) > 100 {
-		return ErrCategoryNameTooLong
+	if err := validateCategory(cat); err != nil {
+		return err
 	}
 	if err := r.ensureLoaded(); err != nil {
 		return err
@@ -282,7 +248,7 @@ func (r *TextRepository) DeleteCategory(id string) error {
 		}
 	}
 	if idx == -1 {
-		return fmt.Errorf("storage: category not found: %s", id)
+		return fmt.Errorf("%w: %s", ErrCategoryNotFound, id)
 	}
 	oldCat := r.library.Categories[idx]
 	r.library.Categories = append(r.library.Categories[:idx], r.library.Categories[idx+1:]...)
@@ -303,7 +269,8 @@ func (r *TextRepository) DeleteText(id string) error {
 	}
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	if _, exists := r.textIndex[id]; !exists {
+	idx, exists := r.sliceIndex[id]
+	if !exists {
 		return fmt.Errorf("%w: %s", ErrTextNotFound, id)
 	}
 	prevContent, hadFile, err := r.readContent(id)
@@ -314,27 +281,21 @@ func (r *TextRepository) DeleteText(id string) error {
 		return err
 	}
 	oldEntry := r.textIndex[id]
-	oldCache, hadCache := "", false
-	if r.contentCache != nil {
-		oldCache, hadCache = r.contentCache[id]
-	}
-	var oldIdx int
-	for i, t := range r.library.Texts {
-		if t.ID == id {
-			oldIdx = i
-			r.library.Texts = append(r.library.Texts[:i], r.library.Texts[i+1:]...)
-			break
-		}
-	}
+	oldCache, hadCache := r.contentCache[id]
+	// Remove from slice using O(1) index lookup
+	r.library.Texts = append(r.library.Texts[:idx], r.library.Texts[idx+1:]...)
 	delete(r.textIndex, id)
+	delete(r.sliceIndex, id)
 	delete(r.contentCache, id)
+	// Rebuild sliceIndex for shifted elements
+	r.rebuildSliceIndex()
 	if err := r.persistIndex(); err != nil {
-		r.library.Texts = append(r.library.Texts[:oldIdx], append([]domain.Text{oldEntry}, r.library.Texts[oldIdx:]...)...)
+		// Rollback: restore slice, maps, and content file
+		r.library.Texts = append(r.library.Texts[:idx], append([]domain.Text{oldEntry}, r.library.Texts[idx:]...)...)
 		r.textIndex[id] = oldEntry
+		r.rebuildSliceIndex()
 		if hadCache {
 			r.contentCache[id] = oldCache
-		} else {
-			delete(r.contentCache, id)
 		}
 		if hadFile {
 			_ = r.persistContent(id, prevContent) //nolint:errcheck // best-effort rollback
@@ -367,34 +328,18 @@ func (r *TextRepository) persistContent(id, content string) error {
 }
 
 func (r *TextRepository) getPrevContent(id string) (content string, hadFile bool, err error) {
-	if r.contentCache != nil {
-		if cached, ok := r.contentCache[id]; ok {
-			content = cached
-			hadFile = true
-			return
-		}
+	if cached, ok := r.contentCache[id]; ok {
+		return cached, true, nil
 	}
-	content, hadFile, err = r.readContent(id)
-	return
+	return r.readContent(id)
 }
 
-func (r *TextRepository) rollbackUpdate(id string, oldEntry *domain.Text, oldCache string, hadCache bool, prevContent string, hadFile bool) {
+// rebuildSliceIndex reconstructs the id→position map from library.Texts.
+// Called after slice modifications (delete) to maintain O(1) lookups.
+func (r *TextRepository) rebuildSliceIndex() {
+	clear(r.sliceIndex)
 	for i, t := range r.library.Texts {
-		if t.ID == id {
-			r.library.Texts[i] = *oldEntry
-			break
-		}
-	}
-	r.textIndex[id] = *oldEntry
-	if hadCache {
-		r.contentCache[id] = oldCache
-	} else {
-		delete(r.contentCache, id)
-	}
-	if hadFile {
-		_ = r.persistContent(id, prevContent) //nolint:errcheck // best-effort rollback
-	} else {
-		_ = r.deleteContent(id) //nolint:errcheck // best-effort rollback
+		r.sliceIndex[t.ID] = i
 	}
 }
 
@@ -448,14 +393,19 @@ func (r *TextRepository) ensureLoaded() error {
 	}
 	r.library = library
 	r.loaded = true
+	// Initialize lookup maps
 	if r.contentCache == nil {
 		r.contentCache = make(map[string]string)
 	}
 	if r.textIndex == nil {
 		r.textIndex = make(map[string]domain.Text, len(library.Texts))
 	}
-	for _, text := range library.Texts {
+	if r.sliceIndex == nil {
+		r.sliceIndex = make(map[string]int, len(library.Texts))
+	}
+	for i, text := range library.Texts {
 		r.textIndex[text.ID] = text
+		r.sliceIndex[text.ID] = i
 	}
 	return nil
 }
