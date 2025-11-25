@@ -49,7 +49,7 @@ var supportedLanguages = []LanguageInfo{
 	{Key: "c", Icon: "🔧", Label: "C"},
 	{Key: "cpp", Icon: "⚙️", Label: "C++"},
 	{Key: "rust", Icon: "🦀", Label: "Rust"},
-	{Key: "go", Icon: "🐹", Label: "Go"},
+	{Key: "go", Icon: "🔵", Label: "Go"},
 	{Key: "zig", Icon: "⚡", Label: "Zig"},
 	// Web & scripting
 	{Key: "js", Icon: "🟡", Label: "JavaScript"},
