@@ -323,6 +323,7 @@
             characterElements[currentIndex].classList.remove('current');
         }
         // Show summary modal
+        data.isCompleted = true; // Session completed
         showModal('session-summary', data);
     });
 

@@ -330,7 +330,9 @@
         if (modalTitle) {
             switch (type) {
                 case 'session-summary':
-                    modalTitle.textContent = 'Session Complete';
+                    modalTitle.textContent = data?.isCompleted
+                        ? 'Session Complete'
+                        : 'Session Paused';
                     break;
                 case 'settings':
                     modalTitle.textContent = 'Settings';
