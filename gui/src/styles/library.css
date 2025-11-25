@@ -1,0 +1,290 @@
+/*
+ * Copyright 2025 Asher Buk
+ * SPDX-License-Identifier: Apache-2.0
+ * https://github.com/AshBuk/FingerGo
+ *
+ * Library UI styles: sidebar, controls, text editor modal
+ */
+
+/* Library controls - fixed to right edge, mirrors left action bar */
+#library-controls {
+    position: fixed;
+    top: 6px;
+    right: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    z-index: 50;
+}
+#library-controls button {
+    background: var(--key-bg);
+    color: var(--accent);
+    border: 1px solid var(--key-border);
+    border-radius: 6px;
+    padding: 7px 9px;
+    font-size: 1.1rem;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: 0 2px 8px var(--shadow-strong);
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+}
+#library-controls button:hover {
+    background: var(--key-bg-hover);
+    border-color: var(--key-border-strong);
+}
+#library-controls button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+/* Sidebar slide-in panel */
+#library-sidebar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 320px;
+    height: 100vh;
+    background: var(--bg);
+    border-left: 1px solid var(--line-strong);
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+}
+#library-sidebar.visible {
+    transform: translateX(0);
+}
+.sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    border-bottom: 1px solid var(--line-strong);
+}
+.sidebar-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: var(--text-default);
+}
+#sidebar-close {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: var(--text-muted);
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+#sidebar-close:hover {
+    background: var(--key-bg-hover);
+    color: var(--text-default);
+}
+.sidebar-content {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Category tree */
+#category-tree {
+    border-bottom: 1px solid var(--line-weak);
+}
+.category-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.category-item {
+    padding: 10px 16px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--line-weak);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-default);
+    transition: background 0.15s ease;
+}
+.category-item:hover {
+    background: var(--key-bg-hover);
+}
+.category-item.active {
+    background: rgba(var(--accent-rgb), 0.15);
+    font-weight: 500;
+}
+.category-item .icon {
+    font-size: 16px;
+}
+.category-item .count {
+    margin-left: auto;
+    font-size: 0.85em;
+    color: var(--text-muted);
+}
+
+/* Text list */
+#text-list {
+    flex: 1;
+    overflow-y: auto;
+}
+.text-item {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--line-weak);
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+.text-item:hover {
+    background: var(--key-bg-hover);
+}
+.text-item.selected {
+    background: rgba(var(--accent-rgb), 0.1);
+}
+.text-item-title {
+    font-weight: 500;
+    margin-bottom: 4px;
+    color: var(--text-default);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.text-item-title .favorite {
+    color: #f59e0b;
+    font-size: 12px;
+}
+.text-item-meta {
+    font-size: 0.85em;
+    color: var(--text-muted);
+    display: flex;
+    gap: 12px;
+}
+.text-item-actions {
+    display: flex;
+    gap: 4px;
+    margin-top: 8px;
+}
+.text-item-actions button {
+    padding: 4px 8px;
+    font-size: 12px;
+    background: var(--key-bg);
+    border: 1px solid var(--line-weak);
+    border-radius: 4px;
+    cursor: pointer;
+    color: var(--text-muted);
+}
+.text-item-actions button:hover {
+    background: var(--key-bg-hover);
+    color: var(--text-default);
+}
+.text-item-actions .danger {
+    color: var(--error-text, #ef4444);
+}
+.text-item-actions .danger:hover {
+    background: rgba(239, 68, 68, 0.15);
+}
+
+/* Empty state */
+.library-empty {
+    padding: 32px 16px;
+    text-align: center;
+    color: var(--text-muted);
+}
+.library-empty p {
+    margin: 0 0 16px 0;
+}
+
+/* Text editor modal */
+.text-editor {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 400px;
+}
+.editor-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.editor-field label {
+    font-weight: 500;
+    font-size: 0.9em;
+    color: var(--text-default);
+}
+.editor-field input,
+.editor-field select,
+.editor-field textarea {
+    width: 100%;
+    padding: 8px 12px;
+    background: var(--key-bg);
+    border: 1px solid var(--line-strong);
+    border-radius: 4px;
+    color: var(--text-default);
+    font-size: 14px;
+}
+.editor-field input:focus,
+.editor-field select:focus,
+.editor-field textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+.editor-field textarea {
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    resize: vertical;
+    min-height: 200px;
+    line-height: 1.5;
+}
+.editor-row {
+    display: flex;
+    gap: 16px;
+}
+.editor-row .editor-field {
+    flex: 1;
+}
+.editor-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 8px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line-weak);
+}
+.editor-actions button {
+    padding: 8px 16px;
+    font-size: 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.editor-actions #editor-cancel {
+    background: var(--key-bg);
+    border: 1px solid var(--line-strong);
+    color: var(--text-default);
+}
+.editor-actions #editor-cancel:hover {
+    background: var(--key-bg-hover);
+}
+.editor-actions #editor-save {
+    background: var(--accent);
+    border: 1px solid var(--accent);
+    color: var(--bg);
+    font-weight: 500;
+}
+.editor-actions #editor-save:hover {
+    opacity: 0.9;
+}
+.editor-actions #editor-delete {
+    margin-right: auto;
+    background: transparent;
+    border: 1px solid var(--error-text, #ef4444);
+    color: var(--error-text, #ef4444);
+}
+.editor-actions #editor-delete:hover {
+    background: rgba(239, 68, 68, 0.15);
+}
+
+/* Hide delete button for new texts */
+.text-editor[data-mode='create'] #editor-delete {
+    display: none;
+}
