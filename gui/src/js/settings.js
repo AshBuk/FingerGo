@@ -5,7 +5,7 @@
 /**
  * Settings Manager
  * Manages application preferences: theme, zen mode, UI visibility
- * Persists settings to backend via Wails bridge
+ * Persists settings to internal layer via Wails bridge
  */
 (() => {
     let currentTheme = 'dark';
@@ -42,7 +42,7 @@
     }
 
     /**
-     * Persist setting to backend
+     * Persist setting to internal layer
      * @param {string} key
      * @param {*} value
      */
@@ -138,7 +138,7 @@
     }
 
     /**
-     * Load settings from backend
+     * Load settings from internal layer
      * @returns {Promise<{theme: string, zenMode: boolean, showKeyboard: boolean, showStatsBar: boolean}>}
      */
     async function load() {
