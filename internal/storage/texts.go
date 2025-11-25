@@ -15,13 +15,50 @@ import (
 )
 
 var (
-	errNilManager         = errors.New("storage: manager is nil")
-	errDefaultTextUnset   = errors.New("storage: default text id is not configured")
-	ErrTextNotFound       = errors.New("storage: text not found")
-	ErrContentUnavailable = errors.New("storage: text content unavailable")
-	ErrTextExists         = errors.New("storage: text already exists")
-	ErrEmptyTextID        = errors.New("storage: text id is empty")
+	errNilManager          = errors.New("storage: manager is nil")
+	errDefaultTextUnset    = errors.New("storage: default text id is not configured")
+	ErrTextNotFound        = errors.New("storage: text not found")
+	ErrContentUnavailable  = errors.New("storage: text content unavailable")
+	ErrTextExists          = errors.New("storage: text already exists")
+	ErrEmptyTextID         = errors.New("storage: text id is empty")
+	ErrEmptyTextTitle      = errors.New("storage: text title is empty")
+	ErrTextTitleTooLong    = errors.New("storage: text title too long")
+	ErrEmptyTextContent    = errors.New("storage: text content is empty")
+	ErrTextContentTooLarge = errors.New("storage: text content too large")
+	ErrInvalidLanguage     = errors.New("storage: invalid language")
+	ErrCategoryExists      = errors.New("storage: category already exists")
+	ErrEmptyCategoryID     = errors.New("storage: category id is empty")
+	ErrEmptyCategoryName   = errors.New("storage: category name is empty")
+	ErrCategoryNameTooLong = errors.New("storage: category name too long")
 )
+
+const (
+	maxTitleLength   = 200       // Maximum title length in characters
+	maxContentLength = 1_000_000 // Maximum content length (1MB of text)
+)
+
+// validateText checks text field constraints.
+func validateText(text *domain.Text) error {
+	if text.Title == "" {
+		return ErrEmptyTextTitle
+	}
+	if len(text.Title) > maxTitleLength {
+		return ErrTextTitleTooLong
+	}
+	if text.Content == "" {
+		return ErrEmptyTextContent
+	}
+	if len(text.Content) > maxContentLength {
+		return ErrTextContentTooLarge
+	}
+	if text.Language == "" {
+		text.Language = "text" // default to plain text
+	}
+	if !domain.IsValidLanguage(text.Language) {
+		return fmt.Errorf("%w: %s", ErrInvalidLanguage, text.Language)
+	}
+	return nil
+}
 
 // TextRepository manages the text library with lazy loading and caching.
 //
@@ -110,6 +147,9 @@ func (r *TextRepository) SaveText(text *domain.Text) error {
 	if text == nil || text.ID == "" {
 		return ErrEmptyTextID
 	}
+	if err := validateText(text); err != nil {
+		return err
+	}
 	if err := r.ensureLoaded(); err != nil {
 		return err
 	}
@@ -142,6 +182,9 @@ func (r *TextRepository) SaveText(text *domain.Text) error {
 func (r *TextRepository) UpdateText(text *domain.Text) error {
 	if text == nil || text.ID == "" {
 		return ErrEmptyTextID
+	}
+	if err := validateText(text); err != nil {
+		return err
 	}
 	if err := r.ensureLoaded(); err != nil {
 		return err
@@ -176,6 +219,39 @@ func (r *TextRepository) UpdateText(text *domain.Text) error {
 	r.contentCache[entry.ID] = content
 	if err := r.persistIndex(); err != nil {
 		r.rollbackUpdate(entry.ID, &oldEntry, oldCache, hadCache, prevContent, hadFile)
+		return err
+	}
+	return nil
+}
+
+// SaveCategory creates a new category entry.
+// Returns ErrCategoryExists if a category with the same ID or name already exists.
+func (r *TextRepository) SaveCategory(cat *domain.Category) error {
+	if cat == nil || cat.ID == "" {
+		return ErrEmptyCategoryID
+	}
+	if cat.Name == "" {
+		return ErrEmptyCategoryName
+	}
+	if len(cat.Name) > 100 {
+		return ErrCategoryNameTooLong
+	}
+	if err := r.ensureLoaded(); err != nil {
+		return err
+	}
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	for _, c := range r.library.Categories {
+		if c.ID == cat.ID {
+			return fmt.Errorf("%w: %s", ErrCategoryExists, cat.ID)
+		}
+		if c.Name == cat.Name {
+			return fmt.Errorf("%w: %s", ErrCategoryExists, cat.Name)
+		}
+	}
+	r.library.Categories = append(r.library.Categories, *cat)
+	if err := r.persistIndex(); err != nil {
+		r.library.Categories = r.library.Categories[:len(r.library.Categories)-1]
 		return err
 	}
 	return nil
