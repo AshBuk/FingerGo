@@ -263,3 +263,50 @@ https://github.com/AshBuk/FingerGo
 .color-btn-primary:hover {
     background: rgba(var(--accent-rgb), 0.25);
 }
+
+/* Confirm Dialog */
+.confirm-dialog {
+    padding: 1rem 0;
+}
+
+.confirm-message {
+    font-size: 1rem;
+    color: var(--text-default);
+    margin-bottom: 2rem;
+    line-height: 1.5;
+}
+
+.confirm-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+
+.confirm-actions button {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.9rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid var(--line-strong);
+}
+
+.confirm-actions .btn-secondary {
+    background: var(--bg);
+    color: var(--text-default);
+}
+
+.confirm-actions .btn-secondary:hover {
+    background: rgba(var(--accent-rgb), 0.1);
+    border-color: var(--accent);
+}
+
+.confirm-actions .btn-danger {
+    background: var(--error-text);
+    color: #fff;
+    border-color: var(--error-text);
+}
+
+.confirm-actions .btn-danger:hover {
+    opacity: 0.9;
+}
