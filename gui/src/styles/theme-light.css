@@ -26,6 +26,12 @@ https://github.com/AshBuk/FingerGo
     --key-pressed-border: rgba(167, 137, 107, 0.55);
     --shadow-strong: rgba(0, 0, 0, 0.14);
 
+    /* Action buttons - same as target key in light theme */
+    --button-bg: rgba(var(--accent-rgb), 0.35);
+    --button-bg-hover: rgba(var(--accent-rgb), 0.45);
+    --button-border: rgba(var(--accent-rgb), 0.6);
+    --button-border-hover: rgba(var(--accent-rgb), 0.7);
+
     /* Error states */
     --error-bg: rgba(194, 72, 49, 0.22);
     --error-border: rgba(194, 72, 49, 0.45);
