@@ -8,8 +8,8 @@ https://github.com/AshBuk/FingerGo
 .theme-light {
     /* Base colors with warm tint */
     --bg: #f7f1e6;
-    --text-default: #2a2422;
-    --text-muted: #4a3f36;
+    --text-default: #1a1310;
+    --text-muted: #3a2f26;
 
     /* Accent (deep warm brown for text/buttons - increased contrast) */
     --accent: #1a1310;
