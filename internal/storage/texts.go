@@ -257,6 +257,36 @@ func (r *TextRepository) SaveCategory(cat *domain.Category) error {
 	return nil
 }
 
+// DeleteCategory removes a category entry by ID.
+// Returns ErrCategoryNotFound if category doesn't exist.
+func (r *TextRepository) DeleteCategory(id string) error {
+	if id == "" {
+		return ErrEmptyCategoryID
+	}
+	if err := r.ensureLoaded(); err != nil {
+		return err
+	}
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	idx := -1
+	for i, c := range r.library.Categories {
+		if c.ID == id {
+			idx = i
+			break
+		}
+	}
+	if idx == -1 {
+		return fmt.Errorf("storage: category not found: %s", id)
+	}
+	oldCat := r.library.Categories[idx]
+	r.library.Categories = append(r.library.Categories[:idx], r.library.Categories[idx+1:]...)
+	if err := r.persistIndex(); err != nil {
+		r.library.Categories = append(r.library.Categories[:idx], append([]domain.Category{oldCat}, r.library.Categories[idx:]...)...)
+		return err
+	}
+	return nil
+}
+
 // DeleteText removes a text entry by ID.
 func (r *TextRepository) DeleteText(id string) error {
 	if id == "" {
