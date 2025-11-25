@@ -16,12 +16,25 @@
     }
 
     /**
+     * Check if library sidebar is visible
+     * @returns {boolean}
+     */
+    function isLibraryVisible() {
+        return window.LibraryManager?.isVisible() || false;
+    }
+
+    /**
      * Initialize global keyboard shortcuts
      */
     function init() {
         window.addEventListener('keydown', e => {
-            // Escape - Show stats modal (skip if modal visible)
+            // Escape - Close sidebar/show stats (priority: sidebar > modal > stats)
             if (e.key === 'Escape') {
+                if (isLibraryVisible()) {
+                    e.preventDefault();
+                    window.LibraryManager?.hide();
+                    return;
+                }
                 if (isModalVisible()) return;
                 e.preventDefault();
                 window.SessionManager?.showStatsModal();
@@ -49,6 +62,18 @@
             if (e.key === 'z' && (e.ctrlKey || e.metaKey) && e.altKey) {
                 e.preventDefault();
                 window.SettingsManager?.toggleZenMode();
+                return;
+            }
+            // Ctrl+Alt+L - Toggle library sidebar
+            if (e.key === 'l' && (e.ctrlKey || e.metaKey) && e.altKey) {
+                e.preventDefault();
+                window.LibraryManager?.toggle();
+                return;
+            }
+            // Ctrl+Alt+N - New text
+            if (e.key === 'n' && (e.ctrlKey || e.metaKey) && e.altKey) {
+                e.preventDefault();
+                window.LibraryManager?.openEditor(null);
             }
         });
     }

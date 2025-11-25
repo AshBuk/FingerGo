@@ -124,6 +124,110 @@
     }
 
     /**
+     * Generate text editor HTML
+     * @param {Object} data - {mode, text, categories, selectedCategory}
+     * @returns {string} HTML content
+     */
+    function generateTextEditor(data) {
+        const { mode, text, categories, selectedCategory } = data;
+        const isEdit = mode === 'edit' && text;
+        const title = isEdit ? text.title : '';
+        const content = isEdit ? text.content : '';
+        const language = isEdit ? text.language : 'plain';
+        const categoryId = isEdit ? text.categoryId : selectedCategory || '';
+        const categoryOptions = (categories || [])
+            .map(
+                c =>
+                    `<option value="${c.id}"${c.id === categoryId ? ' selected' : ''}>${c.name}</option>`,
+            )
+            .join('');
+        return `
+            <div class="text-editor" data-mode="${mode}" data-id="${isEdit ? text.id : ''}">
+                <div class="editor-field">
+                    <label for="text-title">Title</label>
+                    <input type="text" id="text-title" value="${title}" placeholder="My typing text" required>
+                </div>
+                <div class="editor-row">
+                    <div class="editor-field">
+                        <label for="text-category">Category</label>
+                        <select id="text-category">
+                            <option value="">Uncategorized</option>
+                            ${categoryOptions}
+                        </select>
+                    </div>
+                    <div class="editor-field">
+                        <label for="text-language">Language</label>
+                        <select id="text-language">
+                            <option value="plain"${language === 'plain' ? ' selected' : ''}>Plain Text</option>
+                            <option value="go"${language === 'go' ? ' selected' : ''}>Go</option>
+                            <option value="js"${language === 'js' ? ' selected' : ''}>JavaScript</option>
+                            <option value="py"${language === 'py' ? ' selected' : ''}>Python</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="editor-field">
+                    <label for="text-content">Content</label>
+                    <textarea id="text-content" rows="12" placeholder="Enter the text to practice typing..." required>${content}</textarea>
+                </div>
+                <div class="editor-actions">
+                    <button type="button" id="editor-delete">Delete</button>
+                    <button type="button" id="editor-cancel">Cancel</button>
+                    <button type="button" id="editor-save">Save</button>
+                </div>
+            </div>
+        `;
+    }
+
+    /**
+     * Bind text editor event handlers
+     * @param {Object} data - Original modal data
+     */
+    function bindTextEditorHandlers(data) {
+        const editor = modalContent.querySelector('.text-editor');
+        if (!editor) return;
+        const isEdit = editor.dataset.mode === 'edit';
+        const textId = editor.dataset.id || null;
+        // Save button
+        const saveBtn = document.getElementById('editor-save');
+        if (saveBtn) {
+            saveBtn.addEventListener('click', () => {
+                const title = document.getElementById('text-title')?.value.trim();
+                const content = document.getElementById('text-content')?.value;
+                const categoryId = document.getElementById('text-category')?.value || '';
+                const language = document.getElementById('text-language')?.value || 'plain';
+                if (!title) {
+                    document.getElementById('text-title')?.focus();
+                    return;
+                }
+                if (!content) {
+                    document.getElementById('text-content')?.focus();
+                    return;
+                }
+                const textData = {
+                    id: isEdit ? textId : null,
+                    title,
+                    content,
+                    categoryId,
+                    language,
+                    isFavorite: data.text?.isFavorite || false,
+                    createdAt: data.text?.createdAt || null,
+                };
+                window.EventBus?.emit('text:save', textData);
+            });
+        }
+        // Cancel button
+        document.getElementById('editor-cancel')?.addEventListener('click', hideModal);
+        // Delete button
+        const deleteBtn = document.getElementById('editor-delete');
+        if (deleteBtn && isEdit && textId) {
+            deleteBtn.addEventListener('click', () => {
+                window.LibraryManager?.deleteText(textId);
+                hideModal();
+            });
+        }
+    }
+
+    /**
      * Generate color settings HTML
      * @param {Object} data - Settings data with theme
      * @returns {string} HTML content
@@ -217,12 +321,11 @@
 
     /**
      * Show modal with content
-     * @param {string} type - Modal type ('session-summary', 'settings', 'color-settings')
+     * @param {string} type - Modal type ('session-summary', 'settings', 'color-settings', 'text-editor')
      * @param {Object} data - Data to display
      */
     function showModal(type, data) {
         if (!modalOverlay || !modalContent) return;
-
         // Set title based on type
         if (modalTitle) {
             switch (type) {
@@ -235,11 +338,13 @@
                 case 'color-settings':
                     modalTitle.textContent = 'Color Settings';
                     break;
+                case 'text-editor':
+                    modalTitle.textContent = data?.mode === 'edit' ? 'Edit Text' : 'New Text';
+                    break;
                 default:
                     modalTitle.textContent = 'Information';
             }
         }
-
         // Generate content based on type
         let contentHTML = '';
         switch (type) {
@@ -252,16 +357,19 @@
             case 'color-settings':
                 contentHTML = generateColorSettings(data);
                 break;
+            case 'text-editor':
+                contentHTML = generateTextEditor(data);
+                break;
             default:
                 contentHTML = '<p>No content available</p>';
         }
-
         modalContent.innerHTML = contentHTML;
         modalOverlay.classList.remove('modal-hidden');
-
-        // Bind handlers for color settings
+        // Bind type-specific handlers
         if (type === 'color-settings') {
             bindColorSettingsHandlers(data?.theme || 'dark');
+        } else if (type === 'text-editor') {
+            bindTextEditorHandlers(data);
         }
     }
 
