@@ -170,8 +170,6 @@ body.zen-mode .top-action-button:not(#zen-toggle) {
 #text-display .char.current {
     background: rgba(var(--accent-rgb), 0.3);
     border-radius: 2px;
-    padding: 0 2px;
-    animation: blink 1s ease-in-out infinite;
 }
 
 #text-display .char.current.error {
