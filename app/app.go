@@ -151,6 +151,15 @@ func (a *App) SaveCategory(cat *domain.Category) error {
 	return repo.SaveCategory(cat)
 }
 
+// DeleteCategory removes a category entry by ID.
+func (a *App) DeleteCategory(id string) error {
+	repo, err := a.getTextRepository()
+	if err != nil {
+		return err
+	}
+	return repo.DeleteCategory(id)
+}
+
 // SupportedLanguages returns the list of supported programming languages.
 func (a *App) SupportedLanguages() []domain.LanguageInfo {
 	return domain.SupportedLanguages()
