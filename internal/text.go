@@ -31,3 +31,70 @@ type TextLibrary struct {
 	Categories    []Category `json:"categories"`    // flat list with ParentID refs
 	Texts         []Text     `json:"texts"`         // metadata; content lazy-loaded
 }
+
+// LanguageInfo describes a supported programming language.
+type LanguageInfo struct {
+	Key   string `json:"key"`   // identifier used in Text.Language
+	Icon  string `json:"icon"`  // emoji for UI display
+	Label string `json:"label"` // human-readable name
+}
+
+// supportedLanguages is the single source of truth for language definitions.
+var supportedLanguages = []LanguageInfo{
+	// General text
+	{Key: "text", Icon: "📄", Label: "Plain Text"},
+	{Key: "english", Icon: "🇬🇧", Label: "English"},
+	{Key: "russian", Icon: "🇷🇺", Label: "Russian"},
+	// Systems programming
+	{Key: "c", Icon: "🔧", Label: "C"},
+	{Key: "cpp", Icon: "⚙️", Label: "C++"},
+	{Key: "rust", Icon: "🦀", Label: "Rust"},
+	{Key: "go", Icon: "🐹", Label: "Go"},
+	{Key: "zig", Icon: "⚡", Label: "Zig"},
+	// Web & scripting
+	{Key: "js", Icon: "🟡", Label: "JavaScript"},
+	{Key: "ts", Icon: "🔷", Label: "TypeScript"},
+	{Key: "py", Icon: "🐍", Label: "Python"},
+	{Key: "rb", Icon: "💎", Label: "Ruby"},
+	{Key: "php", Icon: "🐘", Label: "PHP"},
+	{Key: "lua", Icon: "🌙", Label: "Lua"},
+	// JVM & .NET
+	{Key: "java", Icon: "☕", Label: "Java"},
+	{Key: "kotlin", Icon: "🟣", Label: "Kotlin"},
+	{Key: "scala", Icon: "🔴", Label: "Scala"},
+	{Key: "csharp", Icon: "🟢", Label: "C#"},
+	// Functional
+	{Key: "haskell", Icon: "λ", Label: "Haskell"},
+	{Key: "elixir", Icon: "💧", Label: "Elixir"},
+	// Mobile
+	{Key: "swift", Icon: "🍎", Label: "Swift"},
+	{Key: "dart", Icon: "🎯", Label: "Dart"},
+	// Data & config
+	{Key: "sql", Icon: "🗃️", Label: "SQL"},
+	{Key: "json", Icon: "📋", Label: "JSON"},
+	{Key: "yaml", Icon: "📝", Label: "YAML"},
+	// Shell
+	{Key: "bash", Icon: "🖥️", Label: "Bash"},
+}
+
+// validLanguageKeys is a lookup map for O(1) validation.
+// Built from supportedLanguages at initialization.
+var validLanguageKeys map[string]bool
+
+func init() {
+	validLanguageKeys = make(map[string]bool, len(supportedLanguages))
+	for _, lang := range supportedLanguages {
+		validLanguageKeys[lang.Key] = true
+	}
+}
+
+// SupportedLanguages returns the list of supported programming languages.
+func SupportedLanguages() []LanguageInfo {
+	return supportedLanguages
+}
+
+// IsValidLanguage checks if a language key is supported.
+// Uses O(1) map lookup for performance.
+func IsValidLanguage(key string) bool {
+	return validLanguageKeys[key]
+}
