@@ -53,6 +53,7 @@
         window.TypingEngine?.pause();
         const summary = window.StatsManager?.getSessionSummary?.() || buildLiveSummary();
         if (summary) {
+            summary.isCompleted = false; // Session paused, not completed
             window.UIManager.showModal('session-summary', summary);
         }
     }
