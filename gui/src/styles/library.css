@@ -123,16 +123,47 @@ body.zen-mode #library-sidebar {
     background: var(--key-bg-hover);
 }
 .category-item.active {
-    background: rgba(var(--accent-rgb), 0.15);
     font-weight: 500;
+}
+.category-item.active::before {
+    content: '▸';
+    font-size: 18px;
+    margin-right: 8px;
+    transition: transform 0.15s ease;
+    color: var(--text-default);
+}
+.category-item.active.expanded::before {
+    transform: rotate(90deg);
+}
+.category-item .delete-btn {
+    margin-left: auto;
+    padding: 2px 6px;
+    font-size: 14px;
+    background: transparent;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    opacity: 0;
+    transition:
+        opacity 0.15s ease,
+        background 0.15s ease;
+}
+.category-item:hover .delete-btn {
+    opacity: 0.9;
+}
+.category-item .delete-btn:hover {
+    opacity: 1;
+    background: rgba(239, 68, 68, 0.15);
 }
 .category-item .icon {
     font-size: 16px;
 }
 .category-item .count {
-    margin-left: auto;
     font-size: 0.85em;
     color: var(--text-muted);
+}
+.category-item .spacer {
+    flex: 1;
 }
 
 /* Text list */
@@ -200,6 +231,20 @@ body.zen-mode #library-sidebar {
 }
 .library-empty p {
     margin: 0 0 16px 0;
+}
+.empty-add-text {
+    padding: 6px 16px;
+    font-size: 14px;
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: opacity 0.15s ease;
+}
+.empty-add-text:hover {
+    opacity: 0.9;
 }
 
 /* Text editor modal */

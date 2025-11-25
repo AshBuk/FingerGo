@@ -9,14 +9,15 @@
 (() => {
     const state = {
         library: null,
-        selectedCategory: null,
+        selectedCategory: null, // null = All, string = category id
+        isExpanded: false, // whether text list is visible (collapsed by default)
         isVisible: false,
     };
 
     const getEl = id => document.getElementById(id);
 
     /**
-     * Load library from backend
+     * Load library from internal layer
      * @returns {Promise<Object|null>}
      */
     async function loadLibrary() {
@@ -36,7 +37,7 @@
      * @returns {string}
      */
     function normalizeLanguage(lang) {
-        return lang || 'text';
+        return window.SupportedLanguages?.sanitize?.(lang) || 'text';
     }
 
     /**
@@ -45,12 +46,11 @@
      * @returns {string}
      */
     function langIcon(lang) {
-        const icons = { go: '🔵', js: '🟡', py: '🐍', text: '📄' };
-        return icons[normalizeLanguage(lang)] || '📄';
+        return window.SupportedLanguages?.getIcon?.(normalizeLanguage(lang)) || '📄';
     }
 
     /**
-     * Render category tree
+     * Render category tree with nested text items
      */
     function renderCategories() {
         const container = getEl('category-tree');
@@ -61,66 +61,94 @@
         texts.forEach(t => {
             counts[t.categoryId] = (counts[t.categoryId] || 0) + 1;
         });
-        // Build category items (flat for now, hierarchical later)
+        // Build category items with nested text lists
         const allCount = texts.length;
-        let html = `<ul class="category-list">
-            <li class="category-item${!state.selectedCategory ? ' active' : ''}" data-category="">
-                <span class="icon">📚</span>
-                <span>All</span>
-                <span class="count">${allCount}</span>
-            </li>`;
+        const isAllActive = !state.selectedCategory;
+        const allExpanded = isAllActive && state.isExpanded;
+        let html = '<ul class="category-list">';
+        // "All" category
+        html += `<li class="category-item${isAllActive ? ' active' : ''}${allExpanded ? ' expanded' : ''}" data-category="">
+            <span class="icon">📚</span>
+            <span>All</span>
+            <span class="count">${allCount}</span>
+        </li>`;
+        if (allExpanded) {
+            html += renderTextsForCategory(null);
+        }
+        // Regular categories
         categories.forEach(cat => {
             const isActive = state.selectedCategory === cat.id;
+            const isExpanded = isActive && state.isExpanded;
             const count = counts[cat.id] || 0;
             const icon = cat.icon || '📁';
-            html += `<li class="category-item${isActive ? ' active' : ''}" data-category="${cat.id}">
+            html += `<li class="category-item${isActive ? ' active' : ''}${isExpanded ? ' expanded' : ''}" data-category="${cat.id}">
                 <span class="icon">${icon}</span>
                 <span>${cat.name}</span>
+                <span class="spacer"></span>
                 <span class="count">${count}</span>
+                <button class="delete-btn" data-id="${cat.id}" title="Delete category">🗑️</button>
             </li>`;
+            if (isExpanded) {
+                html += renderTextsForCategory(cat.id);
+            }
         });
+
         html += '</ul>';
         container.innerHTML = html;
-        // Bind click handlers
+
+        // Bind category click handlers
         container.querySelectorAll('.category-item').forEach(item => {
-            item.addEventListener('click', () => {
-                state.selectedCategory = item.dataset.category || null;
+            item.addEventListener('click', e => {
+                if (e.target.closest('.delete-btn')) return;
+                const clickedCat = item.dataset.category || null;
+                if (state.selectedCategory === clickedCat) {
+                    state.isExpanded = !state.isExpanded;
+                } else {
+                    state.selectedCategory = clickedCat;
+                    state.isExpanded = true;
+                }
                 renderCategories();
-                renderTextList();
             });
         });
+
+        // Bind category delete button handlers
+        container.querySelectorAll('.category-item .delete-btn').forEach(btn => {
+            btn.addEventListener('click', e => {
+                e.stopPropagation();
+                deleteCategory(btn.dataset.id);
+            });
+        });
+
+        // Bind text item handlers
+        bindTextItemHandlers(container);
     }
 
     /**
-     * Render text list filtered by selected category
+     * Render text items for a specific category
+     * @param {string|null} categoryId - Category ID or null for all texts
+     * @returns {string} HTML for text items
      */
-    function renderTextList() {
-        const container = getEl('text-list');
-        if (!container || !state.library) return;
-        let texts = state.library.texts || [];
-        if (state.selectedCategory) {
-            texts = texts.filter(t => t.categoryId === state.selectedCategory);
-        }
+    function renderTextsForCategory(categoryId) {
+        const texts = state.library.texts.filter(t =>
+            categoryId === null ? true : t.categoryId === categoryId,
+        );
+
         if (texts.length === 0) {
-            container.innerHTML = `<div class="library-empty">
+            return `<div class="library-empty">
                 <p>No texts in this category</p>
-                <button id="empty-add-text">+ Add</button>
+                <button class="empty-add-text" data-category="${categoryId || ''}">+ Add</button>
             </div>`;
-            getEl('empty-add-text')?.addEventListener('click', () => openEditor(null));
-            return;
         }
-        let html = '';
+
+        let html = '<div>';
         texts.forEach(text => {
             const fav = text.isFavorite ? '<span class="favorite">★</span>' : '';
-            const cat = state.library.categories.find(c => c.id === text.categoryId);
-            const catName = cat?.name || 'Uncategorized';
             const lang = normalizeLanguage(text.language);
             const langLabel = lang === 'text' ? 'Text' : lang;
             html += `<div class="text-item" data-id="${text.id}">
                 <div class="text-item-title">${fav}${text.title}</div>
                 <div class="text-item-meta">
                     <span>${langIcon(lang)} ${langLabel}</span>
-                    <span>${catName}</span>
                 </div>
                 <div class="text-item-actions">
                     <button class="icon-btn edit-btn" data-id="${text.id}" title="Edit">✏️</button>
@@ -128,26 +156,52 @@
                 </div>
             </div>`;
         });
-        container.innerHTML = html;
-        // Bind handlers
+        html += '</div>';
+        return html;
+    }
+
+    /**
+     * Bind event handlers for text items
+     * @param {HTMLElement} container - Container element
+     */
+    function bindTextItemHandlers(container) {
+        // Empty state add buttons
+        container.querySelectorAll('.empty-add-text').forEach(btn => {
+            btn.addEventListener('click', () => openEditor(null));
+        });
+
+        // Text item click
         container.querySelectorAll('.text-item').forEach(item => {
             item.addEventListener('click', e => {
                 if (e.target.closest('button')) return;
                 selectText(item.dataset.id);
             });
         });
-        container.querySelectorAll('.edit-btn').forEach(btn => {
+
+        // Edit buttons
+        container.querySelectorAll('.text-item .edit-btn').forEach(btn => {
             btn.addEventListener('click', e => {
                 e.stopPropagation();
                 openEditor(btn.dataset.id);
             });
         });
-        container.querySelectorAll('.delete-btn').forEach(btn => {
+
+        // Delete buttons
+        container.querySelectorAll('.text-item .delete-btn').forEach(btn => {
             btn.addEventListener('click', e => {
                 e.stopPropagation();
                 deleteText(btn.dataset.id);
             });
         });
+    }
+
+    /**
+     * Render text list - now just calls renderCategories
+     * @deprecated This function is kept for compatibility but delegates to renderCategories
+     */
+    function renderTextList() {
+        // Text list is now rendered inline with categories
+        // This function is kept for API compatibility
     }
 
     /**
@@ -184,13 +238,48 @@
     }
 
     /**
-     * Save text (create or update)
-     * @param {Object} textData
-     * @returns {Promise<boolean>}
+     * Save text (create or update) with automatic category creation
+     *
+     * Category creation logic:
+     * - If textData.categoryName is provided and categoryId is empty:
+     *   1. Creates new category with UUID, provided name, and default folder icon
+     *   2. Calls internal layer SaveCategory() to persist
+     *   3. Updates textData.categoryId with new category ID
+     * - If SaveCategory() fails (duplicate name, validation error):
+     *   - Shows error modal to user
+     *   - Returns false without saving text
+     *
+     * Text save logic:
+     * - If textData.id exists → UpdateText() (edit mode)
+     * - If textData.id is null → SaveText() with new UUID (create mode)
+     * - On success: refreshes library and returns true
+     * - On failure: shows error modal and returns false
+     *
+     * @param {Object} textData - Text payload
+     * @param {string|null} textData.id - Text ID (null for new texts)
+     * @param {string} textData.title - Text title (required)
+     * @param {string} textData.content - Text content (required)
+     * @param {string} textData.categoryId - Category ID (empty for uncategorized)
+     * @param {string} [textData.categoryName] - New category name to create (optional)
+     * @param {string} textData.language - Language key (validated/sanitized)
+     * @param {boolean} textData.isFavorite - Favorite flag
+     * @param {string|null} textData.createdAt - Creation timestamp (ISO string)
+     * @returns {Promise<boolean>} true on success, false on failure
      */
     async function saveText(textData) {
         if (!window.go?.app?.App) return false;
         try {
+            // Handle new category creation if categoryName provided without existing categoryId
+            if (textData.categoryName && !textData.categoryId) {
+                const newCat = {
+                    id: crypto.randomUUID(),
+                    name: textData.categoryName,
+                    icon: '📁',
+                };
+                await window.go.app.App.SaveCategory(newCat);
+                textData.categoryId = newCat.id;
+            }
+            delete textData.categoryName; // clean up before sending to internal layer
             if (textData.id) {
                 await window.go.app.App.UpdateText(textData);
             } else {
@@ -202,7 +291,20 @@
             return true;
         } catch (err) {
             console.error('Failed to save text:', err);
+            showErrorAlert(err.message || 'Failed to save text. Please try again.');
             return false;
+        }
+    }
+
+    /**
+     * Show error alert to user
+     * @param {string} message - Error message
+     */
+    function showErrorAlert(message) {
+        if (window.ModalManager?.show) {
+            window.ModalManager.show('error', { message });
+        } else {
+            console.error('Error:', message);
         }
     }
 
@@ -231,7 +333,44 @@
     }
 
     /**
-     * Refresh library from backend
+     * Delete category with confirmation
+     * @param {string} categoryId
+     */
+    async function deleteCategory(categoryId) {
+        const category = state.library?.categories.find(c => c.id === categoryId);
+        if (!category) return;
+
+        // Check if category has texts
+        const textsInCategory = state.library?.texts.filter(t => t.categoryId === categoryId) || [];
+        const warningMsg =
+            textsInCategory.length > 0
+                ? `Category "${category.name}" contains ${textsInCategory.length} text(s).\nTexts will become uncategorized.\n\nDelete category?`
+                : `Delete category "${category.name}"?`;
+
+        const confirmed = await window.ModalManager.confirm({
+            title: 'Delete Category',
+            message: warningMsg,
+            confirmText: 'Delete',
+            cancelText: 'Cancel',
+        });
+        if (!confirmed) return;
+
+        try {
+            await window.go.app.App.DeleteCategory(categoryId);
+            // Reset selection if deleted category was selected
+            if (state.selectedCategory === categoryId) {
+                state.selectedCategory = null;
+                state.isExpanded = false;
+            }
+            await refresh();
+        } catch (err) {
+            console.error('Failed to delete category:', err);
+            showErrorAlert(err.message || 'Failed to delete category. Please try again.');
+        }
+    }
+
+    /**
+     * Refresh library from internal layer
      */
     async function refresh() {
         await loadLibrary();
@@ -311,5 +450,6 @@
         openEditor,
         saveText,
         deleteText,
+        deleteCategory,
     };
 })();
