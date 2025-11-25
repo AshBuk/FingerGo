@@ -104,7 +104,7 @@
         if (texts.length === 0) {
             container.innerHTML = `<div class="library-empty">
                 <p>No texts in this category</p>
-                <button id="empty-add-text">+ Add Text</button>
+                <button id="empty-add-text">+ Add</button>
             </div>`;
             getEl('empty-add-text')?.addEventListener('click', () => openEditor(null));
             return;
