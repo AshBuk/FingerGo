@@ -230,6 +230,9 @@ body.zen-mode #library-sidebar {
     color: var(--text-default);
     font-size: 14px;
 }
+.editor-field select {
+    appearance: none;
+}
 .editor-field input:focus,
 .editor-field select:focus,
 .editor-field textarea:focus {
