@@ -61,6 +61,7 @@ type SessionPayload struct {
 
 // ToTypingSession converts the payload to a normalized TypingSession.
 // Any missing temporal information falls back to the provided fallback time.
+// Metrics are clamped to valid ranges (WPM >= 0, Accuracy 0-100, etc.).
 func (p *SessionPayload) ToTypingSession(fallback time.Time) TypingSession {
 	now := fallback.UTC()
 	start := fromMillis(p.StartTime, now)
@@ -68,7 +69,6 @@ func (p *SessionPayload) ToTypingSession(fallback time.Time) TypingSession {
 	if !start.Before(end) {
 		end = start
 	}
-
 	duration := end.Sub(start)
 	if p.Duration > 0 {
 		dur := time.Duration(p.Duration * float64(time.Second))
@@ -77,27 +77,26 @@ func (p *SessionPayload) ToTypingSession(fallback time.Time) TypingSession {
 			end = start.Add(duration)
 		}
 	}
-
-	rawText := ""
-	rawTitle := ""
-	rawCategory := ""
-	rawTextID := ""
+	rawText, rawTitle, rawCategory, rawTextID := "", "", "", ""
 	if p.SessionTextMeta != nil {
 		rawText = p.Text
 		rawTitle = p.TextTitle
 		rawCategory = p.CategoryID
 		rawTextID = p.TextID
 	}
-
 	title := strings.TrimSpace(rawTitle)
 	if title == "" {
 		title = deriveTitle(rawText)
 	}
 	preview := derivePreview(rawText)
 	mistakes := cloneMistakes(p.Mistakes)
-
 	charCount := utf8.RuneCountInString(rawText)
-
+	// Clamp metrics to valid ranges (defense in depth)
+	wpm := max(0.0, p.WPM)
+	cpm := max(0.0, p.CPM)
+	accuracy := clamp(p.Accuracy, 0, 100)
+	totalKeystrokes := max(0, p.TotalKeystrokes)
+	totalErrors := clamp(p.TotalErrors, 0, totalKeystrokes)
 	return TypingSession{
 		TextID:          strings.TrimSpace(rawTextID),
 		TextTitle:       title,
@@ -106,11 +105,11 @@ func (p *SessionPayload) ToTypingSession(fallback time.Time) TypingSession {
 		StartedAt:       start,
 		CompletedAt:     end,
 		DurationSeconds: int(math.Round(duration.Seconds())),
-		WPM:             round2(p.WPM),
-		CPM:             round2(p.CPM),
-		Accuracy:        round2(p.Accuracy),
-		TotalKeystrokes: p.TotalKeystrokes,
-		TotalErrors:     p.TotalErrors,
+		WPM:             round2(wpm),
+		CPM:             round2(cpm),
+		Accuracy:        round2(accuracy),
+		TotalKeystrokes: totalKeystrokes,
+		TotalErrors:     totalErrors,
 		CharacterCount:  charCount,
 		Mistakes:        mistakes,
 	}
@@ -178,4 +177,8 @@ func round2(value float64) float64 {
 		return 0
 	}
 	return math.Round(value*100) / 100
+}
+
+func clamp[T int | float64](value, minVal, maxVal T) T {
+	return max(minVal, min(maxVal, value))
 }
