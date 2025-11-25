@@ -76,10 +76,14 @@
                 window.LibraryManager?.toggle();
                 return;
             }
-            // Ctrl+Alt+N - New text
+            // Ctrl+Alt+N - Toggle text editor (new text or close if modal open)
             if (e.key === 'n' && (e.ctrlKey || e.metaKey) && e.altKey) {
                 e.preventDefault();
-                window.LibraryManager?.openEditor(null);
+                if (isModalVisible()) {
+                    window.ModalManager?.hide();
+                } else {
+                    window.LibraryManager?.openEditor(null);
+                }
             }
         });
     }
