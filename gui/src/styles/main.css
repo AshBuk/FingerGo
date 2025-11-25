@@ -27,13 +27,14 @@ body {
     gap: 0;
 }
 
-/* Action buttons (theme + reset) */
+/* Action buttons (left panel - vertical) */
 #top-action-bar {
     position: fixed;
-    top: 10px;
-    left: 14px;
+    top: 6px;
+    left: 6px;
     display: flex;
-    gap: 0.5rem;
+    flex-direction: column;
+    gap: 0.4rem;
     z-index: 1100;
 }
 
@@ -41,12 +42,12 @@ body {
     background: var(--key-bg);
     color: var(--accent);
     border: 1px solid var(--key-border);
-    border-radius: 8px;
-    padding: 6px 10px;
-    font-size: 1rem;
+    border-radius: 6px;
+    padding: 7px 9px;
+    font-size: 1.1rem;
     line-height: 1;
     cursor: pointer;
-    box-shadow: 0 4px 12px var(--shadow-strong);
+    box-shadow: 0 2px 8px var(--shadow-strong);
     transition:
         background 0.15s ease,
         border-color 0.15s ease,

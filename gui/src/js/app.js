@@ -109,6 +109,7 @@
     function boot() {
         initialize().then(() => {
             window.ShortcutsManager?.init();
+            window.LibraryManager?.init();
             window.SessionManager?.setupTypingStart();
         });
     }
@@ -134,5 +135,7 @@
         toggleZenMode: () => window.SettingsManager?.toggleZenMode(),
         applyZenMode: (e, p) => window.SettingsManager?.applyZenMode(e, p),
         getTextMeta: () => window.SessionManager?.getTextMeta(),
+        toggleLibrary: () => window.LibraryManager?.toggle(),
+        openTextEditor: id => window.LibraryManager?.openEditor(id),
     };
 })();
