@@ -108,6 +108,7 @@
             window.TypingEngine?.reset();
             window.UIManager?.renderText(currentText);
             setInitialTarget(currentText);
+            setupTypingStart();
         } catch (err) {
             console.error('Failed to load text:', err);
         }
