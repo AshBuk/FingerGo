@@ -31,13 +31,22 @@
     }
 
     /**
+     * Normalize language value
+     * @param {string} lang
+     * @returns {string}
+     */
+    function normalizeLanguage(lang) {
+        return lang || 'text';
+    }
+
+    /**
      * Get language icon
      * @param {string} lang
      * @returns {string}
      */
     function langIcon(lang) {
-        const icons = { go: '🔵', js: '🟡', py: '🐍', plain: '📄' };
-        return icons[lang] || '📄';
+        const icons = { go: '🔵', js: '🟡', py: '🐍', text: '📄' };
+        return icons[normalizeLanguage(lang)] || '📄';
     }
 
     /**
@@ -105,15 +114,17 @@
             const fav = text.isFavorite ? '<span class="favorite">★</span>' : '';
             const cat = state.library.categories.find(c => c.id === text.categoryId);
             const catName = cat?.name || 'Uncategorized';
+            const lang = normalizeLanguage(text.language);
+            const langLabel = lang === 'text' ? 'Text' : lang;
             html += `<div class="text-item" data-id="${text.id}">
                 <div class="text-item-title">${fav}${text.title}</div>
                 <div class="text-item-meta">
-                    <span>${langIcon(text.language)} ${text.language || 'plain'}</span>
+                    <span>${langIcon(lang)} ${langLabel}</span>
                     <span>${catName}</span>
                 </div>
                 <div class="text-item-actions">
-                    <button class="edit-btn" data-id="${text.id}">Edit</button>
-                    <button class="delete-btn danger" data-id="${text.id}">Delete</button>
+                    <button class="icon-btn edit-btn" data-id="${text.id}" title="Edit">✏️</button>
+                    <button class="icon-btn delete-btn" data-id="${text.id}" title="Delete">🗑️</button>
                 </div>
             </div>`;
         });
@@ -202,9 +213,15 @@
     async function deleteText(textId) {
         const text = state.library?.texts.find(t => t.id === textId);
         if (!text) return;
-        // TODO: Replace with custom confirmation modal
-        // eslint-disable-next-line no-alert
-        if (!confirm(`Delete "${text.title}"?\nThis action cannot be undone.`)) return;
+
+        const confirmed = await window.ModalManager.confirm({
+            title: 'Delete Text',
+            message: `Delete "${text.title}"?\nThis action cannot be undone.`,
+            confirmText: 'Delete',
+            cancelText: 'Cancel',
+        });
+        if (!confirmed) return;
+
         try {
             await window.go.app.App.DeleteText(textId);
             await refresh();

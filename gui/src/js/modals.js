@@ -133,7 +133,7 @@
         const isEdit = mode === 'edit' && text;
         const title = isEdit ? text.title : '';
         const content = isEdit ? text.content : '';
-        const language = isEdit ? text.language : 'plain';
+        const language = isEdit ? text.language || 'text' : 'text';
         const categoryId = isEdit ? text.categoryId : selectedCategory || '';
         const categoryOptions = (categories || [])
             .map(
@@ -158,7 +158,7 @@
                     <div class="editor-field">
                         <label for="text-language">Language</label>
                         <select id="text-language">
-                            <option value="plain"${language === 'plain' ? ' selected' : ''}>Plain Text</option>
+                            <option value="text"${language === 'text' ? ' selected' : ''}>Text</option>
                             <option value="go"${language === 'go' ? ' selected' : ''}>Go</option>
                             <option value="js"${language === 'js' ? ' selected' : ''}>JavaScript</option>
                             <option value="py"${language === 'py' ? ' selected' : ''}>Python</option>
@@ -170,7 +170,6 @@
                     <textarea id="text-content" rows="12" placeholder="Enter the text to practice typing..." required>${content}</textarea>
                 </div>
                 <div class="editor-actions">
-                    <button type="button" id="editor-delete">Delete</button>
                     <button type="button" id="editor-cancel">Cancel</button>
                     <button type="button" id="editor-save">Save</button>
                 </div>
@@ -194,7 +193,7 @@
                 const title = document.getElementById('text-title')?.value.trim();
                 const content = document.getElementById('text-content')?.value;
                 const categoryId = document.getElementById('text-category')?.value || '';
-                const language = document.getElementById('text-language')?.value || 'plain';
+                const language = document.getElementById('text-language')?.value || 'text';
                 if (!title) {
                     document.getElementById('text-title')?.focus();
                     return;
@@ -217,14 +216,6 @@
         }
         // Cancel button
         document.getElementById('editor-cancel')?.addEventListener('click', hideModal);
-        // Delete button
-        const deleteBtn = document.getElementById('editor-delete');
-        if (deleteBtn && isEdit && textId) {
-            deleteBtn.addEventListener('click', () => {
-                window.LibraryManager?.deleteText(textId);
-                hideModal();
-            });
-        }
     }
 
     /**
@@ -397,6 +388,51 @@
         return modalOverlay && !modalOverlay.classList.contains('modal-hidden');
     }
 
+    /**
+     * Show confirmation dialog
+     * @param {Object} options - Confirmation options
+     * @param {string} options.title - Dialog title
+     * @param {string} options.message - Confirmation message
+     * @param {string} options.confirmText - Confirm button text
+     * @param {string} options.cancelText - Cancel button text
+     * @returns {Promise<boolean>} true if confirmed, false if cancelled
+     */
+    function showConfirm(options) {
+        const {
+            title = 'Confirm',
+            message = 'Are you sure?',
+            confirmText = 'Confirm',
+            cancelText = 'Cancel',
+        } = options;
+
+        return new Promise(resolve => {
+            if (modalTitle) modalTitle.textContent = title;
+            modalContent.innerHTML = `
+                <div class="confirm-dialog">
+                    <p class="confirm-message">${message}</p>
+                    <div class="confirm-actions">
+                        <button type="button" class="btn-secondary" data-action="cancel">${cancelText}</button>
+                        <button type="button" class="btn-danger" data-action="confirm">${confirmText}</button>
+                    </div>
+                </div>
+            `;
+
+            const handleClick = e => {
+                const action = e.target.dataset?.action;
+                if (action === 'confirm') {
+                    resolve(true);
+                    hideModal();
+                } else if (action === 'cancel') {
+                    resolve(false);
+                    hideModal();
+                }
+            };
+
+            modalContent.addEventListener('click', handleClick, { once: true });
+            modalOverlay.classList.remove('modal-hidden');
+        });
+    }
+
     // Modal close handlers
     if (modalClose) {
         modalClose.addEventListener('click', hideModal);
@@ -414,5 +450,6 @@
         show: showModal,
         hide: hideModal,
         isVisible,
+        confirm: showConfirm,
     };
 })();

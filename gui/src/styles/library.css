@@ -175,24 +175,21 @@ body.zen-mode #library-sidebar {
     gap: 4px;
     margin-top: 8px;
 }
-.text-item-actions button {
-    padding: 4px 8px;
-    font-size: 12px;
-    background: var(--key-bg);
-    border: 1px solid var(--line-weak);
+.text-item-actions .icon-btn {
+    padding: 4px 6px;
+    font-size: 16px;
+    background: transparent;
+    border: none;
     border-radius: 4px;
     cursor: pointer;
-    color: var(--text-muted);
+    opacity: 0.6;
+    transition:
+        opacity 0.2s ease,
+        background 0.2s ease;
 }
-.text-item-actions button:hover {
-    background: var(--key-bg-hover);
-    color: var(--text-default);
-}
-.text-item-actions .danger {
-    color: var(--error-text, #ef4444);
-}
-.text-item-actions .danger:hover {
-    background: rgba(239, 68, 68, 0.15);
+.text-item-actions .icon-btn:hover {
+    opacity: 1;
+    background: rgba(var(--accent-rgb), 0.1);
 }
 
 /* Empty state */
