@@ -32,6 +32,7 @@ fingergo/
 │   ├── settings.go            # Settings model + defaults
 │   ├── keyboard.go            # KeyboardLayout model
 │   ├── stats.go               # Statistics models
+│   ├── repository.go          # Repository interfaces (domain contracts)
 │   └── storage/               # Persistence layer
 │       ├── storage.go         # Storage manager + embedded defaults
 │       ├── texts.go           # Text repository
@@ -144,7 +145,8 @@ Due to the critical need for immediate UI responsiveness in a typing application
 *   `gui/src/js/stats.js`: Performs real-time calculation and display of typing statistics within a session.
 
 **Internal Layer**
-*   **Text Library Management:** Loading text content and metadata from `texts/` directory via `TextRepository`.
-*   **Session Data Storage:** Persisting completed typing sessions to `sessions.json` via `SessionRepository`.
-*   **Settings Management:** User preferences (theme, zenMode, showKeyboard) persisted in `settings.json` via `SettingsRepository`.
+*   **Domain Contracts:** Defines repository interfaces (`TextRepository`, `SessionRepository`, etc.) that the application layer depends on.
+*   **Text Library Management:** The `storage` package provides a `TextRepository` implementation for loading text content and metadata from the `texts/` directory.
+*   **Session Data Storage:** The `storage` package provides a `SessionRepository` implementation for persisting completed typing sessions to `sessions.json`.
+*   **Settings Management:** The `storage` package provides a `SettingsRepository` implementation for persisting user preferences (theme, zenMode, showKeyboard) in `settings.json`.
 *   **Keyboard Layout Management:** Managing, loading, and serving keyboard layout definitions from Go backend for dynamic and extendable layout support.
