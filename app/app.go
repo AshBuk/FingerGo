@@ -15,10 +15,10 @@ import (
 )
 
 type App struct {
-	storage      *storage.Manager            // Manages the application's data storage on disk
-	textsRepo    *storage.TextRepository     // Handles operations related to typing texts
-	sessionsRepo *storage.SessionRepository  // Manages the persistence of typing session data
-	settingsRepo *storage.SettingsRepository // Handles user preferences persistence
+	storage      *storage.Manager          // Manages the application's data storage on disk
+	textsRepo    domain.TextRepository     // Handles operations related to typing texts
+	sessionsRepo domain.SessionRepository  // Manages the persistence of typing session data
+	settingsRepo domain.SettingsRepository // Handles user preferences persistence
 }
 
 func New() *App { return &App{} }
@@ -180,7 +180,7 @@ func (a *App) ensureTextRepository() error {
 	return nil
 }
 
-func (a *App) getTextRepository() (*storage.TextRepository, error) {
+func (a *App) getTextRepository() (domain.TextRepository, error) {
 	if err := a.ensureTextRepository(); err != nil {
 		return nil, err
 	}
@@ -205,7 +205,7 @@ func (a *App) ensureSessionRepository() error {
 	return nil
 }
 
-func (a *App) getSessionRepository() (*storage.SessionRepository, error) {
+func (a *App) getSessionRepository() (domain.SessionRepository, error) {
 	if err := a.ensureSessionRepository(); err != nil {
 		return nil, err
 	}
@@ -230,7 +230,7 @@ func (a *App) ensureSettingsRepository() error {
 	return nil
 }
 
-func (a *App) getSettingsRepository() (*storage.SettingsRepository, error) {
+func (a *App) getSettingsRepository() (domain.SettingsRepository, error) {
 	if err := a.ensureSettingsRepository(); err != nil {
 		return nil, err
 	}
