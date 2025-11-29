@@ -5,6 +5,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "test": "node --test gui/src/js/__tests__/*.test.js",
     "lint": "eslint gui/src/**/*.js",
     "lint:fix": "eslint gui/src/**/*.js --fix",
     "format": "prettier --write 'gui/src/**/*.{js,html,css}'",
