@@ -11,6 +11,8 @@ import (
 	"unicode/utf8"
 )
 
+const defaultSessionTitle = "Typing Session"
+
 // TypingSession captures a completed typing attempt for historical analytics.
 type TypingSession struct {
 	StartedAt   time.Time      `json:"startedAt"`   // session start time (UTC)
@@ -126,11 +128,11 @@ func deriveTitle(text string) string {
 	const limit = 64
 	lines := strings.Split(strings.TrimSpace(text), "\n")
 	if len(lines) == 0 {
-		return "Typing Session"
+		return defaultSessionTitle
 	}
 	line := strings.TrimSpace(lines[0])
 	if line == "" {
-		return "Typing Session"
+		return defaultSessionTitle
 	}
 	return truncateRunes(line, limit)
 }
