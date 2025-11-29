@@ -11,7 +11,7 @@
 ▸  Hierarchical **text/code library** (plain text and code samples)  
 ▸  Live stats: **WPM, CPM, accuracy, per‑key mistakes, session history**  
 ▸ **Dark/Light theme, Shortcuts, Zen Mode, keyboard Toggle**  
-▸ **Minimalist Design** – clean interface featuring the Go gopher mascot.
+▸ **Clean Interface Design**
 
 ## Tech Stack
 
