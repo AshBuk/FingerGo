@@ -37,7 +37,10 @@
         if (!btn) return;
         btn.setAttribute('aria-pressed', enabled ? 'true' : 'false');
         btn.textContent = enabled ? '🧘‍♂️' : '🧘';
-        btn.setAttribute('title', enabled ? 'Exit Zen mode (Ctrl+Alt+Z)' : 'Enter Zen mode (Ctrl+Alt+Z)');
+        btn.setAttribute(
+            'title',
+            enabled ? 'Exit Zen mode (Ctrl+Alt+Z)' : 'Enter Zen mode (Ctrl+Alt+Z)',
+        );
         btn.setAttribute('aria-label', enabled ? 'Exit Zen mode' : 'Enter Zen mode');
     }
 
