@@ -140,4 +140,42 @@
         toggleLibrary: () => window.LibraryManager?.toggle(),
         openTextEditor: id => window.LibraryManager?.openEditor(id),
     };
+
+    // Create organized namespace to reduce global scope pollution
+    // All modules are now accessible under window.FingerGo
+    window.FingerGo = {
+        // Core modules
+        Events: window.EventBus,
+        Keyboard: window.KeyboardUI,
+        Typing: window.TypingEngine,
+        UI: window.UIManager,
+        Stats: window.StatsManager,
+        Settings: window.SettingsManager,
+        Session: window.SessionManager,
+        Library: window.LibraryManager,
+        Shortcuts: window.ShortcutsManager,
+        Modal: window.ModalManager,
+        App: window.App,
+
+        // Utilities
+        Utils: {
+            Key: window.KeyUtils,
+            App: window.AppUtils,
+            Color: window.ColorUtils,
+        },
+
+        // Data
+        Layouts: window.KeyboardLayouts,
+        Languages: window.SupportedLanguages,
+        Colors: window.ColorSchemes,
+        Constants: window.AppConstants,
+    };
+
+    // Log successful initialization
+    console.log(
+        `%cFingerGo %cv${window.AppConstants?.VERSION || '1.0.0'}`,
+        'font-weight: bold; font-size: 14px; color: #4A90E2',
+        'font-weight: normal; color: #888',
+    );
+    console.log('Modules loaded:', Object.keys(window.FingerGo).join(', '));
 })();
