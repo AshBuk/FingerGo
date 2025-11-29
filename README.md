@@ -1,16 +1,17 @@
-<img src="fingergo.png" alt="FingerGo Logo" width="400" align="right">
+# <h1 align="center">FingerGo</h1>
 
-### **FingerGo**
+<img src="fingergo.png" alt="FingerGo Linux touch-typing trainer modern app" width="400" align="right">
 
-Touch-typing trainer desktop app.
+**FingerGo** is a minimalist **touch-typing trainer for Linux**, designed to improve typing speed and accuracy, with a user-friendly Unix-style, intuitive interface.  
+It features real-time keyboard visualization, a hierarchical text and code library, and live statistics tracking for WPM, CPM, and accuracy.  
+Built with Go + Wails. Distributed for Linux.
 
-Distributed for Linux (Flatpak).
-
-### Includes
+### Features
 ▸  Real-time visual keyboard with finger mapping  
-▸  Hierarchical text library (plain text and code samples)  
-▸  Detailed stats: WPM, accuracy, per-key mistakes, session history  
-▸  Minimalist UI with the Go gopher mascot  
+▸  Hierarchical **text/code library** (plain text and code samples)  
+▸  Live stats: **WPM, CPM, accuracy, per‑key mistakes, session history**  
+▸ **Dark/Light theme, Shortcuts, Zen Mode, keyboard Toggle**  
+▸ **Minimalist Design** – clean interface featuring the Go gopher mascot.
 
 ## Tech Stack
 
@@ -22,8 +23,9 @@ Distributed for Linux (Flatpak).
 
 ## For Developers
 
-- [Technical specifications](specs/tech-design/)
-- [CONTRIBUTING.md](CONTRIBUTING.md)
+- [Technical design](docs/tech-design/)
+- [Architecture overview](docs/tech-design/architecture.md)
+- [Contributing](docs/CONTRIBUTING.md)
 
 ## Acknowledgments
 
