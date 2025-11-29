@@ -2,8 +2,8 @@
 
 <img src="fingergo.png" alt="FingerGo Linux touch-typing trainer modern app" width="400" align="right">
 
-### FingerGo is a minimalist **touch-typing trainer for Linux**, designed to improve typing speed and accuracy, with a user-friendly Unix-style and intuitive interface.  
-### It includes real-time keyboard visualization, a hierarchical text and code library, and live statistics tracking for WPM, CPM, and accuracy.  
+#### FingerGo is a minimalist **touch-typing trainer for Linux**, designed to improve typing speed and accuracy, with a user-friendly Unix-style and intuitive interface.  
+#### It includes real-time keyboard visualization, a hierarchical text and code library, and live statistics tracking for WPM, CPM, and accuracy.  
 #### Built with Go ↔ Wails ↔ Vanilla JavaScript (ES6+). Distributed for Linux.
 
 ### Features
