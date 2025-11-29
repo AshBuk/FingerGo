@@ -67,6 +67,7 @@
         // Clear existing content
         textDisplay.innerHTML = '';
 
+        const fragment = document.createDocumentFragment();
         let lineStartIndex = 0;
 
         // Create character elements
@@ -87,13 +88,15 @@
 
             span.dataset.index = i;
             characterElements.push(span);
-            textDisplay.appendChild(span);
+            fragment.appendChild(span);
 
             // Track line boundaries
             if (char === '\n') {
                 lineStartIndex = i + 1;
             }
         }
+        textDisplay.appendChild(fragment);
+
         // Sync textarea with text content
         if (textInput) {
             textInput.value = text;
