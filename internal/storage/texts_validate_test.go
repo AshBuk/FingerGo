@@ -28,6 +28,7 @@ func TestValidateText(t *testing.T) {
 
 	t.Run("rejects empty title", func(t *testing.T) {
 		text := &domain.Text{
+			ID:      "test-id",
 			Title:   "",
 			Content: "content",
 		}
@@ -40,6 +41,7 @@ func TestValidateText(t *testing.T) {
 
 	t.Run("rejects too long title", func(t *testing.T) {
 		text := &domain.Text{
+			ID:      "test-id",
 			Title:   strings.Repeat("a", maxTitleLength+1),
 			Content: "content",
 		}
@@ -52,6 +54,7 @@ func TestValidateText(t *testing.T) {
 
 	t.Run("rejects empty content", func(t *testing.T) {
 		text := &domain.Text{
+			ID:      "test-id",
 			Title:   "Title",
 			Content: "",
 		}
@@ -64,6 +67,7 @@ func TestValidateText(t *testing.T) {
 
 	t.Run("rejects too large content", func(t *testing.T) {
 		text := &domain.Text{
+			ID:      "test-id",
 			Title:   "Title",
 			Content: strings.Repeat("x", maxContentLength+1),
 		}
@@ -76,6 +80,7 @@ func TestValidateText(t *testing.T) {
 
 	t.Run("sets default language when empty", func(t *testing.T) {
 		text := &domain.Text{
+			ID:       "test-id",
 			Title:    "Title",
 			Content:  "content",
 			Language: "",
@@ -91,6 +96,7 @@ func TestValidateText(t *testing.T) {
 
 	t.Run("rejects invalid language", func(t *testing.T) {
 		text := &domain.Text{
+			ID:       "test-id",
 			Title:    "Title",
 			Content:  "content",
 			Language: "invalid-lang",
