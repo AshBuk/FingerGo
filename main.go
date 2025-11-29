@@ -5,6 +5,7 @@
 package main
 
 import (
+	"context"
 	"embed"
 	"log"
 
@@ -28,12 +29,22 @@ func main() {
 		MinWidth:                 800,
 		MinHeight:                600,
 		AssetServer:              &assetserver.Options{Assets: assets},
-		OnStartup:                appInstance.Startup,
+		OnStartup:                wrapStartup(appInstance),
 		OnShutdown:               appInstance.Shutdown,
 		Bind:                     []interface{}{appInstance},
 		Frameless:                false,
 		EnableDefaultContextMenu: true,
 	}); err != nil {
-		log.Fatal(err)
+		log.Fatalf("failed to start application: %v", err)
+	}
+}
+
+// wrapStartup wraps App.Startup to handle errors properly.
+// Wails expects OnStartup callback to not return error, so we handle it here.
+func wrapStartup(appInstance *app.App) func(ctx context.Context) {
+	return func(ctx context.Context) {
+		if err := appInstance.Startup(ctx); err != nil {
+			log.Fatalf("application startup failed: %v", err)
+		}
 	}
 }
