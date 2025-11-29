@@ -15,7 +15,11 @@ import (
 	domain "github.com/AshBuk/FingerGo/internal"
 )
 
-const configFile = "settings.json"
+const (
+	configFile = "settings.json"
+	themeDark  = "dark"
+	themeLight = "light"
+)
 
 // SettingsRepository persists user settings in settings.json.
 type SettingsRepository struct {
@@ -71,7 +75,7 @@ func (r *SettingsRepository) Update(key string, value any) error {
 		if !ok {
 			return fmt.Errorf("settings: theme expects string, got %T", value)
 		}
-		if v != "dark" && v != "light" {
+		if v != themeDark && v != themeLight {
 			return fmt.Errorf("settings: invalid theme %q", v)
 		}
 		updated.Theme = v
