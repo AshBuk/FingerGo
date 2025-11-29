@@ -113,7 +113,7 @@ https://github.com/AshBuk/FingerGo
 
 /* Key Styles */
 .key {
-    --key-size: clamp(36px, 5vw, 60px);
+    --key-size: clamp(30px, 4vw, 48px);
     min-width: var(--key-size);
     height: var(--key-size);
     display: flex;
