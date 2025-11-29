@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"os"
 	"sync"
 
@@ -81,8 +82,9 @@ func (r *TextRepository) DefaultText() (domain.Text, error) {
 
 // Text returns a text (metadata + content) by identifier.
 func (r *TextRepository) Text(id string) (domain.Text, error) {
-	if id == "" {
-		return domain.Text{}, ErrTextNotFound
+	// Validate ID for security (prevent path traversal)
+	if err := validateTextID(id); err != nil {
+		return domain.Text{}, fmt.Errorf("%w: %s", ErrTextNotFound, id)
 	}
 	if err := r.ensureLoaded(); err != nil {
 		return domain.Text{}, err
@@ -146,7 +148,10 @@ func (r *TextRepository) SaveText(text *domain.Text) error {
 		delete(r.textIndex, entry.ID)
 		delete(r.sliceIndex, entry.ID)
 		delete(r.contentCache, entry.ID)
-		_ = r.deleteContent(entry.ID) //nolint:errcheck // best-effort rollback
+		// Best-effort rollback: attempt to delete orphaned content file
+		if delErr := r.deleteContent(entry.ID); delErr != nil {
+			log.Printf("WARNING: rollback failed to delete content for %q: %v", entry.ID, delErr)
+		}
 		return err
 	}
 	return nil
@@ -192,10 +197,15 @@ func (r *TextRepository) UpdateText(text *domain.Text) error {
 		} else {
 			delete(r.contentCache, entry.ID)
 		}
+		// Best-effort rollback: attempt to restore previous content file state
 		if hadFile {
-			_ = r.persistContent(entry.ID, prevContent) //nolint:errcheck // best-effort rollback
+			if restoreErr := r.persistContent(entry.ID, prevContent); restoreErr != nil {
+				log.Printf("WARNING: rollback failed to restore content for %q: %v", entry.ID, restoreErr)
+			}
 		} else {
-			_ = r.deleteContent(entry.ID) //nolint:errcheck // best-effort rollback
+			if delErr := r.deleteContent(entry.ID); delErr != nil {
+				log.Printf("WARNING: rollback failed to delete content for %q: %v", entry.ID, delErr)
+			}
 		}
 		return err
 	}
@@ -232,8 +242,9 @@ func (r *TextRepository) SaveCategory(cat *domain.Category) error {
 // DeleteCategory removes a category entry by ID.
 // Returns ErrCategoryNotFound if category doesn't exist.
 func (r *TextRepository) DeleteCategory(id string) error {
-	if id == "" {
-		return ErrEmptyCategoryID
+	// Validate ID for security (prevent path traversal)
+	if err := validateCategoryID(id); err != nil {
+		return err
 	}
 	if err := r.ensureLoaded(); err != nil {
 		return err
@@ -261,8 +272,9 @@ func (r *TextRepository) DeleteCategory(id string) error {
 
 // DeleteText removes a text entry by ID.
 func (r *TextRepository) DeleteText(id string) error {
-	if id == "" {
-		return ErrEmptyTextID
+	// Validate ID for security (prevent path traversal)
+	if err := validateTextID(id); err != nil {
+		return err
 	}
 	if err := r.ensureLoaded(); err != nil {
 		return err
@@ -297,8 +309,11 @@ func (r *TextRepository) DeleteText(id string) error {
 		if hadCache {
 			r.contentCache[id] = oldCache
 		}
+		// Best-effort rollback: attempt to restore content file
 		if hadFile {
-			_ = r.persistContent(id, prevContent) //nolint:errcheck // best-effort rollback
+			if restoreErr := r.persistContent(id, prevContent); restoreErr != nil {
+				log.Printf("WARNING: rollback failed to restore content for %q: %v", id, restoreErr)
+			}
 		}
 		return err
 	}
