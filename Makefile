@@ -1,13 +1,13 @@
 # FingerGo Makefile
 
 .PHONY: deps fmt lint test build run dev clean generate license
-.PHONY: go-deps go-fmt go-lint go-test js-deps js-fmt js-lint
+.PHONY: go-deps go-fmt go-lint go-test js-deps js-fmt js-lint js-test
 
 # === Combined Targets ===
 deps: go-deps js-deps     # Install all dependencies (Go + JS)
 fmt: go-fmt js-fmt        # Format all code (Go + JS)
 lint: go-lint js-lint     # Lint all code (Go + JS)
-test: go-test             # Run Go tests
+test: go-test js-test     # Run all tests (Go + JS)
 
 # === Go Targets ===
 go-deps:                  # Install Go dependencies
@@ -27,6 +27,8 @@ js-fmt:                   # Format JS code
 	npm run format
 js-lint:                  # Lint JS code
 	npm run lint
+js-test:                  # Run JS tests
+	npm test
 
 # === Wails Targets ===
 dev:                      # Start development mode

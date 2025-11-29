@@ -51,7 +51,7 @@ jobs:
         run: npm run format:check
 
       - name: Test
-        run: go test ./...
+        run: make test
 
       - name: License headers
         run: bash scripts/check-licenses.sh
