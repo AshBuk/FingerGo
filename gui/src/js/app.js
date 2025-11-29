@@ -86,13 +86,10 @@
             console.error('No text available. Check internal layer connection.');
             return;
         }
-        // Listen for modal close to resume/restart session
+        // Listen for modal close to setup typing start handler if session is not active
         window.EventBus.on('modal:closed', () => {
             const session = window.TypingEngine?.getSessionData();
-            if (session?.isActive && session?.isPaused) {
-                window.TypingEngine.resume();
-                return;
-            }
+            // If session is not active, setup handler for first keystroke
             if (!session?.isActive) {
                 window.SessionManager.setupTypingStart();
             }
@@ -115,7 +112,6 @@
             window.SessionManager?.setupTypingStart();
         });
     }
-
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', boot);
     } else {
