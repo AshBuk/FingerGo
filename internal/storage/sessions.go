@@ -15,7 +15,7 @@ import (
 
 	"github.com/google/uuid"
 
-	domain "github.com/AshBuk/FingerGo/internal"
+	domain "github.com/AshBuk/FingerGo/internal/domain"
 )
 
 const (

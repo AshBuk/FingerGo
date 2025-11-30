@@ -7,7 +7,7 @@ package storage
 import (
 	"testing"
 
-	domain "github.com/AshBuk/FingerGo/internal"
+	domain "github.com/AshBuk/FingerGo/internal/domain"
 )
 
 // setupSessionRepository creates a test repository with initialized storage.

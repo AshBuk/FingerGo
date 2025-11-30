@@ -10,7 +10,7 @@ import (
 	"log"
 	"reflect"
 
-	domain "github.com/AshBuk/FingerGo/internal"
+	domain "github.com/AshBuk/FingerGo/internal/domain"
 	"github.com/AshBuk/FingerGo/internal/storage"
 )
 
