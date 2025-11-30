@@ -45,6 +45,12 @@ var supportedLanguages = []LanguageInfo{
 	{Key: "text", Icon: "📄", Label: "Plain Text"},
 	{Key: "english", Icon: "🇬🇧", Label: "English"},
 	{Key: "russian", Icon: "🇷🇺", Label: "Russian"},
+	{Key: "french", Icon: "🇫🇷", Label: "French"},
+	{Key: "german", Icon: "🇩🇪", Label: "German"},
+	{Key: "spanish", Icon: "🇪🇸", Label: "Spanish"},
+	{Key: "italian", Icon: "🇮🇹", Label: "Italian"},
+	{Key: "chinese", Icon: "🇨🇳", Label: "Chinese"},
+	{Key: "hindi", Icon: "🇮🇳", Label: "Hindi"},
 	// Systems programming
 	{Key: "c", Icon: "🔧", Label: "C"},
 	{Key: "cpp", Icon: "⚙️", Label: "C++"},
