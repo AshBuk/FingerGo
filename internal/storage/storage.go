@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // https://github.com/AshBuk/FingerGo
 
-// Package storage manages the on-disk data layout for FingerGo.
+// Package storage manages the on-disk data layout (container for the FingerGo app data).
 //
 // Directory structure created by Init():
 //
