@@ -1,5 +1,5 @@
 # Wails
-build/
+build/bin/
 gui/dist/
 gui/src/wailsjs/
 wails_build_*
