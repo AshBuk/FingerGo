@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	domain "github.com/AshBuk/FingerGo/internal"
+	domain "github.com/AshBuk/FingerGo/internal/domain"
 )
 
 func TestValidateText(t *testing.T) {

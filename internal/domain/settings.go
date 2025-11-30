@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // https://github.com/AshBuk/FingerGo
 
-package internal
+package domain
 
 // Settings holds user preferences persisted in settings.json.
 type Settings struct {

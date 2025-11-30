@@ -9,7 +9,7 @@
 //   - Storage implementations satisfy these interfaces
 //   - Tests can provide mock implementations
 
-package internal
+package domain
 
 // TextRepository defines operations for managing typing texts.
 type TextRepository interface {

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // https://github.com/AshBuk/FingerGo
 
-package internal
+package domain
 
 import "time"
 
@@ -22,7 +22,7 @@ type Category struct {
 	ID       string `json:"id"`                 // unique identifier (UUID)
 	Name     string `json:"name"`               // display name in library
 	ParentID string `json:"parentId,omitempty"` // parent for nesting (empty if root)
-	Icon     string `json:"icon,omitempty"`     // icon: go, js, py, folder
+	Icon     string `json:"icon,omitempty"`     // emoji for visual representation
 }
 
 // TextLibrary aggregates available texts and their categories.

@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	domain "github.com/AshBuk/FingerGo/internal"
+	domain "github.com/AshBuk/FingerGo/internal/domain"
 )
 
 // setupTextRepository creates a test repository with initialized storage.

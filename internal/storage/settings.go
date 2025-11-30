@@ -12,7 +12,7 @@ import (
 	"os"
 	"sync"
 
-	domain "github.com/AshBuk/FingerGo/internal"
+	domain "github.com/AshBuk/FingerGo/internal/domain"
 )
 
 const (
