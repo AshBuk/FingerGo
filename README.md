@@ -25,6 +25,7 @@
 
 - [Technical design](docs/tech-design/)
 - [Architecture overview](docs/tech-design/architecture.md)
+- [Makefile](Makefile) — build, test, lint commands
 - [Contributing](docs/CONTRIBUTING.md)
 
 ## Acknowledgments
