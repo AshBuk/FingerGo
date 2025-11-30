@@ -10,14 +10,32 @@
     "email": "asherbuk@gmail.com"
   },
   "info": {
-    "companyName": "",
+    "companyName": "Asher Buk Open Source",
     "productName": "FingerGo",
-    "productVersion": "0.1.0",
+    "productVersion": "1.0.0",
     "copyright": "Copyright 2025 Asher Buk",
     "comments": "Touch typing trainer with visual keyboard feedback"
   },
   "wailsjsdir": "./gui/src/wailsjs",
   "assetdir": "./gui/src",
   "reloaddirs": "./app,./internal",
-  "debounceMS": 100
+  "debounceMS": 100,
+  "nsisType": "multiple",
+  "obfuscated": false,
+  "linux": {
+    "icon": "./fingergo.png"
+  },
+  "windows": {
+    "icon": "./build/appicon.ico",
+    "webview2": "download"
+  },
+  "mac": {
+    "icon": "./build/appicon.icns",
+    "bundle": {
+      "identifier": "com.ashbuk.fingergo",
+      "name": "FingerGo",
+      "version": "0.1.0",
+      "copyright": "Copyright 2025 Asher Buk"
+    }
+  }
 }

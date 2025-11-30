@@ -1,6 +1,6 @@
 # FingerGo Makefile
 
-.PHONY: deps fmt lint test build run dev clean generate license
+.PHONY: deps fmt lint test build run dev clean generate license icons test-build
 .PHONY: go-deps go-fmt go-lint go-test js-deps js-fmt js-lint js-test
 
 # === Combined Targets ===
@@ -45,5 +45,9 @@ clean:                    # Remove build artifacts
 	rm -rf build/bin dist gui/src/wailsjs node_modules || true
 license:                  # Check license headers
 	bash scripts/check-licenses.sh
+icons:                    # Generate platform icons from PNG
+	bash scripts/generate-icons.sh
+test-build:               # Run full test suite + build verification
+	bash scripts/test-build.sh
 
 
