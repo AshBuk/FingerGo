@@ -180,14 +180,6 @@ jobs:
         with:
           path: artifacts
 
-      - name: Debug - List all downloaded files
-        run: |
-          echo "=== Downloaded artifacts structure ==="
-          ls -lhR artifacts/
-          echo ""
-          echo "=== Files to be released ==="
-          find artifacts -type f
-
       - name: Get version
         id: version
         run: |
@@ -208,37 +200,41 @@ jobs:
           
           cat > RELEASE_NOTES.md << EOF
           # FingerGo v${VERSION}
-          
+
           ## Changes
           ${CHANGELOG}
-          
+
           ## Installation
-          
+
+          ### Windows
+          **Portable:**
+          - Download \`FingerGo-${VERSION}-x64-portable.zip\`
+          - Extract and run \`FingerGo.exe\`
+
+          ### macOS
+          **DMG:**
+          - Download \`FingerGo-${VERSION}-universal.dmg\`
+          - Open DMG and drag FingerGo to Applications
+          - First launch: Right-click → Open (bypasses Gatekeeper if unsigned)
+
           ### Linux
           **AppImage (recommended):**
           \`\`\`bash
           chmod +x FingerGo-${VERSION}-x86_64.AppImage
           ./FingerGo-${VERSION}-x86_64.AppImage
           \`\`\`
-          
+
+          **Portable (tar.gz):**
+          \`\`\`bash
+          tar -xzf FingerGo-${VERSION}-linux-x86_64.tar.gz
+          ./FingerGo
+          \`\`\`
+
           **Flatpak:**
           \`\`\`bash
           flatpak install FingerGo-${VERSION}-x86_64.flatpak
           flatpak run com.ashbuk.FingerGo
           \`\`\`
-          
-          **Portable:**
-          \`\`\`bash
-          tar -xzf FingerGo-${VERSION}-linux-x86_64.tar.gz
-          ./FingerGo
-          \`\`\`
-          
-          ### macOS
-          Download \`FingerGo-${VERSION}-universal.dmg\`, open and drag to Applications.  
-          First launch: Right-click → Open (bypasses Gatekeeper if unsigned).
-          
-          ### Windows
-          - **Portable:** Extract \`FingerGo-${VERSION}-x64-portable.zip\` and run \`FingerGo.exe\`
           EOF
 
       - name: Create GitHub Release

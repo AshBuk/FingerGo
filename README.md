@@ -23,46 +23,48 @@ Built with Go ↔ Wails ↔ Vanilla JavaScript (ES6+). Available for **Linux, ma
 
 ## Installation
 
-### 🐧 Linux
+### 🪟 Windows
 
 **Download from [Releases](https://github.com/AshBuk/FingerGo/releases/latest):**
 
-```bash
-# Option 1: Tarball (all distros)
-tar -xzf FingerGo-Linux-amd64.tar.gz
-chmod +x fingergo
-./fingergo
+**Portable:**
+1. Download `FingerGo-{VERSION}-x64-portable.zip`
+2. Extract and run `FingerGo.exe`
 
-# Option 2: DEB package (Debian/Ubuntu) - Coming soon
-# sudo dpkg -i FingerGo-Linux-amd64.deb
-
-# Option 3: RPM package (Fedora/RHEL) - Coming soon
-# sudo rpm -i FingerGo-Linux-amd64.rpm
-```
+**Requirements:** Windows 10/11 with WebView2 (auto-downloads if missing)
 
 ### 🍎 macOS
 
 **Download from [Releases](https://github.com/AshBuk/FingerGo/releases/latest):**
 
-1. Download `FingerGo-macOS-universal.dmg`
-2. Open DMG and drag FingerGo to Applications folder
-3. **First launch:** Right-click → Open (bypasses Gatekeeper if not notarized)
+**DMG:**
+1. Download `FingerGo-{VERSION}-universal.dmg`
+2. Open DMG and drag FingerGo to Applications
+3. **First launch:** Right-click → Open (bypasses Gatekeeper if unsigned)
 
 **Supports:** Intel and Apple Silicon (Universal binary)
 
-### 🪟 Windows
+### 🐧 Linux
 
 **Download from [Releases](https://github.com/AshBuk/FingerGo/releases/latest):**
 
-```powershell
-# Option 1: MSI Installer (recommended)
-# Double-click FingerGo-Windows-amd64.msi and follow wizard
-
-# Option 2: Portable ZIP
-# Extract FingerGo-Windows-amd64.zip and run fingergo.exe
+**AppImage (recommended):**
+```bash
+chmod +x FingerGo-{VERSION}-x86_64.AppImage
+./FingerGo-{VERSION}-x86_64.AppImage
 ```
 
-**Requirements:** Windows 10/11 with WebView2 (auto-downloads if missing)
+**Portable (tar.gz):**
+```bash
+tar -xzf FingerGo-{VERSION}-linux-x86_64.tar.gz
+./FingerGo
+```
+
+**Flatpak:**
+```bash
+flatpak install FingerGo-{VERSION}-x86_64.flatpak
+flatpak run com.ashbuk.FingerGo
+```
 
 ---
 
