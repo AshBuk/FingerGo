@@ -241,9 +241,11 @@
                 charEl.classList.remove('error', 'current');
                 charEl.classList.add('typed', 'correct', 'fade-success');
                 // Remove animation class after animation completes
-                setTimeout(() => {
-                    charEl.classList.remove('fade-success');
-                }, 300);
+                charEl.addEventListener(
+                    'animationend',
+                    () => charEl.classList.remove('fade-success'),
+                    { once: true },
+                );
                 break;
         }
     }
