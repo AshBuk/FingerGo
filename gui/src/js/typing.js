@@ -27,7 +27,11 @@
         pausedTime: 0,
         pauseStartTime: null,
         typedChars: new Set(), // Track which characters have been typed (by index)
+        hasError: false, // Track if current position has an error (for strict mode)
     };
+
+    // Strict mode setting: require backspace to fix errors (true) or allow direct correction (false)
+    let strictMode = false;
 
     const IGNORED_KEYS = new Set([
         'Escape',
@@ -125,29 +129,6 @@
     }
 
     /**
-     * Move cursor to next untyped character (forward from current position)
-     */
-    function moveToNextUntyped() {
-        // First, try to find next untyped character forward
-        for (let i = session.currentIndex + 1; i < session.text.length; i++) {
-            if (!session.typedChars.has(i)) {
-                session.currentIndex = i;
-                updateTargetKey();
-                return;
-            }
-        }
-        // If none found forward, check from beginning
-        for (let i = 0; i < session.currentIndex; i++) {
-            if (!session.typedChars.has(i)) {
-                session.currentIndex = i;
-                updateTargetKey();
-                return;
-            }
-        }
-        // All typed - session complete
-    }
-
-    /**
      * Update keyboard target key based on current index
      */
     function updateTargetKey() {
@@ -164,6 +145,17 @@
      */
     function handleKeyDown(e) {
         if (!session.isActive) return;
+        // Ignore events from input/textarea/select elements (forms, modals)
+        // BUT allow events from our main text-input textarea
+        const target = e.target;
+        if (
+            (target.tagName === 'INPUT' ||
+                target.tagName === 'TEXTAREA' ||
+                target.tagName === 'SELECT') &&
+            target.id !== 'text-input'
+        ) {
+            return;
+        }
         // Ignore navigation keys (with or without modifiers)
         if (window.KeyUtils.isNavigationKey?.(e.key)) {
             return;
@@ -184,20 +176,35 @@
         if (['Tab', 'Enter', ' '].includes(e.key)) {
             e.preventDefault();
         }
-        const pressedKey = window.KeyUtils.normalizeKey(e.key);
+
         const expectedChar = session.text[session.currentIndex];
         if (expectedChar === undefined) {
             // Session already complete
             return;
         }
-        // Skip already typed characters
-        if (session.typedChars.has(session.currentIndex)) {
-            // Move to next untyped character
-            moveToNextUntyped();
+
+        // Handle backspace
+        if (e.key === 'Backspace') {
+            if (session.currentIndex > 0) {
+                session.currentIndex--;
+                session.hasError = false;
+                // Remove from typed chars if moving back
+                // Note: in strict mode user can move back to correct errors
+                updateTargetKey();
+                // Clear error highlights
+                if (window.KeyboardUI) {
+                    window.KeyboardUI.clearAllErrors();
+                }
+                window.EventBus.emit('typing:backspace', {
+                    index: session.currentIndex,
+                });
+            }
             return;
         }
 
+        const pressedKey = window.KeyUtils.normalizeKey(e.key);
         const expectedKey = window.KeyUtils.normalizeTextChar(expectedChar);
+
         const isCorrect = pressedKey === expectedKey;
 
         session.totalKeystrokes++;
@@ -211,8 +218,9 @@
             timestamp: Date.now(),
         });
         if (isCorrect) {
-            // Mark this character as typed
+            // Mark this character as typed correctly
             session.typedChars.add(session.currentIndex);
+            session.hasError = false;
             // Correct key pressed
             window.EventBus.emit('typing:keystroke', {
                 char: expectedChar,
@@ -224,10 +232,11 @@
             if (window.KeyboardUI) {
                 window.KeyboardUI.clearError(expectedKey);
             }
-            // Move to next untyped character
-            moveToNextUntyped();
+            // Move cursor forward
+            session.currentIndex++;
+            updateTargetKey();
             // Check if session complete (all characters typed)
-            if (session.typedChars.size >= session.text.length) {
+            if (session.currentIndex >= session.text.length) {
                 completeSession();
             }
 
@@ -250,6 +259,15 @@
             // Apply visual error feedback
             if (window.KeyboardUI) {
                 window.KeyboardUI.setError(expectedKey);
+            }
+
+            if (strictMode) {
+                // Strict mode: user must use backspace to correct
+                session.currentIndex++;
+                updateTargetKey();
+            } else {
+                // Cheat mode: cursor stays, wait for correct key
+                session.hasError = true;
             }
             emitStatsUpdate();
         }
@@ -395,6 +413,7 @@
         session.pausedTime = 0;
         session.pauseStartTime = null;
         session.typedChars.clear();
+        session.hasError = false;
 
         if (statsUpdateTimer) {
             clearTimeout(statsUpdateTimer);
@@ -452,7 +471,29 @@
     function setCurrentIndex(index) {
         if (index < 0 || index > session.text.length) return;
         session.currentIndex = index;
+        session.hasError = false; // Clear error state on manual navigation
         updateTargetKey();
+    }
+
+    /**
+     * Set strict mode (require backspace to fix errors)
+     * @param {boolean} enabled - true for strict mode, false for cheat mode
+     */
+    function setStrictMode(enabled) {
+        strictMode = Boolean(enabled);
+        // Clear error state when switching modes
+        session.hasError = false;
+        if (window.KeyboardUI) {
+            window.KeyboardUI.clearAllErrors();
+        }
+    }
+
+    /**
+     * Get current strict mode state
+     * @returns {boolean} Current strict mode setting
+     */
+    function getStrictMode() {
+        return strictMode;
     }
 
     // Listen for cursor move events from UI
@@ -477,6 +518,8 @@
         getCurrentIndex,
         setCurrentIndex,
         getMetrics,
+        setStrictMode,
+        getStrictMode,
         handleKeyDown, // Export for app.js to process first keystroke
     };
 })();

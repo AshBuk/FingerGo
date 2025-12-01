@@ -103,6 +103,11 @@
         }
         // Ensure caret starts at beginning
         setCursorPosition(0, { emit: false });
+
+        // Focus textarea to enable keyboard navigation immediately
+        if (textInput) {
+            requestAnimationFrame(() => textInput.focus());
+        }
     }
 
     /**
