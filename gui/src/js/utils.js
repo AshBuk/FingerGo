@@ -20,6 +20,11 @@
 
     /**
      * Normalize keyboard event key for comparison
+     *
+     * Currently an identity function - returns key unchanged.
+     * Exists as extension point for future keyboard layouts that may need
+     * key remapping (e.g., Cyrillic layouts, Dvorak, dead keys handling).
+     *
      * @param {string} key - Keyboard event key (e.g., 'a', 'A', 'Enter', 'Tab')
      * @returns {string} Normalized key representation (preserves case)
      */
