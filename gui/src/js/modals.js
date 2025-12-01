@@ -480,13 +480,6 @@
     if (modalClose) {
         modalClose.addEventListener('click', hideModal);
     }
-    if (modalOverlay) {
-        modalOverlay.addEventListener('click', e => {
-            if (e.target === modalOverlay) {
-                hideModal();
-            }
-        });
-    }
 
     // Export API
     window.ModalManager = {
