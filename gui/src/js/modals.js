@@ -39,10 +39,12 @@
         return null;
     }
 
+    const esc = window.AppUtils?.escapeHtml || (s => String(s ?? ''));
+
     /**
      * Return readable label for a key identifier
      * @param {string} key
-     * @returns {string}
+     * @returns {string} HTML-escaped label
      */
     function formatKeyLabel(key) {
         if (!key) return 'Unknown';
@@ -58,7 +60,7 @@
             case 'Backspace':
                 return 'Backspace';
             default:
-                return key.length === 1 ? key : key;
+                return esc(key);
         }
     }
 
@@ -149,21 +151,22 @@
     function generateTextEditor(data) {
         const { mode, text, categories, selectedCategory } = data;
         const isEdit = mode === 'edit' && text;
-        const title = isEdit ? text.title : '';
-        const content = isEdit ? text.content : '';
-        const language = isEdit ? text.language || 'text' : 'text';
+        const title = esc(isEdit ? text.title : '');
+        const content = esc(isEdit ? text.content : '');
+        const language = esc(isEdit ? text.language || 'text' : 'text');
         const categoryId = isEdit ? text.categoryId : selectedCategory || '';
         // Find current category name for display
         const currentCat = (categories || []).find(c => c.id === categoryId);
-        const categoryName = currentCat?.name || '';
-        // Build datalist options
+        const categoryName = esc(currentCat?.name || '');
+        // Build datalist options (escape category names)
         const categoryOptions = (categories || [])
-            .map(c => `<option value="${c.name}" data-id="${c.id}">`)
+            .map(c => `<option value="${esc(c.name)}" data-id="${esc(c.id)}">`)
             .join('');
         const languageKeys = window.SupportedLanguages?.keys() || [];
-        const languageOptions = languageKeys.map(l => `<option value="${l}">`).join('');
+        const languageOptions = languageKeys.map(l => `<option value="${esc(l)}">`).join('');
+        const textId = esc(isEdit ? text.id : '');
         return `
-            <div class="text-editor" data-mode="${mode}" data-id="${isEdit ? text.id : ''}">
+            <div class="text-editor" data-mode="${esc(mode)}" data-id="${textId}">
                 <div class="editor-field">
                     <label for="text-title">Title</label>
                     <input type="text" id="text-title" value="${title}" placeholder="My typing text" required>
@@ -259,7 +262,7 @@
      * @returns {string} HTML content
      */
     function generateColorSettings(data) {
-        const theme = data?.theme || 'dark';
+        const theme = esc(data?.theme || 'dark');
         const savedColors = window.ColorSettings?.getColors(theme) || {};
 
         // Read current CSS values (from theme or custom overrides)
@@ -392,7 +395,7 @@
                 contentHTML = generateTextEditor(data);
                 break;
             case 'error':
-                contentHTML = `<div class="error-message"><p>${data?.message || 'An error occurred'}</p><button type="button" id="error-ok">OK</button></div>`;
+                contentHTML = `<div class="error-message"><p>${esc(data?.message || 'An error occurred')}</p><button type="button" id="error-ok">OK</button></div>`;
                 break;
             default:
                 contentHTML = '<p>No content available</p>';
@@ -452,10 +455,10 @@
             if (modalTitle) modalTitle.textContent = title;
             modalContent.innerHTML = `
                 <div class="confirm-dialog">
-                    <p class="confirm-message">${message}</p>
+                    <p class="confirm-message">${esc(message)}</p>
                     <div class="confirm-actions">
-                        <button type="button" class="btn-secondary" data-action="cancel">${cancelText}</button>
-                        <button type="button" class="btn-danger" data-action="confirm">${confirmText}</button>
+                        <button type="button" class="btn-secondary" data-action="cancel">${esc(cancelText)}</button>
+                        <button type="button" class="btn-danger" data-action="confirm">${esc(confirmText)}</button>
                     </div>
                 </div>
             `;
