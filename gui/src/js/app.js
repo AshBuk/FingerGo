@@ -27,6 +27,7 @@
         bind('stats-toggle', () => window.SettingsManager.toggleStatsBar());
         bind('keyboard-toggle', () => window.SettingsManager.toggleKeyboard());
         bind('reset-session', () => window.SessionManager.reset());
+        bind('strict-mode-toggle', () => window.SettingsManager.toggleStrictMode());
     }
 
     /**
@@ -76,6 +77,7 @@
         window.SettingsManager.applyZenMode(settings.zenMode, false);
         window.SettingsManager.applyKeyboardVisibility(settings.showKeyboard, false);
         window.SettingsManager.applyStatsBarVisibility(settings.showStatsBar, false);
+        window.SettingsManager.applyStrictMode(settings.strictMode, false);
         // Bind UI handlers
         bindButtonHandlers();
         // Check required modules
@@ -132,6 +134,8 @@
         applyTheme: (t, p) => window.SettingsManager?.applyTheme(t, p),
         toggleZenMode: () => window.SettingsManager?.toggleZenMode(),
         applyZenMode: (e, p) => window.SettingsManager?.applyZenMode(e, p),
+        toggleStrictMode: () => window.SettingsManager?.toggleStrictMode(),
+        applyStrictMode: (e, p) => window.SettingsManager?.applyStrictMode(e, p),
         getTextMeta: () => window.SessionManager?.getTextMeta(),
         toggleLibrary: () => window.LibraryManager?.toggle(),
         openTextEditor: id => window.LibraryManager?.openEditor(id),
