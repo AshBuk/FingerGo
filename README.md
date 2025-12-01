@@ -2,9 +2,9 @@
 
 <img src="fingergo.png" alt="FingerGo cross-platform touch-typing trainer modern app" width="400" align="right">
 
-#### FingerGo is a **cross-platform touch-typing trainer**, designed to improve typing speed and accuracy, with a user-friendly and intuitive interface.  
-#### It includes real-time keyboard visualization, a hierarchical text and code library, and live statistics tracking.  
-#### Built with Go ↔ Wails ↔ Vanilla JavaScript (ES6+). Available for **Linux, macOS, and Windows**.
+FingerGo is a **cross-platform touch-typing trainer**, designed to improve typing speed and accuracy, with a user-friendly and intuitive interface.  
+It includes real-time keyboard visualization, a hierarchical text and code library, and live statistics tracking.  
+Built with Go ↔ Wails ↔ Vanilla JavaScript (ES6+). Available for **Linux, macOS, and Windows**.
 
 ### Features
 ▸ **Clean Interface Design**
