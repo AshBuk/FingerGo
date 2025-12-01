@@ -50,6 +50,18 @@
         return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     }
 
+    /**
+     * Escape HTML special characters to prevent XSS
+     * @param {string} str - Raw string to escape
+     * @returns {string} HTML-safe string
+     */
+    function escapeHtml(str) {
+        if (str === null || str === undefined) return '';
+        const s = String(str);
+        const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+        return s.replace(/[&<>"']/g, c => map[c]);
+    }
+
     window.KeyUtils = {
         normalizeKey,
         normalizeTextChar,
@@ -58,5 +70,6 @@
 
     window.AppUtils = {
         formatTime,
+        escapeHtml,
     };
 })();

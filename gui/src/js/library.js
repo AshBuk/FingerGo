@@ -7,6 +7,8 @@
  * Manages text library sidebar: categories, text list, CRUD operations
  */
 (() => {
+    const esc = window.AppUtils?.escapeHtml || (s => String(s ?? ''));
+
     const state = {
         library: null,
         selectedCategory: null, // null = All, string = category id
@@ -80,13 +82,15 @@
             const isActive = state.selectedCategory === cat.id;
             const isExpanded = isActive && state.isExpanded;
             const count = counts[cat.id] || 0;
-            const icon = cat.icon || '📁';
-            html += `<li class="category-item${isActive ? ' active' : ''}${isExpanded ? ' expanded' : ''}" data-category="${cat.id}">
+            const icon = esc(cat.icon || '📁');
+            const catId = esc(cat.id);
+            const catName = esc(cat.name);
+            html += `<li class="category-item${isActive ? ' active' : ''}${isExpanded ? ' expanded' : ''}" data-category="${catId}">
                 <span class="icon">${icon}</span>
-                <span>${cat.name}</span>
+                <span>${catName}</span>
                 <span class="spacer"></span>
                 <span class="count">${count}</span>
-                <button class="delete-btn" data-id="${cat.id}" title="Delete category">🗑️</button>
+                <button class="delete-btn" data-id="${catId}" title="Delete category">🗑️</button>
             </li>`;
             if (isExpanded) {
                 html += renderTextsForCategory(cat.id);
@@ -136,7 +140,7 @@
         if (texts.length === 0) {
             return `<div class="library-empty">
                 <p>No texts in this category</p>
-                <button class="empty-add-text" data-category="${categoryId || ''}">+ Add</button>
+                <button class="empty-add-text" data-category="${esc(categoryId || '')}">+ Add</button>
             </div>`;
         }
 
@@ -144,15 +148,17 @@
         texts.forEach(text => {
             const fav = text.isFavorite ? '<span class="favorite">★</span>' : '';
             const lang = normalizeLanguage(text.language);
-            const langLabel = lang === 'text' ? 'Text' : lang;
-            html += `<div class="text-item" data-id="${text.id}">
-                <div class="text-item-title">${fav}${text.title}</div>
+            const langLabel = lang === 'text' ? 'Text' : esc(lang);
+            const textId = esc(text.id);
+            const textTitle = esc(text.title);
+            html += `<div class="text-item" data-id="${textId}">
+                <div class="text-item-title">${fav}${textTitle}</div>
                 <div class="text-item-meta">
                     <span>${langIcon(lang)} ${langLabel}</span>
                 </div>
                 <div class="text-item-actions">
-                    <button class="icon-btn edit-btn" data-id="${text.id}" title="Edit">✏️</button>
-                    <button class="icon-btn delete-btn" data-id="${text.id}" title="Delete">🗑️</button>
+                    <button class="icon-btn edit-btn" data-id="${textId}" title="Edit">✏️</button>
+                    <button class="icon-btn delete-btn" data-id="${textId}" title="Delete">🗑️</button>
                 </div>
             </div>`;
         });
