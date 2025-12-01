@@ -8,35 +8,39 @@ on:
 permissions:
   contents: write
 
+env:
+  APP_NAME: FingerGo
+
 jobs:
   build:
     strategy:
       fail-fast: false
       matrix:
         include:
-          # Linux AMD64
           - platform: linux/amd64
             os: ubuntu-latest
-            name: FingerGo-Linux-amd64
-            output: FingerGo
+            arch: x86_64
             
-          # macOS Universal (Intel + Apple Silicon)
           - platform: darwin/universal
             os: macos-latest
-            name: FingerGo-macOS-universal
-            output: FingerGo.app
+            arch: universal
             
-          # Windows AMD64
           - platform: windows/amd64
             os: windows-latest
-            name: FingerGo-Windows-amd64
-            output: FingerGo.exe
+            arch: x64
 
     runs-on: ${{ matrix.os }}
     
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Get version
+        id: version
+        shell: bash
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
 
       - name: Setup Go
         uses: actions/setup-go@v5
@@ -69,41 +73,41 @@ jobs:
           npm ci
 
       - name: Build application
+        shell: bash
         run: |
           if [ "${{ runner.os }}" == "Linux" ]; then
             wails build -platform ${{ matrix.platform }} -tags webkit2_41 -clean
           else
             wails build -platform ${{ matrix.platform }} -clean
           fi
-        shell: bash
 
+      # ==================== Linux Packaging ====================
       - name: Package Linux artifacts
         if: runner.os == 'Linux'
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
         run: |
-          # Create tar.gz archive
           cd build/bin
-          tar -czf ${{ matrix.name }}.tar.gz ${{ matrix.output }}
+          
+          # Create versioned tar.gz archive
+          # Convention: AppName-VERSION-linux-ARCH.tar.gz
+          tar -czf ${{ env.APP_NAME }}-${VERSION}-linux-${{ matrix.arch }}.tar.gz ${{ env.APP_NAME }}
           
           # Create AppImage
           cd ${{ github.workspace }}
           
-          # Download linuxdeploy and AppImage plugin
           wget -q https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
           chmod +x linuxdeploy-x86_64.AppImage
           
-          # Create AppDir structure
           mkdir -p AppDir/usr/bin
           mkdir -p AppDir/usr/share/applications
-          mkdir -p AppDir/usr/share/icons/hicolor/256x256/apps
+          mkdir -p AppDir/usr/share/icons/hicolor/512x512/apps
           
-          # Copy binary
-          cp build/bin/${{ matrix.output }} AppDir/usr/bin/fingergo
+          cp build/bin/${{ env.APP_NAME }} AppDir/usr/bin/fingergo
           chmod +x AppDir/usr/bin/fingergo
           
-          # Copy icon
-          cp fingergo.png AppDir/usr/share/icons/hicolor/256x256/apps/fingergo.png
+          cp fingergo.png AppDir/usr/share/icons/hicolor/512x512/apps/fingergo.png
           
-          # Create desktop entry
           cat > AppDir/usr/share/applications/fingergo.desktop << 'EOF'
           [Desktop Entry]
           Type=Application
@@ -115,39 +119,45 @@ jobs:
           Terminal=false
           EOF
           
-          # Build AppImage (APPIMAGE_EXTRACT_AND_RUN needed for CI without FUSE)
+          # Convention: AppName-VERSION-ARCH.AppImage
+          export VERSION="${VERSION}"
           ARCH=x86_64 APPIMAGE_EXTRACT_AND_RUN=1 ./linuxdeploy-x86_64.AppImage \
             --appdir AppDir \
             --output appimage \
             --desktop-file AppDir/usr/share/applications/fingergo.desktop \
             --icon-file fingergo.png
           
-          # Move AppImage to build/bin
-          mv FingerGo*.AppImage build/bin/${{ matrix.name }}.AppImage || mv *.AppImage build/bin/${{ matrix.name }}.AppImage
+          # Rename to convention
+          mv ${{ env.APP_NAME }}*.AppImage build/bin/${{ env.APP_NAME }}-${VERSION}-${{ matrix.arch }}.AppImage 2>/dev/null || \
+          mv *.AppImage build/bin/${{ env.APP_NAME }}-${VERSION}-${{ matrix.arch }}.AppImage
 
+      # ==================== macOS Packaging ====================
       - name: Package macOS artifacts
         if: runner.os == 'macOS'
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
         run: |
-          # Create DMG
           cd build/bin
-          # Basic DMG creation (can be enhanced with background image, etc.)
-          hdiutil create -volname "FingerGo" -srcfolder ${{ matrix.output }} -ov -format UDZO ${{ matrix.name }}.dmg
+          # Convention: AppName-VERSION-ARCH.dmg
+          hdiutil create -volname "${{ env.APP_NAME }}" -srcfolder ${{ env.APP_NAME }}.app -ov -format UDZO \
+            ${{ env.APP_NAME }}-${VERSION}-${{ matrix.arch }}.dmg
 
+      # ==================== Windows Packaging ====================
       - name: Package Windows artifacts
         if: runner.os == 'Windows'
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        shell: bash
         run: |
-          # Wails automatically generates MSI installer on Windows
-          # Just copy the output for release
           cd build/bin
-          # Create portable ZIP
-          7z a ${{ matrix.name }}.zip ${{ matrix.output }}
+          # Convention: AppName-VERSION-ARCH-portable.zip
+          7z a ${{ env.APP_NAME }}-${VERSION}-${{ matrix.arch }}-portable.zip ${{ env.APP_NAME }}.exe
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.name }}
+          name: ${{ env.APP_NAME }}-${{ runner.os }}-${{ matrix.arch }}
           path: |
-            build/bin/${{ matrix.output }}
             build/bin/*.tar.gz
             build/bin/*.AppImage
             build/bin/*.dmg
@@ -162,20 +172,25 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
           path: artifacts
 
-      - name: Generate changelog
-        id: changelog
+      - name: Get version
+        id: version
         run: |
-          # Extract version from tag
-          VERSION=${GITHUB_REF#refs/tags/}
+          VERSION=${GITHUB_REF#refs/tags/v}
           echo "version=${VERSION}" >> $GITHUB_OUTPUT
-          
-          # Generate simple changelog from commits since last tag
+
+      - name: Generate changelog
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          # Generate changelog from commits since last tag
           PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
           if [ -n "$PREV_TAG" ]; then
             CHANGELOG=$(git log ${PREV_TAG}..HEAD --pretty=format:"- %s (%h)" --no-merges)
@@ -183,9 +198,8 @@ jobs:
             CHANGELOG=$(git log --pretty=format:"- %s (%h)" --no-merges -n 10)
           fi
           
-          # Save changelog to file
           cat > RELEASE_NOTES.md << EOF
-          # FingerGo ${VERSION}
+          # FingerGo v${VERSION}
           
           ## Changes
           ${CHANGELOG}
@@ -194,23 +208,29 @@ jobs:
           
           ### Linux
           **AppImage (recommended):**
-          - Download \`FingerGo-Linux-amd64.AppImage\`
-          - Make executable: \`chmod +x FingerGo-Linux-amd64.AppImage\`
-          - Run: \`./FingerGo-Linux-amd64.AppImage\`
+          \`\`\`bash
+          chmod +x FingerGo-${VERSION}-x86_64.AppImage
+          ./FingerGo-${VERSION}-x86_64.AppImage
+          \`\`\`
+          
+          **Flatpak:**
+          \`\`\`bash
+          flatpak install FingerGo-${VERSION}-x86_64.flatpak
+          flatpak run com.ashbuk.FingerGo
+          \`\`\`
           
           **Portable:**
-          - Download \`FingerGo-Linux-amd64.tar.gz\`
-          - Extract: \`tar -xzf FingerGo-Linux-amd64.tar.gz\`
-          - Run: \`./FingerGo\`
+          \`\`\`bash
+          tar -xzf FingerGo-${VERSION}-linux-x86_64.tar.gz
+          ./FingerGo
+          \`\`\`
           
           ### macOS
-          - Download \`FingerGo-macOS-universal.dmg\`
-          - Open DMG and drag FingerGo to Applications
-          - Right-click → Open (first launch only, if not notarized)
+          Download \`FingerGo-${VERSION}-universal.dmg\`, open and drag to Applications.  
+          First launch: Right-click → Open (bypasses Gatekeeper if unsigned).
           
           ### Windows
-          - Download \`FingerGo-Windows-amd64.msi\` (installer) or \`.zip\` (portable)
-          - Run MSI installer or extract ZIP and run \`FingerGo.exe\`
+          - **Portable:** Extract \`FingerGo-${VERSION}-x64-portable.zip\` and run \`FingerGo.exe\`
           EOF
 
       - name: Create GitHub Release
@@ -227,4 +247,3 @@ jobs:
             artifacts/**/*.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-

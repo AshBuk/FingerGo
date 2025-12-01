@@ -12,33 +12,83 @@ permissions:
 jobs:
   flatpak:
     runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/flathub-infra/flatpak-github-actions:freedesktop-24.08
-      options: --privileged
     
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
       
-      - name: Build Flatpak
-        uses: flathub-infra/flatpak-github-actions/flatpak-builder@master
+      - name: Get version
+        id: version
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            VERSION=${GITHUB_REF#refs/tags/v}
+          else
+            VERSION="0.0.0-dev"
+          fi
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+      
+      - name: Setup Go
+        uses: actions/setup-go@v5
         with:
-          bundle: FingerGo.flatpak
-          manifest-path: flatpak/com.ashbuk.FingerGo.yml
-          cache-key: flatpak-builder-${{ github.sha }}
+          go-version: '1.25'
+          cache: true
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libgtk-3-dev \
+            libwebkit2gtk-4.1-dev \
+            build-essential \
+            pkg-config \
+            flatpak \
+            flatpak-builder
+      
+      - name: Install Wails CLI
+        run: go install github.com/wailsapp/wails/v2/cmd/wails@latest
+      
+      - name: Install project dependencies
+        run: |
+          go mod download
+          npm ci
+      
+      - name: Build Linux binary
+        run: wails build -platform linux/amd64 -tags webkit2_41 -clean
+      
+      - name: Prepare Flatpak sources
+        run: |
+          # Copy binary and assets to flatpak directory
+          cp build/bin/FingerGo flatpak/
+          cp fingergo.png flatpak/
+      
+      - name: Install Flatpak runtime
+        run: |
+          flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+          flatpak install --user -y flathub org.freedesktop.Platform//24.08 org.freedesktop.Sdk//24.08
+      
+      - name: Build Flatpak
+        run: |
+          cd flatpak
+          flatpak-builder --force-clean --user --install-deps-from=flathub --repo=repo build-dir com.ashbuk.FingerGo.yml
+          flatpak build-bundle repo FingerGo-${{ steps.version.outputs.version }}-x86_64.flatpak com.ashbuk.FingerGo
       
       - name: Upload Flatpak artifact
         uses: actions/upload-artifact@v4
         with:
           name: FingerGo-Flatpak
-          path: FingerGo.flatpak
+          path: flatpak/FingerGo-${{ steps.version.outputs.version }}-x86_64.flatpak
           retention-days: 7
       
       - name: Upload to Release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v1
         with:
-          files: FingerGo.flatpak
+          files: flatpak/FingerGo-${{ steps.version.outputs.version }}-x86_64.flatpak
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
