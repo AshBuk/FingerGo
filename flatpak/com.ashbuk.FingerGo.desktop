@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=FingerGo
+Comment=Touch typing trainer with visual keyboard feedback
+GenericName=Typing Trainer
+Categories=Education;Utility;
+Exec=fingergo
+Icon=com.ashbuk.FingerGo
+Terminal=false
+StartupNotify=true
+Keywords=typing;keyboard;training;education;wpm;
+

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>com.ashbuk.FingerGo</id>
+  
+  <name>FingerGo</name>
+  <summary>Touch typing trainer with visual keyboard feedback</summary>
+  
+  <metadata_license>MIT</metadata_license>
+  <project_license>MIT</project_license>
+  
+  <developer id="com.ashbuk">
+    <name>Asher Buk</name>
+  </developer>
+  
+  <description>
+    <p>
+      FingerGo is a desktop touch-typing trainer that emphasizes proper finger 
+      positioning through visual keyboard feedback. Practice typing with real-time 
+      statistics, customizable text libraries, and detailed analytics.
+    </p>
+    <p>Features:</p>
+    <ul>
+      <li>Visual keyboard with finger mapping and color coding</li>
+      <li>Real-time WPM, CPM, and accuracy tracking</li>
+      <li>Hierarchical text library with categories</li>
+      <li>Session history and mistake analysis</li>
+      <li>Dark and light themes</li>
+      <li>Strict mode for error-free typing practice</li>
+    </ul>
+  </description>
+  
+  <launchable type="desktop-id">com.ashbuk.FingerGo.desktop</launchable>
+  
+  <url type="homepage">https://github.com/AshBuk/FingerGo</url>
+  <url type="bugtracker">https://github.com/AshBuk/FingerGo/issues</url>
+  <url type="vcs-browser">https://github.com/AshBuk/FingerGo</url>
+  
+  <content_rating type="oars-1.1"/>
+  
+  <branding>
+    <color type="primary" scheme_preference="light">#4a90d9</color>
+    <color type="primary" scheme_preference="dark">#1a5fb4</color>
+  </branding>
+  
+  <categories>
+    <category>Education</category>
+    <category>Utility</category>
+  </categories>
+  
+  <keywords>
+    <keyword>typing</keyword>
+    <keyword>keyboard</keyword>
+    <keyword>training</keyword>
+    <keyword>touch typing</keyword>
+    <keyword>wpm</keyword>
+    <keyword>education</keyword>
+  </keywords>
+  
+  <releases>
+    <release version="1.0.0" date="2025-12-01">
+      <description>
+        <p>Initial release of FingerGo</p>
+        <ul>
+          <li>Visual keyboard with finger color mapping</li>
+          <li>Real-time typing statistics (WPM, CPM, accuracy)</li>
+          <li>Text library with categories</li>
+          <li>Session history and analytics</li>
+          <li>Dark and light themes</li>
+        </ul>
+      </description>
+    </release>
+  </releases>
+  
+  <provides>
+    <binary>fingergo</binary>
+  </provides>
+  
+  <requires>
+    <display_length compare="ge">768</display_length>
+  </requires>
+  
+  <recommends>
+    <control>keyboard</control>
+    <control>pointing</control>
+  </recommends>
+</component>
+
