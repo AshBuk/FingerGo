@@ -12,6 +12,7 @@
     let isZenMode = false;
     let isKeyboardVisible = true;
     let isStatsBarVisible = true;
+    let isStrictMode = false;
 
     // DOM element references (cached on first use)
     const getEl = id => document.getElementById(id);
@@ -42,6 +43,22 @@
             enabled ? 'Exit Zen mode (Ctrl+Alt+Z)' : 'Enter Zen mode (Ctrl+Alt+Z)',
         );
         btn.setAttribute('aria-label', enabled ? 'Exit Zen mode' : 'Enter Zen mode');
+    }
+
+    /**
+     * Update strict mode toggle button state
+     * @param {boolean} enabled
+     */
+    function setStrictModeToggleState(enabled) {
+        const btn = getEl('strict-mode-toggle');
+        if (!btn) return;
+        btn.setAttribute('aria-pressed', enabled ? 'true' : 'false');
+        btn.textContent = enabled ? '🎯' : '⭕';
+        btn.setAttribute(
+            'title',
+            enabled ? 'Strict mode ON (requires backspace)' : 'Cheat mode ON (direct correction)',
+        );
+        btn.setAttribute('aria-label', enabled ? 'Disable strict mode' : 'Enable strict mode');
     }
 
     /**
@@ -141,11 +158,37 @@
     }
 
     /**
+     * Apply strict mode and optionally persist
+     * @param {boolean} enabled
+     * @param {boolean} [persist=true]
+     */
+    function applyStrictMode(enabled, persist = true) {
+        isStrictMode = Boolean(enabled);
+        setStrictModeToggleState(isStrictMode);
+        // Update typing engine
+        if (window.TypingEngine?.setStrictMode) {
+            window.TypingEngine.setStrictMode(isStrictMode);
+        }
+        window.EventBus?.emit('app:strict-mode', { enabled: isStrictMode });
+        if (persist) persistSetting('strictMode', isStrictMode);
+    }
+
+    function toggleStrictMode() {
+        applyStrictMode(!isStrictMode);
+    }
+
+    /**
      * Load settings from internal layer
-     * @returns {Promise<{theme: string, zenMode: boolean, showKeyboard: boolean, showStatsBar: boolean}>}
+     * @returns {Promise<{theme: string, zenMode: boolean, showKeyboard: boolean, showStatsBar: boolean, strictMode: boolean}>}
      */
     async function load() {
-        const defaults = { theme: 'dark', zenMode: false, showKeyboard: true, showStatsBar: true };
+        const defaults = {
+            theme: 'dark',
+            zenMode: false,
+            showKeyboard: true,
+            showStatsBar: true,
+            strictMode: false,
+        };
         if (!window.go?.app?.App?.GetSettings) return defaults;
         try {
             return await window.go.app.App.GetSettings();
@@ -166,9 +209,12 @@
         toggleKeyboard,
         applyStatsBarVisibility,
         toggleStatsBar,
+        applyStrictMode,
+        toggleStrictMode,
         getTheme: () => currentTheme,
         isZenMode: () => isZenMode,
         isKeyboardVisible: () => isKeyboardVisible,
         isStatsBarVisible: () => isStatsBarVisible,
+        isStrictMode: () => isStrictMode,
     };
 })();

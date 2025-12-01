@@ -10,6 +10,7 @@ type Settings struct {
 	ShowKeyboard bool   `json:"showKeyboard"` // keyboard section visibility
 	ShowStatsBar bool   `json:"showStatsBar"` // stats bar visibility
 	ZenMode      bool   `json:"zenMode"`      // focus mode (hides both keyboard and stats)
+	StrictMode   bool   `json:"strictMode"`   // require backspace to fix errors (true) or allow direct correction (false)
 }
 
 // DefaultSettings returns factory defaults for new installations.
@@ -19,5 +20,6 @@ func DefaultSettings() Settings {
 		ShowKeyboard: true,
 		ShowStatsBar: true,
 		ZenMode:      false,
+		StrictMode:   false, // allow direct correction by default (cheat mode)
 	}
 }
