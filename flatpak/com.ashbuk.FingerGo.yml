@@ -6,9 +6,6 @@ app-id: com.ashbuk.FingerGo
 runtime: org.freedesktop.Platform
 runtime-version: '24.08'
 sdk: org.freedesktop.Sdk
-sdk-extensions:
-  - org.freedesktop.Sdk.Extension.golang
-  - org.freedesktop.Sdk.Extension.node20
 
 command: fingergo
 
@@ -22,45 +19,26 @@ finish-args:
   - --filesystem=xdg-data/fingergo:create
 
 modules:
-  # WebKitGTK dependency
-  - name: webkit2gtk-4.1
-    buildsystem: simple
-    build-commands:
-      - echo "Using runtime webkit2gtk"
-    sources: []
-
-  # FingerGo application
   - name: fingergo
     buildsystem: simple
-    build-options:
-      append-path: /usr/lib/sdk/golang/bin:/usr/lib/sdk/node20/bin
-      env:
-        GOPATH: /run/build/fingergo/go
-        GOCACHE: /run/build/fingergo/go-cache
-        GO111MODULE: 'on'
-        CGO_ENABLED: '1'
     build-commands:
-      # Install Wails CLI
-      - go install github.com/wailsapp/wails/v2/cmd/wails@latest
-      
-      # Install npm dependencies
-      - npm ci --prefix gui || true
-      
-      # Build with Wails
-      - $GOPATH/bin/wails build -tags webkit2_41 -clean
-      
-      # Install binary
-      - install -Dm755 build/bin/FingerGo ${FLATPAK_DEST}/bin/fingergo
+      # Install pre-built binary
+      - install -Dm755 FingerGo ${FLATPAK_DEST}/bin/fingergo
       
       # Install desktop file
-      - install -Dm644 flatpak/com.ashbuk.FingerGo.desktop ${FLATPAK_DEST}/share/applications/com.ashbuk.FingerGo.desktop
+      - install -Dm644 com.ashbuk.FingerGo.desktop ${FLATPAK_DEST}/share/applications/com.ashbuk.FingerGo.desktop
       
-      # Install icon
-      - install -Dm644 fingergo.png ${FLATPAK_DEST}/share/icons/hicolor/256x256/apps/com.ashbuk.FingerGo.png
+      # Install icon (512x512)
+      - install -Dm644 fingergo.png ${FLATPAK_DEST}/share/icons/hicolor/512x512/apps/com.ashbuk.FingerGo.png
       
       # Install metainfo
-      - install -Dm644 flatpak/com.ashbuk.FingerGo.metainfo.xml ${FLATPAK_DEST}/share/metainfo/com.ashbuk.FingerGo.metainfo.xml
+      - install -Dm644 com.ashbuk.FingerGo.metainfo.xml ${FLATPAK_DEST}/share/metainfo/com.ashbuk.FingerGo.metainfo.xml
     sources:
-      - type: dir
-        path: ..
-
+      - type: file
+        path: FingerGo
+      - type: file
+        path: com.ashbuk.FingerGo.desktop
+      - type: file
+        path: com.ashbuk.FingerGo.metainfo.xml
+      - type: file
+        path: fingergo.png
