@@ -8,12 +8,18 @@
 
 ### Features
 ▸ **Clean Interface Design**
+
 ▸ **Shortcuts, Zen Mode, keyboard/Stat Toggle** 
-▸ Real-time visual keyboard with finger mapping  
-▸ Hierarchical **text/code library** (plain text and code samples)  
-▸ Live stats: **WPM, CPM, accuracy, per‑key mistakes, session history**  
-▸ Eye-friendly **Dark/Light themes**
-▸ **Customizable** color theme
+
+▸ **Real-time visual keyboard with finger mapping**  
+
+▸ **Hierarchical text/code library (plain text and code samples)**  
+
+▸ **Live stats: WPM, CPM, accuracy, per‑key mistakes, session history**  
+
+▸ **Eye-friendly Dark/Light themes**
+
+▸ **Customizable color theme**
 
 ## Installation
 
@@ -62,22 +68,44 @@ chmod +x fingergo
 
 ## Tech Stack
 
-- **Backend:** Go 1.25+
-- **Desktop Framework:** Wails v2
-- **Frontend:** Vanilla JavaScript (ES6+), HTML5, CSS3
-- **Storage:** JSON files
-- **Platforms:** Linux, macOS, Windows
+```
+┌──────────────────────┐                    ┌────────────────────────┐
+│   GUI LAYER          │◄──── Wails ───────►│  INTERNAL LAYER        │
+│   HTML/CSS/JS        │      Bridge        │  Go 1.25+              │
+└──────────────────────┘                    └────────────────────────┘
+         │                                              │
+    Event-Driven                                   Repository
+         │                                              │
+    ┌────┴─────┐                                   ┌────┴─────┐
+    │ EventBus │                                   │ Repos    │
+    │ (pub/sub)│                                   │ (DI)     │
+    └────┬─────┘                                   └────┬─────┘
+         │                                              │
+    Modular JS                                    Domain Models
+                                                         │
+                                                         ▼
+                                           ┌─────────────────────┐
+                                           │ JSON Storage        │
+                                           │ ~/.local/share/...  │
+                                           └─────────────────────┘
+```
+
+- **Backend:** [Go](https://github.com/golang/go) 1.25+ with Repository Pattern (DI)
+- **Bridge:** [Wails v2](https://github.com/wailsapp/wails) provides Go↔JS communication
+- **Frontend:** Vanilla [JavaScript](https://github.com/tc39/ecma262) (ES6+) with Event-Driven Architecture (pub/sub EventBus)
+- **Storage:** JSON files in XDG directories
+- **Platforms:** [Linux](https://kernel.org/), [macOS](https://www.apple.com/macos/), [Windows](https://www.microsoft.com/windows/)
 
 ## For Developers
 
 - [Technical design](docs/tech-design/)
 - [Architecture overview](docs/tech-design/architecture.md)
-- [Makefile](Makefile) — build, test, lint commands
+- [Makefile](Makefile)
 - [Contributing](docs/CONTRIBUTING.md)
 
 ## Acknowledgments
 
-- Built with [Wails](https://wails.io/)
+- [Wails](https://wails.io/)
 
 ## Apache 2.0 [LICENSE](LICENSE)
 
