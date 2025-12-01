@@ -34,6 +34,13 @@
     function render() {
         fingerToEl.clear();
 
+        const addKeyMapping = (key, element) => {
+            if (!keyToEls.has(key)) {
+                keyToEls.set(key, []);
+            }
+            keyToEls.get(key).push(element);
+        };
+
         rows.forEach(row => {
             const rowEl = document.createElement('div');
             rowEl.className = 'keyboard-row';
@@ -54,10 +61,12 @@
                 } else {
                     el.textContent = label;
                 }
+                addKeyMapping(def.key, el);
 
-                if (!keyToEls.has(def.key)) keyToEls.set(def.key, []);
-                keyToEls.get(def.key).push(el);
-
+                // For letter keys, also map the uppercase version
+                if (def.key.length === 1 && def.key >= 'a' && def.key <= 'z') {
+                    addKeyMapping(def.key.toUpperCase(), el);
+                }
                 rowEl.appendChild(el);
             });
             if (isSpaceRow) {
@@ -71,7 +80,6 @@
                 container.appendChild(wrapper);
                 return;
             }
-
             container.appendChild(rowEl);
         });
     }
@@ -148,8 +156,15 @@
         if (originalChar === '\n') keyName = 'Enter';
         else if (originalChar === '\t') keyName = 'Tab';
 
-        const normalizedKey = keyName.length === 1 ? keyName.toLowerCase() : keyName;
-        const fingerId = fingerForKey[normalizedKey] || fingerForKey[keyName];
+        let keyForFingerMap = keyName;
+        // If keyName is an uppercase letter or shift symbol, get base key for fingerMap lookup
+        if (keyForFingerMap.length === 1 && keyForFingerMap >= 'A' && keyForFingerMap <= 'Z') {
+            keyForFingerMap = keyForFingerMap.toLowerCase();
+        } else if (layout.shiftToBaseKey?.[keyForFingerMap]) {
+            keyForFingerMap = layout.shiftToBaseKey[keyForFingerMap];
+        }
+
+        const fingerId = fingerForKey[keyForFingerMap];
 
         if (!fingerId) return;
 
@@ -170,7 +185,7 @@
             // Determine which Shift to use (opposite hand)
             const leftHandKeys = layout.leftHandKeys;
             const isLeftHandKey =
-                leftHandKeys?.has(originalChar) || leftHandKeys?.has(normalizedKey);
+                leftHandKeys?.has(originalChar) || leftHandKeys?.has(keyForFingerMap);
             const shiftFinger = isLeftHandKey ? 'right-pinky' : 'left-pinky';
 
             // Highlight Shift finger
@@ -234,29 +249,36 @@
         // Clear previous Shift highlight
         keyToEls.get('Shift')?.forEach(el => el.classList.remove('target'));
 
+        if (!originalChar) {
+            targetKey = null;
+            return;
+        }
+
         // Normalize special text characters to key names
         let keyName = originalChar;
         if (originalChar === '\n') keyName = 'Enter';
         else if (originalChar === '\t') keyName = 'Tab';
+        else if (originalChar === ' ') keyName = ' ';
 
         // For shift symbols, find the base key to highlight
         // For uppercase letters, use lowercase; for shift symbols, use the base key
         const shiftToBaseKey = layout.shiftToBaseKey;
-        let baseKey = key;
+        let baseKey = keyName;
+
         if (shiftToBaseKey?.[keyName]) {
+            // Shift symbol (e.g., "!" -> "1", "Y" is not here)
             baseKey = shiftToBaseKey[keyName];
-        } else if (keyName && keyName >= 'A' && keyName <= 'Z') {
+        } else if (keyName.length === 1 && keyName >= 'A' && keyName <= 'Z') {
+            // Uppercase letter (e.g., "Y" -> "y")
             baseKey = keyName.toLowerCase();
-        } else if (keyName === 'Enter' || keyName === 'Tab') {
-            baseKey = keyName;
         }
+        // Otherwise baseKey = keyName (Enter, Tab, space, lowercase letters, base symbols)
 
         targetKey = baseKey;
 
         if (baseKey && keyToEls.get(baseKey)) {
             keyToEls.get(baseKey).forEach(el => el.classList.add('target'));
         }
-
         highlightFingers(originalChar);
     }
 
