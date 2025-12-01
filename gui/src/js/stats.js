@@ -71,24 +71,41 @@
         return 'rgba(183, 28, 28, 0.90)'; // Dark Red
     }
 
+    // Cache key elements map for O(1) lookup
+    let keyElsMap = null;
+
+    /**
+     * Build or return cached map of key elements
+     * @returns {Map<string, HTMLElement[]>}
+     */
+    function getKeyElementsMap() {
+        if (keyElsMap) return keyElsMap;
+        keyElsMap = new Map();
+        document.querySelectorAll('#keyboard .key').forEach(el => {
+            const key = el.dataset?.key;
+            if (!key) return;
+            if (!keyElsMap.has(key)) keyElsMap.set(key, []);
+            keyElsMap.get(key).push(el);
+        });
+        return keyElsMap;
+    }
+
     /**
      * Apply keyboard heatmap overlay
+     * Optimized: O(n) instead of O(n*m) using cached element map
      * @param {Record<string, number>} mistakes
      */
     function renderHeatmap(mistakes) {
         if (!mistakes) return;
-        const keyEls = document.querySelectorAll('#keyboard .key');
-        // Reset all first
-        keyEls.forEach(el => el.style.removeProperty('--heatmap-color'));
-        // Apply per key
-        Object.keys(mistakes).forEach(key => {
-            const count = mistakes[key] || 0;
+        const map = getKeyElementsMap();
+        // Reset all keys
+        map.forEach(els => els.forEach(el => el.style.removeProperty('--heatmap-color')));
+        // Apply colors only to mistake keys - O(1) lookup per key
+        Object.entries(mistakes).forEach(([key, count]) => {
+            if (!count) return;
             const color = getHeatmapColor(count);
-            keyEls.forEach(el => {
-                if (el.dataset && el.dataset.key === key) {
-                    el.style.setProperty('--heatmap-color', color);
-                }
-            });
+            const els = map.get(key);
+            if (els) els.forEach(el => el.style.setProperty('--heatmap-color', color));
         });
     }
 
@@ -96,8 +113,8 @@
      * Clear heatmap overlay from all keys
      */
     function clearHeatmap() {
-        const keyEls = document.querySelectorAll('#keyboard .key');
-        keyEls.forEach(el => el.style.removeProperty('--heatmap-color'));
+        const map = getKeyElementsMap();
+        map.forEach(els => els.forEach(el => el.style.removeProperty('--heatmap-color')));
     }
 
     // Listen for session lifecycle
