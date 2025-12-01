@@ -1,0 +1,44 @@
+name: Flatpak Build
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  flatpak:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/flathub-infra/flatpak-github-actions:freedesktop-24.08
+      options: --privileged
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Build Flatpak
+        uses: flathub-infra/flatpak-github-actions/flatpak-builder@master
+        with:
+          bundle: FingerGo.flatpak
+          manifest-path: flatpak/com.ashbuk.FingerGo.yml
+          cache-key: flatpak-builder-${{ github.sha }}
+      
+      - name: Upload Flatpak artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: FingerGo-Flatpak
+          path: FingerGo.flatpak
+          retention-days: 7
+      
+      - name: Upload to Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: FingerGo.flatpak
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
