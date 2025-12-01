@@ -21,18 +21,17 @@
     /**
      * Normalize keyboard event key for comparison
      * @param {string} key - Keyboard event key (e.g., 'a', 'A', 'Enter', 'Tab')
-     * @returns {string} Normalized key representation
+     * @returns {string} Normalized key representation (preserves case)
      */
     function normalizeKey(key) {
-        if (key.length === 1) return key.toLowerCase();
-        return key; // Backspace, Enter, Shift, Tab, Space (' ')
+        return key;
     }
 
     function normalizeTextChar(char) {
         if (char === ' ') return ' ';
         if (char === '\n') return 'Enter';
         if (char === '\t') return 'Tab';
-        return char.toLowerCase();
+        return char;
     }
 
     /**

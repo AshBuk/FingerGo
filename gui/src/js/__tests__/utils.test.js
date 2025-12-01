@@ -22,7 +22,6 @@ const NAVIGATION_KEYS = new Set([
 ]);
 
 function normalizeKey(key) {
-    if (key.length === 1) return key.toLowerCase();
     return key;
 }
 
@@ -30,7 +29,7 @@ function normalizeTextChar(char) {
     if (char === ' ') return ' ';
     if (char === '\n') return 'Enter';
     if (char === '\t') return 'Tab';
-    return char.toLowerCase();
+    return char;
 }
 
 function isNavigationKey(key) {
@@ -46,9 +45,9 @@ function formatTime(seconds) {
 
 describe('KeyUtils', () => {
     describe('normalizeKey', () => {
-        it('should lowercase single character keys', () => {
-            assert.equal(normalizeKey('A'), 'a');
-            assert.equal(normalizeKey('Z'), 'z');
+        it('should preserve case for single character keys', () => {
+            assert.equal(normalizeKey('A'), 'A');
+            assert.equal(normalizeKey('Z'), 'Z');
             assert.equal(normalizeKey('a'), 'a');
         });
 
@@ -77,19 +76,10 @@ describe('KeyUtils', () => {
             assert.equal(normalizeTextChar(' '), ' ');
         });
 
-        it('should lowercase regular characters', () => {
-            assert.equal(normalizeTextChar('F'), 'f');
+        it('should preserve case for regular characters', () => {
+            assert.equal(normalizeTextChar('F'), 'F');
             assert.equal(normalizeTextChar('u'), 'u');
-            assert.equal(normalizeTextChar('N'), 'n');
-        });
-
-        it('should match keyboard input with text character', () => {
-            // Critical: keyboard 'Enter' key should match text '\n'
-            assert.equal(normalizeKey('Enter'), normalizeTextChar('\n'));
-            // Space key matches space char
-            assert.equal(normalizeKey(' '), normalizeTextChar(' '));
-            // Regular chars match
-            assert.equal(normalizeKey('a'), normalizeTextChar('A'));
+            assert.equal(normalizeTextChar('N'), 'N');
         });
     });
 
