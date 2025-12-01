@@ -173,7 +173,10 @@ body.zen-mode .top-action-button:not(#zen-toggle) {
 }
 
 #text-display .char.current.error {
-    background: var(--error-bg, rgba(220, 53, 69, 0.3));
+    /* Layer cursor highlight over error background */
+    background:
+        linear-gradient(rgba(var(--accent-rgb), 0.3), rgba(var(--accent-rgb), 0.3)),
+        var(--error-bg, rgba(220, 53, 69, 0.3));
     color: var(--error-text, #dc3545);
     animation: none;
 }
