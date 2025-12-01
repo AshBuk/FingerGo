@@ -239,7 +239,7 @@ func (r *TextRepository) SaveCategory(cat *domain.Category) error {
 	return nil
 }
 
-// DeleteCategory removes a category entry by ID.
+// DeleteCategory removes a category entry by ID and all texts belonging to it.
 // Returns ErrCategoryNotFound if category doesn't exist.
 func (r *TextRepository) DeleteCategory(id string) error {
 	// Validate ID for security (prevent path traversal)
@@ -252,6 +252,32 @@ func (r *TextRepository) DeleteCategory(id string) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	idx := -1
+	for i, c := range r.library.Categories {
+		if c.ID == id {
+			idx = i
+			break
+		}
+	}
+	if idx == -1 {
+		return fmt.Errorf("%w: %s", ErrCategoryNotFound, id)
+	}
+	// Collect all texts belonging to this category
+	var textsToDelete []string
+	for _, text := range r.library.Texts {
+		if text.CategoryID == id {
+			textsToDelete = append(textsToDelete, text.ID)
+		}
+	}
+	// Delete all texts in the category (need to unlock temporarily for DeleteText)
+	r.mu.Unlock()
+	for _, textID := range textsToDelete {
+		if err := r.DeleteText(textID); err != nil {
+			log.Printf("WARNING: failed to delete text %q during category deletion: %v", textID, err)
+		}
+	}
+	r.mu.Lock()
+	// Refresh idx as slice might have changed
+	idx = -1
 	for i, c := range r.library.Categories {
 		if c.ID == id {
 			idx = i
