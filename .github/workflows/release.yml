@@ -180,6 +180,14 @@ jobs:
         with:
           path: artifacts
 
+      - name: Debug - List all downloaded files
+        run: |
+          echo "=== Downloaded artifacts structure ==="
+          ls -lhR artifacts/
+          echo ""
+          echo "=== Files to be released ==="
+          find artifacts -type f
+
       - name: Get version
         id: version
         run: |
