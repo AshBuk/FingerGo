@@ -27,17 +27,17 @@ fingergo/
 │   └── app.go                 # Main app struct (exports to GUI via Wails)
 │
 ├── internal/                  # Internal layer (domain + storage)
-│   ├── text.go                # Text, Category, TextLibrary models
-│   ├── session.go             # TypingSession, SessionPayload models
-│   ├── settings.go            # Settings model + defaults
-│   ├── keyboard.go            # KeyboardLayout model
-│   ├── stats.go               # Statistics models
-│   ├── repository.go          # Repository interfaces (domain contracts)
-│   └── storage/               # Persistence layer
+│   ├── domain/                # Domain models and interfaces
+│   │   ├── repository.go      # Repository interfaces (domain contracts)
+│   │   ├── text.go            # Text, Category, TextLibrary models
+│   │   ├── session.go         # TypingSession, SessionPayload models
+│   │   └── settings.go        # Settings model + defaults
+│   └── storage/               # Persistence layer implementations
 │       ├── storage.go         # Storage manager + embedded defaults
-│       ├── texts.go           # Text repository
-│       ├── sessions.go        # Session repository
-│       ├── settings.go        # Settings repository
+│       ├── texts.go           # Text repository implementation
+│       ├── texts_validate.go  # Text validation logic
+│       ├── sessions.go        # Session repository implementation
+│       ├── settings.go        # Settings repository implementation
 │       └── paths.go           # XDG data directory paths
 │
 ├── data/                      # User data (~/.local/share/fingergo/)
@@ -60,16 +60,27 @@ fingergo/
 │   │   │   └── theme-light.css
 │   │   ├── js/
 │   │   │   ├── events.js         # Event bus (pub/sub for module communication)
-│   │   │   ├── utils.js          # Key normalization utilities
+│   │   │   ├── utils.js          # Key normalization + HTML escaping utilities
+│   │   │   ├── constants.js      # Application-wide constants
 │   │   │   ├── layouts.js        # Keyboard layout registry system
 │   │   │   ├── layouts/          # Modular keyboard layout definitions
 │   │   │   │   └── en-qwerty.js  # EN QWERTY layout data
 │   │   │   ├── keyboard.js       # Keyboard highlighting + finger mapping
 │   │   │   ├── typing.js         # Typing engine (WPM, accuracy, mistakes)
-│   │   │   ├── modals.js         # Modal dialogs (session summary, color settings)
+│   │   │   ├── modals/           # Modal dialog components
+│   │   │   │   ├── core.js           # Base modal (overlay, ESC, close)
+│   │   │   │   ├── session-summary.js # Post-session statistics
+│   │   │   │   ├── color-settings.js  # Color theme editor
+│   │   │   │   ├── text-editor.js     # Text creation/editing
+│   │   │   │   ├── settings.js        # Application settings
+│   │   │   │   └── error.js           # Error notifications
 │   │   │   ├── ui.js             # Text rendering and stats updates
 │   │   │   ├── stats.js          # Statistics visualization
+│   │   │   ├── session.js        # Session state management
+│   │   │   ├── library.js        # Text library management
 │   │   │   ├── colors.js         # Color customization manager
+│   │   │   ├── settings.js       # Application settings manager
+│   │   │   ├── shortcuts.js      # Keyboard shortcuts handler
 │   │   │   └── app.js            # Main app controller (orchestration)
 │   │   ├── wailsjs/              # Auto-generated Wails runtime (not in repo)
 │   │   │   └── runtime/
@@ -106,21 +117,31 @@ fingergo/
         │                                            │
         ├─ Core Infrastructure                       │
         │  ├─ EventBus (events.js)                   ├─ App API
-        │  └─ LayoutRegistry (layouts.js)            │  └─ app.go (Wails bindings)                             │
+        │  └─ LayoutRegistry (layouts.js)            │  └─ app.go (Wails bindings)
         │                                            │
         ├─ UI Components                             ├─ Domain Models
-        │  ├─ KeyboardUI (keyboard.js)               │  ├─ internal/text.go                                      │  │ 
-        │  ├─ TypingEngine (typing.js)               │  ├─ internal/session.go                                   │  │
-        │  ├─ ModalManager (modals.js)               │  ├─ internal/settings.go                                  │  │
-        │  ├─ UIManager (ui.js)                      │  ├─ internal/keyboard.go                                  │  │
-        │  ├─ StatsManager (stats.js)                │  └─ internal/stats.go                                     │
-        │  └─ ColorManager (colors.js)               │
-        │                                            ├─ Storage Layer
-        ├─ Layout Data                               │  ├─ storage/storage.go                                   │  │
-        │  └─ layouts/en-qwerty.js                   │  ├─ storage/texts.go                                     │  │
-        │                                            │  ├─ storage/sessions.go                                  │  │
-        └─ Orchestration                             │  ├─ storage/settings.go
-           └─ app.js (main controller)               │  └─ storage/paths.go
+        │  ├─ KeyboardUI (keyboard.js)               │  ├─ domain/text.go
+        │  ├─ TypingEngine (typing.js)               │  ├─ domain/session.go
+        │  ├─ Modals (modals/*.js)                   │  ├─ domain/settings.go
+        │  │  ├─ Core (core.js)                      │  └─ domain/repository.go
+        │  │  ├─ SessionSummary                      │
+        │  │  ├─ ColorSettings                       ├─ Storage Layer
+        │  │  ├─ TextEditor                          │  ├─ storage/storage.go
+        │  │  ├─ Settings                            │  ├─ storage/texts.go
+        │  │  └─ Error                               │  ├─ storage/texts_validate.go
+        │  ├─ UIManager (ui.js)                      │  ├─ storage/sessions.go
+        │  ├─ StatsManager (stats.js)                │  ├─ storage/settings.go
+        │  ├─ SessionManager (session.js)            │  └─ storage/paths.go
+        │  ├─ LibraryManager (library.js)            │
+        │  ├─ ColorManager (colors.js)               │
+        │  ├─ SettingsManager (settings.js)          │
+        │  └─ ShortcutsManager (shortcuts.js)        │
+        │                                            │
+        ├─ Layout Data                               │
+        │  └─ layouts/en-qwerty.js                   │
+        │                                            │
+        └─ Orchestration                             │
+           └─ app.js (main controller)               │
                                                      ▼
                                           ┌────────────────────────┐
                                           │   FILE STORAGE         │
@@ -143,10 +164,18 @@ Due to the critical need for immediate UI responsiveness in a typing application
 *   `gui/src/js/keyboard.js`: Handles virtual keyboard rendering, key state, and visual feedback.
 *   `gui/src/js/typing.js`: Orchestrates the typing session, manages text progression, and tracks immediate typing performance.
 *   `gui/src/js/stats.js`: Performs real-time calculation and display of typing statistics within a session.
+*   `gui/src/js/modals/`: Modular modal dialog system with base functionality (`core.js`) and specialized modals (session summary, color settings, text editor, settings, error notifications).
 
 **Internal Layer**
-*   **Domain Contracts:** Defines repository interfaces (`TextRepository`, `SessionRepository`, etc.) that the application layer depends on.
-*   **Text Library Management:** The `storage` package provides a `TextRepository` implementation for loading text content and metadata from the `texts/` directory.
-*   **Session Data Storage:** The `storage` package provides a `SessionRepository` implementation for persisting completed typing sessions to `sessions.json`.
-*   **Settings Management:** The `storage` package provides a `SettingsRepository` implementation for persisting user preferences (theme, zenMode, showKeyboard) in `settings.json`.
-*   **Keyboard Layout Management:** Managing, loading, and serving keyboard layout definitions from Go backend for dynamic and extendable layout support.
+*   **Domain Models (`internal/domain/`):**
+    *   `repository.go`: Defines repository interfaces (`TextRepository`, `SessionRepository`, `SettingsRepository`) that the application layer depends on.
+    *   `text.go`: Text, Category, and TextLibrary domain models.
+    *   `session.go`: TypingSession and SessionPayload domain models.
+    *   `settings.go`: Settings domain model with defaults.
+*   **Storage Layer (`internal/storage/`):**
+    *   `storage.go`: Storage manager that orchestrates all repositories and provides embedded defaults.
+    *   `texts.go`: `TextRepository` implementation for loading text content and metadata from the `texts/` directory with lazy loading and caching.
+    *   `texts_validate.go`: Text validation logic (ID uniqueness, category validation, etc.).
+    *   `sessions.go`: `SessionRepository` implementation for persisting completed typing sessions to `sessions.json` with limited history.
+    *   `settings.go`: `SettingsRepository` implementation for persisting user preferences (theme, zenMode, showKeyboard) in `settings.json`.
+    *   `paths.go`: XDG data directory path management for cross-platform data storage.
