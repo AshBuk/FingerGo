@@ -8,9 +8,6 @@
 #
 # Run:
 #   flatpak run io.github.AshBuk.FingerGo
-#
-# Before release, update vendor:
-#   go mod tidy && go mod vendor
 
 app-id: io.github.AshBuk.FingerGo
 runtime: org.gnome.Platform
@@ -38,17 +35,23 @@ modules:
       append-path: /usr/lib/sdk/golang/bin
       env:
         GOROOT: /usr/lib/sdk/golang
-        GOFLAGS: '-mod=vendor'
+        GOPATH: /run/build/fingergo/go
+        GOMODCACHE: /run/build/fingergo/go/pkg/mod
         GOTOOLCHAIN: local
         CGO_ENABLED: '1'
+      # Allow network access during build for go mod download
+      build-args:
+        - --share=network
     build-commands:
       # Enable Go SDK
       - . /usr/lib/sdk/golang/enable.sh
       
-      # Build application with vendored dependencies
+      # Download dependencies (requires network)
+      - go mod download
+      
+      # Build application
       - |
         go build \
-          -mod=vendor \
           -tags desktop,production \
           -trimpath \
           -ldflags="-s -w" \
