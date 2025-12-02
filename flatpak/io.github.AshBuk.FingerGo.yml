@@ -49,7 +49,7 @@ modules:
       # Download dependencies (requires network)
       - go mod download
       
-      # Build application (webkit2_41 for GNOME 47 SDK)
+      # Build application (webkit2_41 for GNOME 48 SDK)
       - |
         go build \
           -tags desktop,production,webkit2_41 \
