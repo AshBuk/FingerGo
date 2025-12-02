@@ -66,15 +66,21 @@
   </keywords>
   
   <releases>
-    <release version="1.0.0" date="2025-12-01">
+    <release version="1.0.0" date="2025-12-02">
       <description>
-        <p>Initial release of FingerGo</p>
+        <p>Stable cross-platform release</p>
         <ul>
-          <li>Visual keyboard with finger color mapping</li>
-          <li>Real-time typing statistics (WPM, CPM, accuracy)</li>
-          <li>Text library with categories</li>
-          <li>Session history and analytics</li>
-          <li>Dark and light themes</li>
+          <li>Clean interface design</li>
+          <li>Keyboard shortcuts, Zen mode, keyboard/stats toggle</li>
+          <li>Real-time visual keyboard with finger mapping</li>
+          <li>Hierarchical text/code library (plain text and code samples)</li>
+          <li>Live stats: WPM, CPM, accuracy, per-key mistakes, session history</li>
+          <li>Eye-friendly Dark/Light themes</li>
+          <li>Customizable color theme</li>
+          <li>Cross-platform support: Linux, macOS, Windows</li>
+          <li>Strict mode for typing practice</li>
+          <li>Automatic focus to textarea on text render</li>
+          <li>XSS prevention via HTML escaping</li>
         </ul>
       </description>
     </release>
