@@ -21,6 +21,12 @@ Built with Go ↔ Wails ↔ Vanilla JavaScript (ES6+). Available for **Linux, ma
 
 ▸ **Customizable color theme**
 
+## Screenshots
+
+<p align="center">
+  <img src="screen/fingergo-screen.png" alt="FingerGo main interface" width="800">
+</p>
+
 ## Installation
 
 ### 🪟 Windows [Release](https://github.com/AshBuk/FingerGo/releases/latest)
