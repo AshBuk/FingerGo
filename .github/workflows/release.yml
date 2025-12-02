@@ -186,23 +186,14 @@ jobs:
           VERSION=${GITHUB_REF#refs/tags/v}
           echo "version=${VERSION}" >> $GITHUB_OUTPUT
 
-      - name: Generate changelog
+      - name: Generate release notes
         env:
           VERSION: ${{ steps.version.outputs.version }}
         run: |
-          # Generate changelog from commits since last tag
-          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
-          if [ -n "$PREV_TAG" ]; then
-            CHANGELOG=$(git log ${PREV_TAG}..HEAD --pretty=format:"- %s (%h)" --no-merges)
-          else
-            CHANGELOG=$(git log --pretty=format:"- %s (%h)" --no-merges -n 10)
-          fi
-          
           cat > RELEASE_NOTES.md << EOF
           # FingerGo v${VERSION}
 
-          ## Changes
-          ${CHANGELOG}
+          See [CHANGELOG.md](https://github.com/AshBuk/FingerGo/blob/main/CHANGELOG.md) for detailed changes.
 
           ## Installation
 
