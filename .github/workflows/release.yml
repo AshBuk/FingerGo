@@ -170,7 +170,7 @@ jobs:
           **Flatpak:**
           \`\`\`bash
           flatpak install --user FingerGo-${VERSION}-x86_64.flatpak
-          flatpak run com.ashbuk.FingerGo
+          flatpak run io.github.AshBuk.FingerGo
           \`\`\`
 
           **Portable (tar.gz):**

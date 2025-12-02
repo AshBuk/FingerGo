@@ -15,7 +15,7 @@ Built with Go ↔ Wails ↔ Vanilla JavaScript (ES6+). Available for **Linux, ma
 
 ▸ **Hierarchical text/code library (plain text and code samples)**  
 
-▸ **Live stats: WPM, CPM, accuracy, per‑key mistakes, session history**  
+▸ **Live stats: WPM, CPM, accuracy, per‑key mistakes**  
 
 ▸ **Eye-friendly Dark/Light themes**
 
@@ -95,7 +95,7 @@ tar -xzf FingerGo-{VERSION}-linux-x86_64.tar.gz
 - [Contributing](docs/CONTRIBUTING.md)
 
 ## Acknowledgments
-
+- [ATTRIBUTION.md](docs/ATTRIBUTION.md)
 - [Wails](https://wails.io/)
 
 ## Apache 2.0 [LICENSE](LICENSE)

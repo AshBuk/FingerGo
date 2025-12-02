@@ -75,8 +75,8 @@ jobs:
       - name: Build Flatpak
         run: |
           cd flatpak
-          flatpak-builder --force-clean --user --install-deps-from=flathub --repo=repo build-dir com.ashbuk.FingerGo.yml
-          flatpak build-bundle repo FingerGo-${{ steps.version.outputs.version }}-x86_64.flatpak com.ashbuk.FingerGo
+          flatpak-builder --force-clean --user --install-deps-from=flathub --repo=repo build-dir io.github.AshBuk.FingerGo.yml
+          flatpak build-bundle repo FingerGo-${{ steps.version.outputs.version }}-x86_64.flatpak io.github.AshBuk.FingerGo
       
       - name: Upload Flatpak artifact
         uses: actions/upload-artifact@v4
