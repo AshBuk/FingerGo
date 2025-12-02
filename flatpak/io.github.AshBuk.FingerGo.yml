@@ -9,8 +9,8 @@
 # Run:
 #   flatpak run io.github.AshBuk.FingerGo
 #
-# Before release, regenerate Go sources:
-#   go run scripts/generate-go-sources.go > flatpak/go-sources.json
+# Before release, update vendor:
+#   go mod tidy && go mod vendor
 
 app-id: io.github.AshBuk.FingerGo
 runtime: org.gnome.Platform
@@ -38,27 +38,17 @@ modules:
       append-path: /usr/lib/sdk/golang/bin
       env:
         GOROOT: /usr/lib/sdk/golang
-        GOPATH: /run/build/fingergo/go
-        GOMODCACHE: /run/build/fingergo/go-mod-cache
-        GOPROXY: 'off'
+        GOFLAGS: '-mod=vendor'
         GOTOOLCHAIN: local
         CGO_ENABLED: '1'
     build-commands:
       # Enable Go SDK
       - . /usr/lib/sdk/golang/enable.sh
       
-      # Assemble GOMODCACHE from individual module directories
-      # Each module was extracted to _modules/{safe-name}/{module-path}@{version}/
-      - |
-        mkdir -p go-mod-cache
-        for dir in _modules/*/; do
-          cp -r "$dir"/* go-mod-cache/ 2>/dev/null || true
-        done
-      
-      # Build application directly with go build (no wails CLI needed)
-      # Frontend is vanilla JS, no build step required
+      # Build application with vendored dependencies
       - |
         go build \
+          -mod=vendor \
           -tags desktop,production \
           -trimpath \
           -ldflags="-s -w" \
@@ -81,10 +71,6 @@ modules:
       - install -Dm644 LICENSE ${FLATPAK_DEST}/share/licenses/io.github.AshBuk.FingerGo/LICENSE
 
     sources:
-      # Application source
       - type: git
         url: https://github.com/AshBuk/FingerGo.git
         tag: v1.0.0
-      
-      # Pre-downloaded Go modules for offline build
-      - go-sources.json
