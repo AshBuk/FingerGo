@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
-  <id>com.ashbuk.FingerGo</id>
-  
+  <id>io.github.AshBuk.FingerGo</id>
+
   <name>FingerGo</name>
   <summary>Touch typing trainer with visual keyboard feedback</summary>
-  
+
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>Apache-2.0</project_license>
-  
-  <developer id="com.ashbuk">
+
+  <developer id="io.github.AshBuk">
     <name>Asher Buk</name>
   </developer>
   
@@ -31,7 +31,7 @@
     </ul>
   </description>
   
-  <launchable type="desktop-id">com.ashbuk.FingerGo.desktop</launchable>
+  <launchable type="desktop-id">io.github.AshBuk.FingerGo.desktop</launchable>
 
   <screenshots>
     <screenshot type="default">

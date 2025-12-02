@@ -1,0 +1,57 @@
+# Flatpak manifest for FingerGo
+# Build: flatpak-builder --force-clean build-dir flatpak/io.github.AshBuk.FingerGo.yml
+# Install: flatpak-builder --user --install --force-clean build-dir flatpak/io.github.AshBuk.FingerGo.yml
+# Run: flatpak run io.github.AshBuk.FingerGo
+
+app-id: io.github.AshBuk.FingerGo
+runtime: org.gnome.Platform
+runtime-version: '48'
+sdk: org.gnome.Sdk
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.golang
+
+command: fingergo
+
+finish-args:
+  - --share=ipc
+  - --socket=x11
+  - --socket=wayland
+  - --socket=pulseaudio
+  - --device=dri
+  - --filesystem=xdg-config/fingergo:create
+  - --filesystem=xdg-data/fingergo:create
+  - --talk-name=org.freedesktop.portal.Desktop
+
+modules:
+  - name: fingergo
+    buildsystem: simple
+    build-options:
+      append-path: /usr/lib/sdk/golang/bin
+      env:
+        GOBIN: /app/bin
+        GOROOT: /usr/lib/sdk/golang
+    build-commands:
+      # Build Wails application from source
+      - . /usr/lib/sdk/golang/enable.sh
+      - export CGO_ENABLED=1
+      - go install github.com/wailsapp/wails/v2/cmd/wails@v2.10.2
+      - wails build -clean -skipbindings -s -trimpath -ldflags="-s -w"
+
+      # Install binary
+      - install -Dm755 build/bin/FingerGo ${FLATPAK_DEST}/bin/fingergo
+
+      # Install desktop file
+      - install -Dm644 flatpak/io.github.AshBuk.FingerGo.desktop ${FLATPAK_DEST}/share/applications/io.github.AshBuk.FingerGo.desktop
+
+      # Install icon
+      - install -Dm644 fingergo.png ${FLATPAK_DEST}/share/icons/hicolor/512x512/apps/io.github.AshBuk.FingerGo.png
+
+      # Install metainfo
+      - install -Dm644 flatpak/io.github.AshBuk.FingerGo.metainfo.xml ${FLATPAK_DEST}/share/metainfo/io.github.AshBuk.FingerGo.metainfo.xml
+
+      # Install license
+      - install -Dm644 LICENSE ${FLATPAK_DEST}/share/licenses/io.github.AshBuk.FingerGo/LICENSE
+    sources:
+      - type: git
+        url: https://github.com/AshBuk/FingerGo.git
+        tag: v1.0.0
