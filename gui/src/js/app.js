@@ -28,6 +28,14 @@
         bind('keyboard-toggle', () => window.SettingsManager.toggleKeyboard());
         bind('reset-session', () => window.SessionManager.reset());
         bind('strict-mode-toggle', () => window.SettingsManager.toggleStrictMode());
+        // GitHub link
+        const githubLink = document.getElementById('github-link');
+        if (githubLink) {
+            githubLink.addEventListener('click', e => {
+                e.preventDefault();
+                window.runtime?.BrowserOpenURL?.('https://github.com/AshBuk/FingerGo');
+            });
+        }
     }
 
     /**

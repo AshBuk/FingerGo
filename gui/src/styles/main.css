@@ -310,3 +310,32 @@ body.zen-mode #text-area {
         width: 45%;
     }
 }
+
+/* GitHub Link */
+#github-link {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent);
+    opacity: 0.4;
+    transition:
+        opacity 0.2s ease,
+        transform 0.2s ease;
+    z-index: 1100;
+}
+#github-link:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+#github-link svg {
+    width: 24px;
+    height: 24px;
+}
+body.zen-mode #github-link {
+    display: none;
+}
