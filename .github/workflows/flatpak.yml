@@ -34,11 +34,6 @@ jobs:
           fi
           echo "version=${VERSION}" >> $GITHUB_OUTPUT
 
-      - name: Validate manifest
-        run: |
-          python3 -c "import yaml; yaml.safe_load(open('flatpak/io.github.AshBuk.FingerGo.yml'))"
-          echo "✓ Manifest YAML is valid"
-
       - name: Build Flatpak
         uses: flatpak/flatpak-github-actions/flatpak-builder@v6
         with:
