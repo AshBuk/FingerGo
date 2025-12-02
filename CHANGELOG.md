@@ -2,7 +2,7 @@
 
 All notable changes to FingerGo will be documented in this file.
 
-## [1.3.3] - 2025-12-02
+## [1.0.0] - 2025-12-02
 
 Stable cross-platform release.
 
