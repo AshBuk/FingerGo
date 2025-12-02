@@ -1,10 +1,14 @@
 <h1 align="center">FingerGo</h1>
 
-<img src="fingergo.png" alt="FingerGo cross-platform touch-typing trainer modern app" width="400" align="right">
+<p align="center">
+<img src="fingergo.png" alt="FingerGo cross-platform touch-typing trainer modern app" width="400">
+</p>
 
-FingerGo is a **cross-platform touch-typing trainer**, designed to improve typing speed and accuracy, with a user-friendly and intuitive interface.  
-It includes real-time keyboard visualization, a hierarchical text and code library, and live statistics tracking.  
-Built with Go ↔ Wails ↔ Vanilla JavaScript (ES6+). Available for **Linux, macOS, and Windows**.
+<p align="center">
+FingerGo is a <strong>cross-platform touch-typing trainer</strong>, designed to improve typing speed and accuracy, with a user-friendly and intuitive interface.<br>
+It includes real-time keyboard visualization, a hierarchical text and code library, and live statistics tracking.<br>
+Built with Go ↔ Wails ↔ Vanilla JavaScript (ES6+). Available for <strong>Linux, macOS, and Windows</strong>.
+</p>
 
 ### Features
 ▸ **Clean Interface Design**
