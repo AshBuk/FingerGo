@@ -49,10 +49,10 @@ modules:
       # Download dependencies (requires network)
       - go mod download
       
-      # Build application
+      # Build application (webkit2_41 for GNOME 47 SDK)
       - |
         go build \
-          -tags desktop,production \
+          -tags desktop,production,webkit2_41 \
           -trimpath \
           -ldflags="-s -w" \
           -o build/bin/FingerGo \
