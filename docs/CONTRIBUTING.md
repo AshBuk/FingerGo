@@ -29,7 +29,10 @@ Why?
 - Go 1.25+
 - Node.js 20+
 - Wails CLI: `go install github.com/wailsapp/wails/v2/cmd/wails@latest`
-- Linux: `libgtk-3-dev libwebkit2gtk-4.1-dev`
+- Platform-specific:
+  - **Linux:** `libgtk-3-dev libwebkit2gtk-4.1-dev`
+  - **macOS:** Xcode Command Line Tools
+  - **Windows:** WebView2 runtime (auto-installed)
 
 **Quick Start:**
 ```bash

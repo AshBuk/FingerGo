@@ -7,7 +7,7 @@ SPDX-License-Identifier: Apache-2.0
 ## GUI Layer:      HTML5 + CSS3 + Vanilla JavaScript (ES6+)
 ## Desktop:        Wails v2 (webview wrapper, Go-JS bridge)
 ## Storage:        JSON files (texts, sessions, settings)
-## Package:        Flatpak (Linux native distribution)
+## Platforms:      Linux, macOS, Windows (cross-platform)
 ## Language:       English (UI and documentation)
 
 
