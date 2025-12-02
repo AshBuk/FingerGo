@@ -1,3 +1,7 @@
+// Copyright 2025 Asher Buk. All rights reserved.
+// Use of this source code is governed by the MIT license
+// that can be found in the LICENSE file.
+
 //go:build ignore
 
 // Generate Flatpak sources JSON for Go modules with SHA256 checksums.
