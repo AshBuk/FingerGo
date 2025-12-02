@@ -15,6 +15,6 @@ Stable cross-platform release.
 - Eye-friendly Dark/Light themes
 - Customizable color theme
 - Cross-platform support: Linux, macOS, Windows
-- AppImage, Flatpak, and portable builds for Linux
+- Flatpak and tar builds for Linux
 - DMG installer for macOS (Universal binary - Intel and Apple Silicon)
 - Portable ZIP for Windows
