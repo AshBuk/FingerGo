@@ -1,14 +1,10 @@
 <h1 align="center">FingerGo</h1>
 
-<p align="center">
-<img src="fingergo.png" alt="FingerGo cross-platform touch-typing trainer modern app" width="400">
-</p>
+<img src="fingergo.png" alt="FingerGo cross-platform touch-typing trainer modern app" width="400" align="right">
 
-<p align="center">
-FingerGo is a <strong>cross-platform touch-typing trainer</strong>, designed to improve typing speed and accuracy, with a user-friendly and intuitive interface.<br>
-It includes real-time keyboard visualization, a hierarchical text and code library, and live statistics tracking.<br>
-Built with Go ↔ Wails ↔ Vanilla JavaScript (ES6+). Available for <strong>Linux, macOS, and Windows</strong>.
-</p>
+FingerGo is a **cross-platform touch-typing trainer**, designed to improve typing speed and accuracy, with a user-friendly and intuitive interface.  
+It includes real-time keyboard visualization, a hierarchical text and code library, and live statistics tracking.  
+Built with Go ↔ Wails ↔ Vanilla JavaScript (ES6+). Available for **Linux, macOS, and Windows**.
 
 ### Features
 ▸ **Clean Interface Design**
@@ -27,9 +23,7 @@ Built with Go ↔ Wails ↔ Vanilla JavaScript (ES6+). Available for <strong>Lin
 
 ## Installation
 
-### 🪟 Windows
-
-**Download from [Releases](https://github.com/AshBuk/FingerGo/releases/latest):**
+### 🪟 Windows [Release](https://github.com/AshBuk/FingerGo/releases/latest)
 
 **Portable:**
 1. Download `FingerGo-{VERSION}-x64-portable.zip`
@@ -37,9 +31,7 @@ Built with Go ↔ Wails ↔ Vanilla JavaScript (ES6+). Available for <strong>Lin
 
 **Requirements:** Windows 10/11 with WebView2 (auto-downloads if missing)
 
-### 🍎 macOS
-
-**Download from [Releases](https://github.com/AshBuk/FingerGo/releases/latest):**
+### 🍎 macOS [Release](https://github.com/AshBuk/FingerGo/releases/latest)
 
 **DMG:**
 1. Download `FingerGo-{VERSION}-universal.dmg`
@@ -48,22 +40,20 @@ Built with Go ↔ Wails ↔ Vanilla JavaScript (ES6+). Available for <strong>Lin
 
 **Supports:** Intel and Apple Silicon (Universal binary)
 
-### 🐧 Linux
+### 🐧 Linux [Releases](https://github.com/AshBuk/FingerGo/releases/latest)
 
-**Download from [Releases](https://github.com/AshBuk/FingerGo/releases/latest):**
-
-**Flatpak (recommended):**
+**Flatpak:**
 ```bash
 flatpak install --user FingerGo-{VERSION}-x86_64.flatpak
 flatpak run com.ashbuk.FingerGo
 ```
 
 **Portable (tar.gz):**
-Requires WebKit2GTK 4.1 installed on your system.
 ```bash
+# Requires WebKit2GTK 4.1 installed on your system.
 tar -xzf FingerGo-{VERSION}-linux-x86_64.tar.gz
 ./FingerGo
-
+```
 
 ---
 
