@@ -17,6 +17,9 @@ finish-args:
   - --device=dri
   - --filesystem=xdg-config/fingergo:create
   - --filesystem=xdg-data/fingergo:create
+  # Portal access for system theme detection
+  - --talk-name=org.freedesktop.portal.Desktop
+  - --talk-name=org.freedesktop.Flatpak
 
 modules:
   - name: fingergo
