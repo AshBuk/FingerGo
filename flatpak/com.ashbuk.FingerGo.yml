@@ -3,9 +3,9 @@
 # Install: flatpak-builder --user --install --force-clean build-dir flatpak/com.ashbuk.FingerGo.yml
 
 app-id: com.ashbuk.FingerGo
-runtime: org.freedesktop.Platform
-runtime-version: '24.08'
-sdk: org.freedesktop.Sdk
+runtime: org.gnome.Platform
+runtime-version: '48'
+sdk: org.gnome.Sdk
 
 command: fingergo
 
