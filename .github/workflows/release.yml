@@ -88,52 +88,7 @@ jobs:
           VERSION: ${{ steps.version.outputs.version }}
         run: |
           cd build/bin
-          
-          # Create versioned tar.gz archive
-          # Convention: AppName-VERSION-linux-ARCH.tar.gz
           tar -czf ${{ env.APP_NAME }}-${VERSION}-linux-${{ matrix.arch }}.tar.gz ${{ env.APP_NAME }}
-          
-          # Create AppImage
-          cd ${{ github.workspace }}
-
-          # Download linuxdeploy and GTK plugin
-          wget -q https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
-          wget -q https://raw.githubusercontent.com/linuxdeploy/linuxdeploy-plugin-gtk/master/linuxdeploy-plugin-gtk.sh
-          chmod +x linuxdeploy-x86_64.AppImage linuxdeploy-plugin-gtk.sh
-
-          mkdir -p AppDir/usr/bin
-          mkdir -p AppDir/usr/share/applications
-          mkdir -p AppDir/usr/share/icons/hicolor/512x512/apps
-
-          cp build/bin/${{ env.APP_NAME }} AppDir/usr/bin/fingergo
-          chmod +x AppDir/usr/bin/fingergo
-
-          cp fingergo.png AppDir/usr/share/icons/hicolor/512x512/apps/fingergo.png
-
-          cat > AppDir/usr/share/applications/fingergo.desktop << 'EOF'
-          [Desktop Entry]
-          Type=Application
-          Name=FingerGo
-          Comment=Touch typing trainer with visual keyboard feedback
-          Exec=fingergo
-          Icon=fingergo
-          Categories=Education;Utility;
-          Terminal=false
-          EOF
-
-          # Convention: AppName-VERSION-ARCH.AppImage
-          export VERSION="${VERSION}"
-          export DEPLOY_GTK_VERSION=3
-          ARCH=x86_64 APPIMAGE_EXTRACT_AND_RUN=1 ./linuxdeploy-x86_64.AppImage \
-            --appdir AppDir \
-            --plugin gtk \
-            --output appimage \
-            --desktop-file AppDir/usr/share/applications/fingergo.desktop \
-            --icon-file fingergo.png
-          
-          # Rename to convention
-          mv ${{ env.APP_NAME }}*.AppImage build/bin/${{ env.APP_NAME }}-${VERSION}-${{ matrix.arch }}.AppImage 2>/dev/null || \
-          mv *.AppImage build/bin/${{ env.APP_NAME }}-${VERSION}-${{ matrix.arch }}.AppImage
 
       # ==================== macOS Packaging ====================
       - name: Package macOS artifacts
@@ -163,7 +118,6 @@ jobs:
           name: ${{ env.APP_NAME }}-${{ runner.os }}-${{ matrix.arch }}
           path: |
             build/bin/*.tar.gz
-            build/bin/*.AppImage
             build/bin/*.dmg
             build/bin/*.msi
             build/bin/*.zip
@@ -213,22 +167,17 @@ jobs:
           - First launch: Right-click → Open (bypasses Gatekeeper if unsigned)
 
           ### Linux
-          **AppImage (recommended):**
+          **Flatpak:**
           \`\`\`bash
-          chmod +x FingerGo-${VERSION}-x86_64.AppImage
-          ./FingerGo-${VERSION}-x86_64.AppImage
+          flatpak install --user FingerGo-${VERSION}-x86_64.flatpak
+          flatpak run com.ashbuk.FingerGo
           \`\`\`
 
           **Portable (tar.gz):**
+          Requires WebKit2GTK 4.1 installed on your system.
           \`\`\`bash
           tar -xzf FingerGo-${VERSION}-linux-x86_64.tar.gz
           ./FingerGo
-          \`\`\`
-
-          **Flatpak:**
-          \`\`\`bash
-          flatpak install FingerGo-${VERSION}-x86_64.flatpak
-          flatpak run com.ashbuk.FingerGo
           \`\`\`
           EOF
 
@@ -240,7 +189,6 @@ jobs:
           prerelease: ${{ contains(github.ref, 'alpha') || contains(github.ref, 'beta') || contains(github.ref, 'rc') }}
           files: |
             artifacts/**/*.tar.gz
-            artifacts/**/*.AppImage
             artifacts/**/*.dmg
             artifacts/**/*.msi
             artifacts/**/*.zip

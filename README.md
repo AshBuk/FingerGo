@@ -52,23 +52,18 @@ Built with Go ↔ Wails ↔ Vanilla JavaScript (ES6+). Available for <strong>Lin
 
 **Download from [Releases](https://github.com/AshBuk/FingerGo/releases/latest):**
 
-**AppImage (recommended):**
+**Flatpak (recommended):**
 ```bash
-chmod +x FingerGo-{VERSION}-x86_64.AppImage
-./FingerGo-{VERSION}-x86_64.AppImage
+flatpak install --user FingerGo-{VERSION}-x86_64.flatpak
+flatpak run com.ashbuk.FingerGo
 ```
 
 **Portable (tar.gz):**
+Requires WebKit2GTK 4.1 installed on your system.
 ```bash
 tar -xzf FingerGo-{VERSION}-linux-x86_64.tar.gz
 ./FingerGo
-```
 
-**Flatpak:**
-```bash
-flatpak install FingerGo-{VERSION}-x86_64.flatpak
-flatpak run com.ashbuk.FingerGo
-```
 
 ---
 
