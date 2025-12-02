@@ -1,38 +1,21 @@
-// Depth-First Search (DFS) - File Finder
-// Time: O(n) where n is total number of files and directories
-// Space: O(h) where h (height) is maximum depth of directory tree (call stack for recursion)
+Welcome to FingerGo! It will help you on your journey to master such an important skill as touch typing.
+You can load your own texts or code for practice using the library panel on the right. Tooltips will show you hotkeys for interface customization, you can also simply click on the corresponding icons.
+Visit the project repository (open source) at github.com/AshBuk/FingerGo
+Gooo, let's get started:
 
-package main
-
-import (
-	"fmt"
-	"os"
-	"path/filepath"
-	"strings"
-)
-
-func FindFileDFS(dirName string, fileName string) (string, bool) {
-	files, _ := os.ReadDir(dirName)
-
-	for _, file := range files {
-		fullPath := filepath.Join(dirName, file.Name())
-		if file.IsDir() {
-			if path, found := FindFileDFS(fullPath, fileName); found {
-				return path, true
-			}
-		} else if strings.Contains(file.Name(), fileName) {
-			return fullPath, true
+func quickSort(arr []int) []int {
+	if len(arr) < 2 {
+		return arr
+	}
+	left := []int{}
+	right := []int{}
+	pivot := arr[0]
+	for _, value := range arr[1:] {
+		if value <= pivot {
+			left = append(left, value)
+		} else {
+			right = append(right, value)
 		}
 	}
-	return "", false
+	return append(append(quickSort(left), pivot), quickSort(right)...)
 }
-
-func main() {
-	// Placeholder: replace with actual directory path and file name
-	path, found := FindFileDFS("/path/to/dir", "file.txt")
-	if found {
-		fmt.Println(path)
-	}
-}
-
-// Source: https://github.com/AshBuk/ALgoDSgo

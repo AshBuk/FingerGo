@@ -1,19 +1,19 @@
 {
-  "defaultTextId": "dfs-file-finder",
+  "defaultTextId": "quick-sort",
   "categories": [
     {
-      "id": "algorithms-go",
-      "name": "Algorithms (Go)",
+      "id": "welcome",
+      "name": "Welcome",
       "icon": "go"
     }
   ],
   "texts": [
     {
       "createdAt": "2025-01-01T00:00:00Z",
-      "id": "dfs-file-finder",
-      "title": "DFS File Finder (Go)",
+      "id": "quick-sort",
+      "title": "Quick Sort",
       "content": "",
-      "categoryId": "algorithms-go",
+      "categoryId": "welcome",
       "language": "go",
       "isFavorite": false
     }
