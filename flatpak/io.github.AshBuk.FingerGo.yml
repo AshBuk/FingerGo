@@ -47,6 +47,14 @@ modules:
       # Enable Go SDK
       - . /usr/lib/sdk/golang/enable.sh
       
+      # Assemble GOMODCACHE from individual module directories
+      # Each module was extracted to _modules/{safe-name}/{module-path}@{version}/
+      - |
+        mkdir -p go-mod-cache
+        for dir in _modules/*/; do
+          cp -r "$dir"/* go-mod-cache/ 2>/dev/null || true
+        done
+      
       # Build application directly with go build (no wails CLI needed)
       # Frontend is vanilla JS, no build step required
       - |

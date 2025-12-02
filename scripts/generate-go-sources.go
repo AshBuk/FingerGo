@@ -94,13 +94,14 @@ func main() {
 			continue
 		}
 
-		// Destination: go-mod-cache
-		// The zip already contains full path: github.com/google/uuid@v1.6.0/...
+		// Use unique dest per module to avoid parallel extraction conflicts
+		// Module path: github.com/google/uuid -> _modules/github.com-google-uuid-v1.6.0
+		safeName := strings.ReplaceAll(mod.Path, "/", "-") + "-" + mod.Version
 		sources = append(sources, FlatpakSource{
 			Type:   "archive",
 			URL:    url,
 			Sha256: checksum,
-			Dest:   "go-mod-cache",
+			Dest:   "_modules/" + safeName,
 		})
 	}
 
