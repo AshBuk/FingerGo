@@ -30,7 +30,7 @@
     "webview2": "download"
   },
   "mac": {
-    "icon": "./build/appicon.icns",
+    "icon": "./fingergo.png",
     "bundle": {
       "identifier": "com.ashbuk.fingergo",
       "name": "FingerGo",
