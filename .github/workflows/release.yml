@@ -95,19 +95,21 @@ jobs:
           
           # Create AppImage
           cd ${{ github.workspace }}
-          
+
+          # Download linuxdeploy and GTK plugin
           wget -q https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
-          chmod +x linuxdeploy-x86_64.AppImage
-          
+          wget -q https://raw.githubusercontent.com/linuxdeploy/linuxdeploy-plugin-gtk/master/linuxdeploy-plugin-gtk.sh
+          chmod +x linuxdeploy-x86_64.AppImage linuxdeploy-plugin-gtk.sh
+
           mkdir -p AppDir/usr/bin
           mkdir -p AppDir/usr/share/applications
           mkdir -p AppDir/usr/share/icons/hicolor/512x512/apps
-          
+
           cp build/bin/${{ env.APP_NAME }} AppDir/usr/bin/fingergo
           chmod +x AppDir/usr/bin/fingergo
-          
+
           cp fingergo.png AppDir/usr/share/icons/hicolor/512x512/apps/fingergo.png
-          
+
           cat > AppDir/usr/share/applications/fingergo.desktop << 'EOF'
           [Desktop Entry]
           Type=Application
@@ -118,11 +120,13 @@ jobs:
           Categories=Education;Utility;
           Terminal=false
           EOF
-          
+
           # Convention: AppName-VERSION-ARCH.AppImage
           export VERSION="${VERSION}"
+          export DEPLOY_GTK_VERSION=3
           ARCH=x86_64 APPIMAGE_EXTRACT_AND_RUN=1 ./linuxdeploy-x86_64.AppImage \
             --appdir AppDir \
+            --plugin gtk \
             --output appimage \
             --desktop-file AppDir/usr/share/applications/fingergo.desktop \
             --icon-file fingergo.png
