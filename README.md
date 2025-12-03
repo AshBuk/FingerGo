@@ -99,6 +99,7 @@ tar -xzf FingerGo-{VERSION}-linux-x86_64.tar.gz
 - [Architecture overview](docs/tech-design/architecture.md)
 - [Makefile](Makefile)
 - [Contributing](docs/CONTRIBUTING.md)
+- [ashbuk.hashnode.dev](https://ashbuk.hashnode.dev/fingergo) Architecture Dive
 
 ## Acknowledgments
 - [ATTRIBUTION.md](docs/ATTRIBUTION.md)
