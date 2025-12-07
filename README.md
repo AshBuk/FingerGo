@@ -65,6 +65,10 @@ tar -xzf FingerGo-{VERSION}-linux-x86_64.tar.gz
 
 ## Tech Stack
 
+  <a href="https://pkg.go.dev/github.com/AshBuk/FingerGo"><img src="https://pkg.go.dev/badge/github.com/AshBuk/FingerGo.svg" alt="Go Reference"></a>
+  <a href="https://goreportcard.com/report/github.com/AshBuk/FingerGo"><img src="https://goreportcard.com/badge/github.com/AshBuk/FingerGo" alt="Go Report Card"></a>
+  <img src="https://img.shields.io/badge/Vanilla_JS-No_Framework-yellow?logo=javascript&logoColor=000" alt="Vanilla JavaScript">
+
 ```
 ┌──────────────────────┐                    ┌────────────────────────┐
 │   GUI LAYER          │◄──── Wails ───────►│  INTERNAL LAYER        │

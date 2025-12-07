@@ -2,27 +2,20 @@
 // SPDX-License-Identifier: Apache-2.0
 // https://github.com/AshBuk/FingerGo
 
-// Package main provides FingerGo, a desktop touch-typing trainer.
+// Package main provides FingerGo, a cross-platform touch-typing trainer.
 //
-// # Overview
+// FingerGo helps improve typing speed and accuracy through real-time keyboard
+// visualization, hierarchical text/code library, and detailed analytics.
 //
-// FingerGo is a desktop touch-typing trainer app with real-time keyboard
-// visualization and detailed typing analytics (WPM, accuracy, mistakes).
-// Built with Wails (Go internal layer + HTML/CSS/JS GUI).
-// Distributed for Linux (Flatpak).
+// Built with Go + Wails + Vanilla JS. Available for Linux, macOS, and Windows.
 //
-// # Tech Stack
+// Features:
 //
-// - Internal: Go 1.25+
-// - Desktop: Wails v2
-// - GUI: Vanilla JavaScript (ES6+), HTML5, CSS3
-// - Storage: JSON files
-// - Platform: Linux
-//
-// # Key Features
-//
-// - Real-time visual keyboard with finger mapping
-// - Hierarchical text library (plain text and code samples)
-// - Detailed stats: WPM, accuracy, per-key mistakes, session history
-// - Minimalist UI with the Go gopher mascot
+//	▸ Clean Interface Design
+//	▸ Shortcuts, Zen Mode, keyboard/Stat Toggle
+//	▸ Real-time visual keyboard with finger mapping
+//	▸ Hierarchical text/code library (plain text and code samples)
+//	▸ Live stats: WPM, CPM, accuracy, per-key mistakes
+//	▸ Eye-friendly Dark/Light themes
+//	▸ Customizable color theme
 package main
