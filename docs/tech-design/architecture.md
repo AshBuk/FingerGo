@@ -3,12 +3,12 @@ Copyright 2025 Asher Buk
 SPDX-License-Identifier: Apache-2.0
 -->
 
-## Internal Layer: Go 1.25+ (goroutines, embed, encoding/json)
-## GUI Layer:      HTML5 + CSS3 + Vanilla JavaScript (ES6+)
-## Desktop:        Wails v2 (webview wrapper, Go-JS bridge)
-## Storage:        JSON files (texts, sessions, settings)
-## Platforms:      Linux, macOS, Windows (cross-platform)
-## Language:       English (UI and documentation)
+#### Internal Layer: Go 1.25+ (goroutines, embed, encoding/json)
+#### GUI Layer:      HTML5 + CSS3 + Vanilla JavaScript (ES6+)
+#### Desktop:        Wails v2 (webview wrapper, Go-JS bridge)
+#### Storage:        JSON files (texts, sessions, settings)
+#### Platforms:      Linux, macOS, Windows (cross-platform)
+#### Language:       English (UI and documentation)
 
 
 ---
@@ -56,6 +56,7 @@ fingergo/
 │   │   │   ├── main.css
 │   │   │   ├── modals.css
 │   │   │   ├── keyboard.css
+│   │   │   ├── library.css
 │   │   │   ├── theme-dark.css
 │   │   │   └── theme-light.css
 │   │   ├── js/
@@ -100,7 +101,7 @@ fingergo/
 ## Architecture Overview
 
 ### High-Level Component Diagram
-```
+
 ┌────────────────────────────────────────────────────────────────┐
 │                          FingerGo                              │
 │                     (Wails Desktop App)                        │
@@ -153,7 +154,6 @@ fingergo/
                                          ▼           ▼           ▼
                                       texts/   sessions.json  settings.json
                                     (library)   (history)    (preferences)
-```
 
 ### Frontend vs. Backend Responsibilities
 FingerGo's architecture leverages the Wails framework, which provides a bridge between a Go backend and a web frontend (HTML/CSS/JS). This allows for a flexible division of responsibilities.

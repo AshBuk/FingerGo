@@ -6,7 +6,8 @@ SPDX-License-Identifier: Apache-2.0
 ## Text Management
 
 #### Category System
-- **Hierarchical structure:** Categories → Subcategories → Texts
+- **Hierarchical structure:** All → 
+Categories → Texts
 - **Visual representation:** Icon-based widgets for each category
   - Generic text icon for plain text categories
   - Language-specific icons for programming languages (Go, TypeScript, Python, etc.)
