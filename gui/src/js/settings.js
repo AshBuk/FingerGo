@@ -187,7 +187,7 @@
             zenMode: false,
             showKeyboard: true,
             showStatsBar: true,
-            strictMode: false,
+            strictMode: true,
         };
         if (!window.go?.app?.App?.GetSettings) return defaults;
         try {
