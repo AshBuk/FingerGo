@@ -2,6 +2,18 @@
 
 All notable changes to FingerGo will be documented in this file.
 
+## [1.1.0] - 2025-12-27
+
+Stability and performance improvements.
+
+### Fixed
+- Session stats modal now shows current session data on Esc
+- Strict mode setting now persists between sessions
+
+### Changed
+- Strict mode enabled by default (cheat mode is opt-in)
+- GPU-accelerated sidebar animation for smoother transitions
+
 ## [1.0.0] - 2025-12-02
 
 Stable cross-platform release.
