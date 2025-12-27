@@ -51,7 +51,8 @@
         if (!window.UIManager) return;
         // Pause session while modal is open
         window.TypingEngine?.pause();
-        const summary = window.StatsManager?.getSessionSummary?.() || buildLiveSummary();
+        // Priority: live session data > cached last session
+        const summary = buildLiveSummary() || window.StatsManager?.getSessionSummary?.();
         if (summary) {
             summary.isCompleted = false; // Session paused, not completed
             window.UIManager.showModal('session-summary', summary);
