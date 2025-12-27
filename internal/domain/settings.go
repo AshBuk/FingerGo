@@ -20,6 +20,6 @@ func DefaultSettings() Settings {
 		ShowKeyboard: true,
 		ShowStatsBar: true,
 		ZenMode:      false,
-		StrictMode:   false, // allow direct correction by default (cheat mode)
+		StrictMode:   true, // require backspace to fix errors (false = cheat mode)
 	}
 }

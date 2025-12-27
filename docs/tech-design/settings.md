@@ -15,7 +15,7 @@ SPDX-License-Identifier: Apache-2.0
 - **Zen mode:** Focus mode that hides both keyboard and stats bar for distraction-free typing
 
 #### Typing Behavior
-- **Strict mode:** Require backspace to fix errors (on) or allow direct correction (off, default)
+- **Strict mode:** Require backspace to fix errors (on, default) or allow direct correction (off)
 - **Error feedback:** Red highlight on wrong key, green fade after correction
 
 ---
