@@ -148,37 +148,13 @@ jobs:
         env:
           VERSION: ${{ steps.version.outputs.version }}
         run: |
+          # Extract changelog for this version
+          CHANGELOG=$(awk '/^## \['"${VERSION}"'\]/{flag=1; next} /^## \[/{flag=0} flag' CHANGELOG.md)
+
           cat > RELEASE_NOTES.md << EOF
-          # FingerGo v${VERSION}
+          ${CHANGELOG}
 
-          See [CHANGELOG.md](https://github.com/AshBuk/FingerGo/blob/main/CHANGELOG.md) for detailed changes.
-
-          ## Installation
-
-          ### Windows
-          **Portable:**
-          - Download \`FingerGo-${VERSION}-x64-portable.zip\`
-          - Extract and run \`FingerGo.exe\`
-
-          ### macOS
-          **DMG:**
-          - Download \`FingerGo-${VERSION}-universal.dmg\`
-          - Open DMG and drag FingerGo to Applications
-          - First launch: Right-click → Open (bypasses Gatekeeper if unsigned)
-
-          ### Linux
-          **Flatpak:**
-          \`\`\`bash
-          flatpak install --user FingerGo-${VERSION}-x86_64.flatpak
-          flatpak run io.github.AshBuk.FingerGo
-          \`\`\`
-
-          **Portable (tar.gz):**
-          Requires WebKit2GTK 4.1 installed on your system.
-          \`\`\`bash
-          tar -xzf FingerGo-${VERSION}-linux-x86_64.tar.gz
-          ./FingerGo
-          \`\`\`
+          See [README](https://github.com/AshBuk/FingerGo#installation) for installation instructions.
           EOF
 
       - name: Create GitHub Release
