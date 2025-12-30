@@ -2,6 +2,10 @@
 
 All notable changes to FingerGo will be documented in this file.
 
+## [1.1.1] - 2025-12-30
+
+Flatpak metadata patch.
+
 ## [1.1.0] - 2025-12-27
 
 Stability and performance improvements.

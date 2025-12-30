@@ -12,7 +12,7 @@
   "info": {
     "companyName": "Asher Buk Open Source",
     "productName": "FingerGo",
-    "productVersion": "1.1.0",
+    "productVersion": "1.1.1",
     "copyright": "Copyright 2025 Asher Buk",
     "comments": "Touch typing trainer with visual keyboard feedback"
   },
@@ -34,7 +34,7 @@
     "bundle": {
       "identifier": "com.ashbuk.fingergo",
       "name": "FingerGo",
-      "version": "1.1.0",
+      "version": "1.1.1",
       "copyright": "Copyright 2025 Asher Buk"
     }
   }

@@ -181,7 +181,7 @@
 
     // Log successful initialization
     console.log(
-        `%cFingerGo %cv${window.AppConstants?.VERSION || '1.0.0'}`,
+        `%cFingerGo %cv${window.AppConstants?.VERSION || '1.1.1'}`,
         'font-weight: bold; font-size: 14px; color: #4A90E2',
         'font-weight: normal; color: #888',
     );

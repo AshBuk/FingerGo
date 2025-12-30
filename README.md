@@ -1,5 +1,14 @@
 <h1 align="center">FingerGo</h1>
 
+<p align="center">
+  <a href="https://github.com/AshBuk/FingerGo/actions/workflows/ci.yml"><img src="https://github.com/AshBuk/FingerGo/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/AshBuk/FingerGo/releases"><img src="https://img.shields.io/badge/macOS-available-blue?logo=apple" alt="macOS"></a>
+  <a href="https://github.com/AshBuk/FingerGo/releases"><img src="https://img.shields.io/badge/Windows-available-blue?logo=windows" alt="Windows"></a>
+  <a href="https://github.com/AshBuk/FingerGo/releases"><img src="https://img.shields.io/badge/Linux-available-blue?logo=linux&logoColor=white" alt="Linux"></a>
+  <a href="https://github.com/AshBuk/FingerGo/releases"><img src="https://img.shields.io/badge/Flatpak-available-blue?logo=flatpak" alt="Flatpak"></a>
+  <a href="https://github.com/AshBuk/FingerGo/releases"><img src="https://img.shields.io/github/v/release/AshBuk/FingerGo?sort=semver" alt="Release"></a>
+</p>
+
 <img src="fingergo.png" alt="FingerGo cross-platform touch-typing trainer modern app" width="400" align="right">
 
 FingerGo is a **cross-platform touch-typing trainer**, designed to improve typing speed and accuracy, with a user-friendly and intuitive interface.  
