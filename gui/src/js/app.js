@@ -90,8 +90,11 @@
         bindButtonHandlers();
         // Check required modules
         if (!checkModules()) return;
-        // Load default text
-        const text = await window.SessionManager.loadDefault();
+        // Load last opened text, fallback to default
+        let text = settings.lastTextId
+            ? await window.SessionManager.loadText(settings.lastTextId)
+            : null;
+        if (!text) text = await window.SessionManager.loadDefault();
         if (!text?.length) {
             console.error('No text available. Check internal layer connection.');
             return;
