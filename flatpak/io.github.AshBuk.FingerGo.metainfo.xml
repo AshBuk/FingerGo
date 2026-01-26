@@ -66,40 +66,19 @@
   </keywords>
   
   <releases>
-    <release version="1.1.1" date="2025-12-30">
+    <release version="1.1.2" date="2025-01-26">
       <description>
-        <p>Flatpak metadata patch</p>
-      </description>
-    </release>
-    <release version="1.1.0" date="2025-12-27">
-      <description>
-        <p>Stability and performance improvements</p>
+        <p>Session UX improvements</p>
         <ul>
-          <li>Session stats modal now shows current session data on Esc</li>
-          <li>Strict mode setting now persists between sessions</li>
-          <li>Strict mode enabled by default</li>
-          <li>GPU-accelerated sidebar animation</li>
+          <li>Restore last opened text on app startup</li>
+          <li>Fix cursor jump when starting to type from middle of text</li>
+          <li>Add visible highlight for Enter key in text display</li>
         </ul>
       </description>
     </release>
-    <release version="1.0.0" date="2025-12-02">
-      <description>
-        <p>Stable cross-platform release</p>
-        <ul>
-          <li>Clean interface design</li>
-          <li>Keyboard shortcuts, Zen mode, keyboard/stats toggle</li>
-          <li>Real-time visual keyboard with finger mapping</li>
-          <li>Hierarchical text/code library (plain text and code samples)</li>
-          <li>Live stats: WPM, CPM, accuracy, per-key mistakes, session history</li>
-          <li>Eye-friendly Dark/Light themes</li>
-          <li>Customizable color theme</li>
-          <li>Cross-platform support: Linux, macOS, Windows</li>
-          <li>Strict mode for typing practice</li>
-          <li>Automatic focus to textarea on text render</li>
-          <li>XSS prevention via HTML escaping</li>
-        </ul>
-      </description>
-    </release>
+    <release version="1.1.1" date="2025-12-30"/>
+    <release version="1.1.0" date="2025-12-27"/>
+    <release version="1.0.0" date="2025-12-02"/>
   </releases>
   
   <provides>
