@@ -79,6 +79,8 @@
             if (char === ' ') {
                 const lockSpace = i === lineStartIndex + 1 && text[lineStartIndex] === '-';
                 span.textContent = lockSpace ? '\u00A0' : ' ';
+            } else if (char === '\n') {
+                span.textContent = ' \n';
             } else if (char === '\r') {
                 // Skip carriage returns (CRLF handling)
                 span.textContent = '';
