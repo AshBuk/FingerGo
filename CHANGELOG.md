@@ -2,6 +2,17 @@
 
 All notable changes to FingerGo will be documented in this file.
 
+## [1.1.2] - 2025-01-26
+
+Session UX improvements.
+
+### Fixed
+- Remove redundant `renderText` call on typing start, this fix cursor jump when starting to type from middle of text and optimize perf
+
+### Added
+- Restore last opened text on app startup via `lastTextId` setting
+- Add visible highlight for Enter key in text display
+
 ## [1.1.1] - 2025-12-30
 
 Flatpak metadata patch.
