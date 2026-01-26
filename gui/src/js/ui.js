@@ -295,11 +295,6 @@
         }
     }
     // Listen to typing events
-    window.EventBus.on('typing:start', data => {
-        if (data.text) {
-            renderText(data.text);
-        }
-    });
     window.EventBus.on('typing:keystroke', data => {
         if (data.index !== undefined) {
             // Mark the character we just typed as correct
