@@ -89,6 +89,7 @@
     /**
      * Load text by ID from internal layer
      * @param {string} textId
+     * @returns {Promise<string|undefined>} Text content or undefined on failure
      */
     async function loadText(textId) {
         if (!window.go?.app?.App?.Text) {
@@ -111,6 +112,9 @@
             window.UIManager?.renderText(currentText);
             setInitialTarget(currentText);
             setupTypingStart();
+            // Persist last text ID for session restore
+            window.go.app.App.UpdateSetting?.('lastTextId', textId);
+            return currentText;
         } catch (err) {
             console.error('Failed to load text:', err);
         }

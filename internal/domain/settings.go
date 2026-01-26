@@ -7,6 +7,7 @@ package domain
 // Settings holds user preferences persisted in settings.json.
 type Settings struct {
 	Theme        string `json:"theme"`        // "dark" | "light"
+	LastTextID   string `json:"lastTextId"`   // last opened text ID for session restore
 	ShowKeyboard bool   `json:"showKeyboard"` // keyboard section visibility
 	ShowStatsBar bool   `json:"showStatsBar"` // stats bar visibility
 	ZenMode      bool   `json:"zenMode"`      // focus mode (hides both keyboard and stats)
