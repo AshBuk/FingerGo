@@ -13,6 +13,7 @@
     let isKeyboardVisible = true;
     let isStatsBarVisible = true;
     let isStrictMode = false;
+    let currentKeyboardLayout = 'en-qwerty';
 
     // DOM element references (cached on first use)
     const getEl = id => document.getElementById(id);
@@ -178,8 +179,21 @@
     }
 
     /**
+     * Apply keyboard layout and optionally persist
+     * @param {string} layoutId - Layout identifier (e.g., 'en-qwerty', 'en-dvorak')
+     * @param {boolean} [persist=true]
+     * @returns {boolean} True if layout applied successfully
+     */
+    function applyKeyboardLayout(layoutId, persist = true) {
+        if (!window.KeyboardUI?.setLayout(layoutId)) return false;
+        currentKeyboardLayout = layoutId;
+        if (persist) persistSetting('keyboardLayout', layoutId);
+        return true;
+    }
+
+    /**
      * Load settings from internal layer
-     * @returns {Promise<{theme: string, zenMode: boolean, showKeyboard: boolean, showStatsBar: boolean, strictMode: boolean}>}
+     * @returns {Promise<{theme: string, zenMode: boolean, showKeyboard: boolean, showStatsBar: boolean, strictMode: boolean, keyboardLayout: string}>}
      */
     async function load() {
         const defaults = {
@@ -188,6 +202,7 @@
             showKeyboard: true,
             showStatsBar: true,
             strictMode: true,
+            keyboardLayout: 'en-qwerty',
         };
         if (!window.go?.app?.App?.GetSettings) return defaults;
         try {
@@ -211,10 +226,12 @@
         toggleStatsBar,
         applyStrictMode,
         toggleStrictMode,
+        applyKeyboardLayout,
         getTheme: () => currentTheme,
         isZenMode: () => isZenMode,
         isKeyboardVisible: () => isKeyboardVisible,
         isStatsBarVisible: () => isStatsBarVisible,
         isStrictMode: () => isStrictMode,
+        getKeyboardLayout: () => currentKeyboardLayout,
     };
 })();
