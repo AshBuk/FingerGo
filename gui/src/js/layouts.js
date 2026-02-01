@@ -68,7 +68,9 @@
     // Auto-register layouts from window globals (set by layout modules)
     function autoRegister() {
         if (window.LAYOUT_EN_QWERTY) register(window.LAYOUT_EN_QWERTY);
+        if (window.LAYOUT_EN_DVORAK) register(window.LAYOUT_EN_DVORAK);
         if (window.LAYOUT_RU_JCUKEN) register(window.LAYOUT_RU_JCUKEN);
+        if (window.LAYOUT_DE_QWERTZ) register(window.LAYOUT_DE_QWERTZ);
 
         // Warn if no default layout available
         if (!registry[defaultLayoutId]) {
