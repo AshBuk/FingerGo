@@ -16,14 +16,14 @@
     }
 
     // Load default layout
-    const layout = window.KeyboardLayouts.getDefaultLayout();
+    let layout = window.KeyboardLayouts.getDefaultLayout();
     if (!layout) {
         console.error('No keyboard layout available. Ensure at least one layout is loaded.');
         return;
     }
 
-    const rows = layout.rows;
-    const fingerForKey = layout.fingerMap;
+    let rows = layout.rows;
+    let fingerForKey = layout.fingerMap;
 
     // Remove any static markup and rebuild from data
     container.innerHTML = '';
@@ -212,14 +212,14 @@
 
     /**
      * Check if character requires Shift key
+     * Unicode-aware: works for Latin, Cyrillic, Greek, etc.
      */
     function requiresShift(char) {
         if (!char || char.length !== 1) return false;
-        // Uppercase letters
-        if (char >= 'A' && char <= 'Z') return true;
-        // Shift symbols
-        const shiftSymbols = '~!@#$%^&*()_+{}|:"<>?';
-        return shiftSymbols.includes(char);
+        // Unicode-aware uppercase check
+        if (char !== char.toLowerCase() && char === char.toUpperCase()) return true;
+        // Shift symbols from layout
+        return !!layout.shiftToBaseKey?.[char];
     }
 
     // Key normalization utilities are now in utils.js (KeyUtils)
@@ -314,6 +314,7 @@
         }
         setPressed(k, true);
     }
+
     function onKeyUp(e) {
         const k = window.KeyUtils.normalizeKey(e.key);
         // For Shift, use location to determine which one
@@ -326,6 +327,28 @@
             return;
         }
         setPressed(k, false);
+    }
+
+    /**
+     * Switch to a different keyboard layout
+     * @param {string} layoutId - Layout identifier (e.g., 'en-dvorak')
+     * @returns {boolean} True if switch successful
+     */
+    function setLayout(layoutId) {
+        const newLayout = window.KeyboardLayouts.getLayout(layoutId);
+        if (!newLayout) return false;
+
+        layout = newLayout;
+        rows = layout.rows;
+        fingerForKey = layout.fingerMap;
+
+        // Clear and re-render
+        container.innerHTML = '';
+        keyToEls.clear();
+        fingerToEl.clear();
+        render();
+
+        return true;
     }
 
     render();
@@ -347,5 +370,7 @@
         clearError: k => clearErrorState(window.KeyUtils.normalizeKey(k)),
         clearAllErrors,
         getCurrentLayout: () => layout,
+        setLayout,
+        getAvailableLayouts: () => window.KeyboardLayouts.getAvailableLayouts(),
     };
 })();
