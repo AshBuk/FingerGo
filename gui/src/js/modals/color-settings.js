@@ -56,8 +56,8 @@
         };
 
         return `
-            <div class="color-settings">
-                <p class="color-theme-label">Editing: <strong>${theme}</strong> theme</p>
+            <div class="modal-section">
+                <p class="modal-label">Editing: <strong>${theme}</strong> theme</p>
                 <div class="color-group">
                     <label class="color-row">
                         <span>Background</span>
