@@ -28,6 +28,7 @@
         bind('keyboard-toggle', () => window.SettingsManager.toggleKeyboard());
         bind('reset-session', () => window.SessionManager.reset());
         bind('strict-mode-toggle', () => window.SettingsManager.toggleStrictMode());
+        bind('layout-toggle', () => window.UIManager?.showModal('settings', {}));
         // GitHub link
         const githubLink = document.getElementById('github-link');
         if (githubLink) {
@@ -86,6 +87,9 @@
         window.SettingsManager.applyKeyboardVisibility(settings.showKeyboard, false);
         window.SettingsManager.applyStatsBarVisibility(settings.showStatsBar, false);
         window.SettingsManager.applyStrictMode(settings.strictMode, false);
+        if (settings.keyboardLayout) {
+            window.SettingsManager.applyKeyboardLayout(settings.keyboardLayout, false);
+        }
         // Bind UI handlers
         bindButtonHandlers();
         // Check required modules
