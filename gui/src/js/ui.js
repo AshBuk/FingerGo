@@ -314,6 +314,12 @@
             showError(data.index);
         }
     });
+    window.EventBus.on('typing:backspace', data => {
+        if (data.index !== undefined && characterElements[data.index]) {
+            // Clear error and typed states when backspacing
+            characterElements[data.index].classList.remove('error', 'typed', 'correct');
+        }
+    });
     window.EventBus.on('stats:update', data => {
         updateStats(data.wpm, data.cpm, data.accuracy, data.time);
     });
