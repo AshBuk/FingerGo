@@ -63,8 +63,8 @@
                 }
                 addKeyMapping(def.key, el);
 
-                // For letter keys, also map the uppercase version
-                if (def.key.length === 1 && def.key >= 'a' && def.key <= 'z') {
+                // For letter keys, also map the uppercase version (Unicode-aware)
+                if (def.key.length === 1 && def.key !== def.key.toUpperCase()) {
                     addKeyMapping(def.key.toUpperCase(), el);
                 }
                 rowEl.appendChild(el);
@@ -158,7 +158,8 @@
 
         let keyForFingerMap = keyName;
         // If keyName is an uppercase letter or shift symbol, get base key for fingerMap lookup
-        if (keyForFingerMap.length === 1 && keyForFingerMap >= 'A' && keyForFingerMap <= 'Z') {
+        // Unicode-aware: works for Latin, Cyrillic, Greek, etc.
+        if (keyForFingerMap.length === 1 && keyForFingerMap !== keyForFingerMap.toLowerCase()) {
             keyForFingerMap = keyForFingerMap.toLowerCase();
         } else if (layout.shiftToBaseKey?.[keyForFingerMap]) {
             keyForFingerMap = layout.shiftToBaseKey[keyForFingerMap];
@@ -266,10 +267,10 @@
         let baseKey = keyName;
 
         if (shiftToBaseKey?.[keyName]) {
-            // Shift symbol (e.g., "!" -> "1", "Y" is not here)
+            // Shift symbol (e.g., "!" -> "1", "Ё" -> "ё")
             baseKey = shiftToBaseKey[keyName];
-        } else if (keyName.length === 1 && keyName >= 'A' && keyName <= 'Z') {
-            // Uppercase letter (e.g., "Y" -> "y")
+        } else if (keyName.length === 1 && keyName !== keyName.toLowerCase()) {
+            // Uppercase letter, Unicode-aware (e.g., "Y" -> "y", "Й" -> "й")
             baseKey = keyName.toLowerCase();
         }
         // Otherwise baseKey = keyName (Enter, Tab, space, lowercase letters, base symbols)

@@ -21,22 +21,32 @@
     /**
      * Normalize keyboard event key for comparison
      *
-     * Currently an identity function - returns key unchanged.
-     * Exists as extension point for future keyboard layouts that may need
-     * key remapping (e.g., Cyrillic layouts, Dvorak, dead keys handling).
+     * Applies Unicode NFC normalization to ensure consistent comparison
+     * across different input sources (keyboard vs text file).
+     * Important for Cyrillic and other scripts where characters like "й"
+     * can be represented as composed (U+0439) or decomposed (U+0438 + U+0306).
      *
      * @param {string} key - Keyboard event key (e.g., 'a', 'A', 'Enter', 'Tab')
      * @returns {string} Normalized key representation (preserves case)
      */
     function normalizeKey(key) {
-        return key;
+        // NFC normalization for consistent Unicode comparison
+        return typeof key === 'string' ? key.normalize('NFC') : key;
     }
 
+    /**
+     * Normalize text character for comparison with keyboard input
+     * Applies Unicode NFC normalization and maps special characters to key names.
+     *
+     * @param {string} char - Character from text
+     * @returns {string} Normalized character or key name
+     */
     function normalizeTextChar(char) {
         if (char === ' ') return ' ';
         if (char === '\n') return 'Enter';
         if (char === '\t') return 'Tab';
-        return char;
+        // NFC normalization for consistent Unicode comparison
+        return typeof char === 'string' ? char.normalize('NFC') : char;
     }
 
     /**
