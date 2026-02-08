@@ -28,6 +28,7 @@
       <li>Live stats: WPM, CPM, accuracy, per-key mistakes, session history</li>
       <li>Eye-friendly Dark/Light themes</li>
       <li>Customizable color theme</li>
+      <li>Multiple keyboard layouts: QWERTY, Dvorak, JCUKEN, QWERTZ</li>
     </ul>
   </description>
   
@@ -66,6 +67,19 @@
   </keywords>
   
   <releases>
+    <release version="1.2.0" date="2026-02-08">
+      <description>
+        <p>Multiple keyboard layout support</p>
+        <ul>
+          <li>Dynamic keyboard layout switching with layout selector</li>
+          <li>English Dvorak keyboard layout</li>
+          <li>Russian JCUKEN layout with Cyrillic input support</li>
+          <li>German QWERTZ keyboard layout</li>
+          <li>Layout preference persistence across sessions</li>
+          <li>Backspace clears error state in typing display</li>
+        </ul>
+      </description>
+    </release>
     <release version="1.1.2" date="2025-01-26">
       <description>
         <p>Session UX improvements</p>

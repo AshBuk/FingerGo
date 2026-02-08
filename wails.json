@@ -12,8 +12,8 @@
   "info": {
     "companyName": "Asher Buk Open Source",
     "productName": "FingerGo",
-    "productVersion": "1.1.2",
-    "copyright": "Copyright 2025 Asher Buk",
+    "productVersion": "1.2.0",
+    "copyright": "Copyright 2025-2026 Asher Buk",
     "comments": "Touch typing trainer with visual keyboard feedback"
   },
   "wailsjsdir": "./gui/src/wailsjs",
@@ -34,8 +34,8 @@
     "bundle": {
       "identifier": "com.ashbuk.fingergo",
       "name": "FingerGo",
-      "version": "1.1.2",
-      "copyright": "Copyright 2025 Asher Buk"
+      "version": "1.2.0",
+      "copyright": "Copyright 2025-2026 Asher Buk"
     }
   }
 }

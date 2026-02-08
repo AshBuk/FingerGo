@@ -2,6 +2,20 @@
 
 All notable changes to FingerGo will be documented in this file.
 
+## [1.2.0] - 2026-02-08
+
+Multiple keyboard layout support.
+
+### Added
+- Dynamic keyboard layout switching with layout selector modal
+- English Dvorak keyboard layout
+- Russian JCUKEN keyboard layout with Unicode/Cyrillic input support
+- German QWERTZ keyboard layout
+- Keyboard layout preference persistence across sessions
+
+### Fixed
+- Backspace now clears error state in typing display
+
 ## [1.1.2] - 2025-01-26
 
 Session UX improvements.
