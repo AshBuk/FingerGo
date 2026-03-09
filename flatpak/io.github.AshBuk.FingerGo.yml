@@ -23,13 +23,10 @@ command: fingergo
 
 finish-args:
   - --share=ipc
-  - --socket=x11
+  - --socket=fallback-x11
   - --socket=wayland
   - --socket=pulseaudio
   - --device=dri
-  - --filesystem=xdg-config/fingergo:create
-  - --filesystem=xdg-data/fingergo:create
-  - --talk-name=org.freedesktop.portal.Desktop
 
 modules:
   - name: fingergo
@@ -60,4 +57,5 @@ modules:
       - type: git
         url: https://github.com/AshBuk/FingerGo.git
         tag: v1.2.1
+        commit: 7125478bcfa55c26630f87dddb3a7c5f3e8cd025
       - go-mod-sources.json
