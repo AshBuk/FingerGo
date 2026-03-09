@@ -2,6 +2,13 @@
 
 All notable changes to FingerGo will be documented in this file.
 
+## [1.2.2] - 2026-03-10
+
+### Changed
+- Move desktop and metainfo files to project root
+- Upgrade GNOME runtime 48 → 49
+- Simplify OARS content rating metadata
+
 ## [1.2.1] - 2026-03-09
 
 ### Changed
