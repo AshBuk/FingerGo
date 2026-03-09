@@ -8,7 +8,7 @@
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>Apache-2.0</project_license>
 
-  <developer id="io.github.AshBuk">
+  <developer id="io.github.ashbuk">
     <name>Asher Buk</name>
   </developer>
   
@@ -36,7 +36,7 @@
 
   <screenshots>
     <screenshot type="default">
-      <image>https://raw.githubusercontent.com/AshBuk/FingerGo/main/screen/fingergo-screen.png</image>
+      <image>https://raw.githubusercontent.com/AshBuk/FingerGo/v1.2.1/screen/fingergo-screen.png</image>
       <caption>Main typing interface with visual keyboard and real-time statistics</caption>
     </screenshot>
   </screenshots>
@@ -101,7 +101,7 @@
         </ul>
       </description>
     </release>
-    <release version="1.1.2" date="2025-01-26"/>
+    <release version="1.1.2" date="2026-01-26"/>
     <release version="1.1.1" date="2025-12-30"/>
     <release version="1.1.0" date="2025-12-27"/>
     <release version="1.0.0" date="2025-12-02"/>
