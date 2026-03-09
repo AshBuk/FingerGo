@@ -83,6 +83,11 @@
   </keywords>
   
   <releases>
+    <release version="1.2.1" date="2026-03-09">
+      <description>
+        <p>Flatpak offline build and dependency update</p>
+      </description>
+    </release>
     <release version="1.2.0" date="2026-02-08">
       <description>
         <p>Multiple keyboard layout support</p>
@@ -96,16 +101,7 @@
         </ul>
       </description>
     </release>
-    <release version="1.1.2" date="2025-01-26">
-      <description>
-        <p>Session UX improvements</p>
-        <ul>
-          <li>Restore last opened text on app startup</li>
-          <li>Fix cursor jump when starting to type from middle of text</li>
-          <li>Add visible highlight for Enter key in text display</li>
-        </ul>
-      </description>
-    </release>
+    <release version="1.1.2" date="2025-01-26"/>
     <release version="1.1.1" date="2025-12-30"/>
     <release version="1.1.0" date="2025-12-27"/>
     <release version="1.0.0" date="2025-12-02"/>

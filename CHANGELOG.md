@@ -2,6 +2,14 @@
 
 All notable changes to FingerGo will be documented in this file.
 
+## [1.2.1] - 2026-03-09
+
+### Changed
+- Update Wails framework v2.10.2 → v2.11.0
+- Flatpak offline build (no network access during build)
+- Add Go module sources generator for Flatpak builds
+- Add explicit OARS 1.1 content rating metadata
+
 ## [1.2.0] - 2026-02-08
 
 Multiple keyboard layout support.
