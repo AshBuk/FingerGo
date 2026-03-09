@@ -11,7 +11,7 @@ missing=0
 
 check_go() {
 	while IFS= read -r -d '' f; do
-		if ! head -n 3 "$f" | grep -q "Copyright 2025 Asher Buk"; then
+		if ! head -n 3 "$f" | grep -qE "Copyright 2025(-[0-9]{4})? Asher Buk"; then
 			echo "Missing license header: $f"
 			missing=$((missing+1))
 		fi
@@ -20,7 +20,7 @@ check_go() {
 
 check_js() {
 	while IFS= read -r -d '' f; do
-		if ! head -n 3 "$f" | grep -q "Copyright 2025 Asher Buk"; then
+		if ! head -n 3 "$f" | grep -qE "Copyright 2025(-[0-9]{4})? Asher Buk"; then
 			echo "Missing license header: $f"
 			missing=$((missing+1))
 		fi
@@ -29,7 +29,7 @@ check_js() {
 
 check_css() {
 	while IFS= read -r -d '' f; do
-		if ! head -n 5 "$f" | grep -q "Copyright 2025 Asher Buk"; then
+		if ! head -n 5 "$f" | grep -qE "Copyright 2025(-[0-9]{4})? Asher Buk"; then
 			echo "Missing license header: $f"
 			missing=$((missing+1))
 		fi
