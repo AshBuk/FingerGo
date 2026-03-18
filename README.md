@@ -5,6 +5,7 @@
   <a href="https://github.com/AshBuk/FingerGo/releases"><img src="https://img.shields.io/badge/Windows-available-blue?logo=windows" alt="Windows"></a>
   <a href="https://github.com/AshBuk/FingerGo/releases"><img src="https://img.shields.io/badge/macOS-available-blue?logo=apple" alt="macOS"></a>
   <a href="https://github.com/AshBuk/FingerGo/releases"><img src="https://img.shields.io/badge/Linux-available-blue?logo=linux&logoColor=white" alt="Linux"></a>
+  <a href="https://flathub.org/apps/io.github.AshBuk.FingerGo"><img src="https://img.shields.io/flathub/v/io.github.AshBuk.FingerGo" alt="Flathub"></a>
   <a href="https://github.com/AshBuk/FingerGo/releases"><img src="https://img.shields.io/github/v/release/AshBuk/FingerGo?sort=semver" alt="Release"></a>
 </p>
 
@@ -54,19 +55,24 @@ Built with Go ↔ Wails ↔ Vanilla JavaScript (ES6+). Available for **Linux, ma
 
 **Supports:** Intel and Apple Silicon (Universal binary)
 
-### 🐧 Linux [Releases](https://github.com/AshBuk/FingerGo/releases/latest)
+### 🐧 Linux
 
-**Flatpak:**
+**Flatpak (recommended):**
+
+<a href="https://flathub.org/apps/io.github.AshBuk.FingerGo">
+  <img src="https://flathub.org/api/badge?locale=en" width="190" alt="Get it on Flathub">
+</a>
+
 ```bash
-flatpak install --user FingerGo-{VERSION}-x86_64.flatpak
-flatpak run com.ashbuk.FingerGo
+flatpak install flathub io.github.AshBuk.FingerGo
+flatpak run io.github.AshBuk.FingerGo
 ```
 
-**Portable (tar.gz):**
+**Portable (tar.gz):** [Release](https://github.com/AshBuk/FingerGo/releases/latest)
 ```bash
 # Requires WebKit2GTK 4.1 installed on your system.
 tar -xzf FingerGo-{VERSION}-linux-x86_64.tar.gz
-./FingerGo
+./FingerGo    # or run install.sh for desktop integration
 ```
 
 ---

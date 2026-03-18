@@ -2,6 +2,12 @@
 
 All notable changes to FingerGo will be documented in this file.
 
+## [1.2.3] - 2026-03-19
+
+### Enhanced
+- Published on [Flathub](https://flathub.org/apps/io.github.AshBuk.FingerGo)
+- Refined Linux tar release: include install/uninstall scripts, icon, and .desktop entry for desktop integration (app menu, launcher)
+
 ## [1.2.2] - 2026-03-10
 
 ### Changed
