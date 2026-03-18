@@ -1,0 +1,18 @@
+FingerGo — Touch Typing Trainer
+https://github.com/AshBuk/FingerGo
+
+Run the binary directly
+-----------
+  ./FingerGo            
+
+Install (Linux)
+---------------
+  ./install.sh          Install binary, icon, and .desktop entry to ~/.local
+  fingergo              Launch from terminal or app menu
+
+  Note: install.sh places the binary in ~/.local/bin.
+        Make sure this directory is in your PATH.
+
+Uninstall
+---------
+  ./uninstall.sh        Remove all installed files
