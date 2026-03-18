@@ -7,6 +7,7 @@ Categories=Education;Utility;
 Exec=fingergo
 Icon=io.github.AshBuk.FingerGo
 Terminal=false
+StartupWMClass=fingergo
 StartupNotify=true
 Keywords=typing;keyboard;training;education;wpm;
 
