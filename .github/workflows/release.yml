@@ -87,8 +87,14 @@ jobs:
         env:
           VERSION: ${{ steps.version.outputs.version }}
         run: |
-          cd build/bin
-          tar -czf ${{ env.APP_NAME }}-${VERSION}-linux-${{ matrix.arch }}.tar.gz ${{ env.APP_NAME }}
+          STAGING="${{ env.APP_NAME }}-${VERSION}-linux-${{ matrix.arch }}"
+          mkdir -p "$STAGING"
+          cp build/bin/${{ env.APP_NAME }} "$STAGING/"
+          cp fingergo.png "$STAGING/"
+          cp io.github.AshBuk.FingerGo.desktop "$STAGING/"
+          cp scripts/install.sh scripts/uninstall.sh scripts/INSTALL.txt "$STAGING/"
+          chmod +x "$STAGING/install.sh" "$STAGING/uninstall.sh"
+          tar -czf "build/bin/${STAGING}.tar.gz" "$STAGING"
 
       # ==================== macOS Packaging ====================
       - name: Package macOS artifacts
