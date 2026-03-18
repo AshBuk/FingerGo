@@ -3,7 +3,7 @@
   <id>io.github.AshBuk.FingerGo</id>
 
   <name>FingerGo</name>
-  <summary>Touch typing trainer with visual keyboard feedback</summary>
+  <summary>Visual touch-typing trainer</summary>
 
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>Apache-2.0</project_license>
@@ -36,7 +36,7 @@
 
   <screenshots>
     <screenshot type="default">
-      <image>https://raw.githubusercontent.com/AshBuk/FingerGo/v1.2.2/screen/fingergo-screen.png</image>
+      <image>https://raw.githubusercontent.com/AshBuk/FingerGo/v1.2.3/screen/fingergo-screen.png</image>
       <caption>Main typing interface with visual keyboard and real-time statistics</caption>
     </screenshot>
   </screenshots>
@@ -67,29 +67,14 @@
   </keywords>
   
   <releases>
-    <release version="1.2.2" date="2026-03-10">
+    <release version="1.2.3" date="2026-03-19">
       <description>
-        <p>Flathub submission fixes</p>
+        <p>Flathub listing</p>
       </description>
     </release>
-    <release version="1.2.1" date="2026-03-09">
-      <description>
-        <p>Flatpak offline build and dependency update</p>
-      </description>
-    </release>
-    <release version="1.2.0" date="2026-02-08">
-      <description>
-        <p>Multiple keyboard layout support</p>
-        <ul>
-          <li>Dynamic keyboard layout switching with layout selector</li>
-          <li>English Dvorak keyboard layout</li>
-          <li>Russian JCUKEN layout with Cyrillic input support</li>
-          <li>German QWERTZ keyboard layout</li>
-          <li>Layout preference persistence across sessions</li>
-          <li>Backspace clears error state in typing display</li>
-        </ul>
-      </description>
-    </release>
+    <release version="1.2.2" date="2026-03-10"/>
+    <release version="1.2.1" date="2026-03-09"/>
+    <release version="1.2.0" date="2026-02-08"/>
     <release version="1.1.2" date="2026-01-26"/>
     <release version="1.1.1" date="2025-12-30"/>
     <release version="1.1.0" date="2025-12-27"/>
