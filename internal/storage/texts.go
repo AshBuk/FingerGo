@@ -84,7 +84,7 @@ func (r *TextRepository) Text(id string) (domain.Text, error) {
 	if err := r.ensureLoaded(); err != nil {
 		return domain.Text{}, err
 	}
-	text, found := r.lookupTextLocked(id)
+	text, found := r.lookupText(id)
 	if !found {
 		return domain.Text{}, fmt.Errorf("%w: %s", ErrTextNotFound, id)
 	}
@@ -242,12 +242,16 @@ func (r *TextRepository) DeleteCategory(id string) error {
 	if idx == -1 {
 		return fmt.Errorf("%w: %s", ErrCategoryNotFound, id)
 	}
-	// Delete all texts belonging to this category
+	// Collect IDs first — DeleteText mutates library.Texts, unsafe to delete during range
+	var textsToDelete []string
 	for _, text := range r.library.Texts {
 		if text.CategoryID == id {
-			if err := r.DeleteText(text.ID); err != nil {
-				log.Printf("WARNING: failed to delete text %q during category deletion: %v", text.ID, err)
-			}
+			textsToDelete = append(textsToDelete, text.ID)
+		}
+	}
+	for _, textID := range textsToDelete {
+		if err := r.DeleteText(textID); err != nil {
+			log.Printf("WARNING: failed to delete text %q during category deletion: %v", textID, err)
 		}
 	}
 	// Refresh idx as slice may have changed after text deletions
@@ -415,7 +419,7 @@ func (r *TextRepository) ensureLoaded() error {
 	return nil
 }
 
-func (r *TextRepository) lookupTextLocked(id string) (domain.Text, bool) {
+func (r *TextRepository) lookupText(id string) (domain.Text, bool) {
 	text, ok := r.textIndex[id]
 	return text, ok
 }
