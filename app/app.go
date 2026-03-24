@@ -8,17 +8,16 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"reflect"
 
 	domain "github.com/AshBuk/FingerGo/internal/domain"
 	"github.com/AshBuk/FingerGo/internal/storage"
 )
 
 type App struct {
-	storage      *storage.Manager          // Manages the application's data storage on disk
-	textsRepo    domain.TextRepository     // Handles operations related to typing texts
-	sessionsRepo domain.SessionRepository  // Manages the persistence of typing session data
-	settingsRepo domain.SettingsRepository // Handles user preferences persistence
+	storage      *storage.Manager            // Manages the application's data storage on disk
+	textsRepo    *storage.TextRepository     // Handles operations related to typing texts
+	sessionsRepo *storage.SessionRepository  // Manages the persistence of typing session data
+	settingsRepo *storage.SettingsRepository // Handles user preferences persistence
 }
 
 func New() *App { return &App{} }
@@ -54,111 +53,99 @@ func (a *App) Shutdown(ctx context.Context) {}
 
 // DefaultText returns the default text entry (metadata + content).
 func (a *App) DefaultText() (domain.Text, error) {
-	repo, err := a.getTextRepository()
-	if err != nil {
-		return domain.Text{}, err
+	if a.textsRepo == nil {
+		return domain.Text{}, fmt.Errorf("text repository not initialized")
 	}
-	return repo.DefaultText()
+	return a.textsRepo.DefaultText()
 }
 
 // Text returns text content by identifier.
 func (a *App) Text(id string) (domain.Text, error) {
-	repo, err := a.getTextRepository()
-	if err != nil {
-		return domain.Text{}, err
+	if a.textsRepo == nil {
+		return domain.Text{}, fmt.Errorf("text repository not initialized")
 	}
-	return repo.Text(id)
+	return a.textsRepo.Text(id)
 }
 
 // TextLibrary returns library metadata for UI navigation.
 func (a *App) TextLibrary() (domain.TextLibrary, error) {
-	repo, err := a.getTextRepository()
-	if err != nil {
-		return domain.TextLibrary{}, err
+	if a.textsRepo == nil {
+		return domain.TextLibrary{}, fmt.Errorf("text repository not initialized")
 	}
-	return repo.Library()
+	return a.textsRepo.Library()
 }
 
 // SaveSession persists a completed typing session.
 func (a *App) SaveSession(payload *domain.SessionPayload) error {
-	repo, err := a.getSessionRepository()
-	if err != nil {
-		return err
+	if a.sessionsRepo == nil {
+		return fmt.Errorf("session repository not initialized")
 	}
-	_, err = repo.Record(payload)
+	_, err := a.sessionsRepo.Record(payload)
 	return err
 }
 
 // ListSessions returns recent typing sessions (newest first).
 func (a *App) ListSessions(limit int) ([]domain.TypingSession, error) {
-	repo, err := a.getSessionRepository()
-	if err != nil {
-		return nil, err
+	if a.sessionsRepo == nil {
+		return nil, fmt.Errorf("session repository not initialized")
 	}
-	return repo.List(limit)
+	return a.sessionsRepo.List(limit)
 }
 
 // GetSettings returns current user settings.
 func (a *App) GetSettings() (domain.Settings, error) {
-	repo, err := a.getSettingsRepository()
-	if err != nil {
-		return domain.DefaultSettings(), err
+	if a.settingsRepo == nil {
+		return domain.DefaultSettings(), fmt.Errorf("settings repository not initialized")
 	}
-	return repo.Load()
+	return a.settingsRepo.Load()
 }
 
 // UpdateSetting modifies a single setting by key and persists the change.
 func (a *App) UpdateSetting(key string, value any) error {
-	repo, err := a.getSettingsRepository()
-	if err != nil {
-		return err
+	if a.settingsRepo == nil {
+		return fmt.Errorf("settings repository not initialized")
 	}
-	return repo.Update(key, value)
+	return a.settingsRepo.Update(key, value)
 }
 
 // SaveText creates a new text entry.
 func (a *App) SaveText(text *domain.Text) error {
-	repo, err := a.getTextRepository()
-	if err != nil {
-		return err
+	if a.textsRepo == nil {
+		return fmt.Errorf("text repository not initialized")
 	}
-	return repo.SaveText(text)
+	return a.textsRepo.SaveText(text)
 }
 
 // UpdateText modifies an existing text entry.
 func (a *App) UpdateText(text *domain.Text) error {
-	repo, err := a.getTextRepository()
-	if err != nil {
-		return err
+	if a.textsRepo == nil {
+		return fmt.Errorf("text repository not initialized")
 	}
-	return repo.UpdateText(text)
+	return a.textsRepo.UpdateText(text)
 }
 
 // DeleteText removes a text entry by ID.
 func (a *App) DeleteText(id string) error {
-	repo, err := a.getTextRepository()
-	if err != nil {
-		return err
+	if a.textsRepo == nil {
+		return fmt.Errorf("text repository not initialized")
 	}
-	return repo.DeleteText(id)
+	return a.textsRepo.DeleteText(id)
 }
 
 // SaveCategory creates a new category entry.
 func (a *App) SaveCategory(cat *domain.Category) error {
-	repo, err := a.getTextRepository()
-	if err != nil {
-		return err
+	if a.textsRepo == nil {
+		return fmt.Errorf("text repository not initialized")
 	}
-	return repo.SaveCategory(cat)
+	return a.textsRepo.SaveCategory(cat)
 }
 
 // DeleteCategory removes a category entry by ID.
 func (a *App) DeleteCategory(id string) error {
-	repo, err := a.getTextRepository()
-	if err != nil {
-		return err
+	if a.textsRepo == nil {
+		return fmt.Errorf("text repository not initialized")
 	}
-	return repo.DeleteCategory(id)
+	return a.textsRepo.DeleteCategory(id)
 }
 
 // SupportedLanguages returns the list of supported programming languages.
@@ -166,87 +153,50 @@ func (a *App) SupportedLanguages() []domain.LanguageInfo {
 	return domain.SupportedLanguages()
 }
 
-// ensureRepository is a generic helper to initialize repositories with common logic.
-// Reduces code duplication across ensureTextRepository, ensureSessionRepository, etc.
-func ensureRepository[T any](
-	mgr *storage.Manager,
-	repoPtr *T,
-	name string,
-	factory func(*storage.Manager) (T, error),
-) error {
-	if mgr == nil {
-		return fmt.Errorf("%s: storage manager not initialized", name)
-	}
-	// Check if already initialized (use reflection to check for nil interface)
-	val := reflect.ValueOf(*repoPtr)
-	// If Value is valid and not zero, repository is already initialized
-	if val.IsValid() && !val.IsZero() {
-		return nil
-	}
-	repo, err := factory(mgr)
-	if err != nil {
-		return fmt.Errorf("%s: initialization failed: %w", name, err)
-	}
-	*repoPtr = repo
-	return nil
-}
-
 // ensureTextRepository initializes text repository if not already initialized.
 func (a *App) ensureTextRepository() error {
-	return ensureRepository(
-		a.storage,
-		&a.textsRepo,
-		"text repository",
-		func(mgr *storage.Manager) (domain.TextRepository, error) {
-			return storage.NewTextRepository(mgr)
-		},
-	)
-}
-
-// getTextRepository returns text repository, initializing if needed.
-func (a *App) getTextRepository() (domain.TextRepository, error) {
-	if err := a.ensureTextRepository(); err != nil {
-		return nil, err
+	if a.textsRepo != nil {
+		return nil
 	}
-	return a.textsRepo, nil
+	if a.storage == nil {
+		return fmt.Errorf("text repository: storage manager not initialized")
+	}
+	repo, err := storage.NewTextRepository(a.storage)
+	if err != nil {
+		return fmt.Errorf("text repository: initialization failed: %w", err)
+	}
+	a.textsRepo = repo
+	return nil
 }
 
 // ensureSessionRepository initializes session repository if not already initialized.
 func (a *App) ensureSessionRepository() error {
-	return ensureRepository(
-		a.storage,
-		&a.sessionsRepo,
-		"session repository",
-		func(mgr *storage.Manager) (domain.SessionRepository, error) {
-			return storage.NewSessionRepository(mgr)
-		},
-	)
-}
-
-// getSessionRepository returns session repository, initializing if needed.
-func (a *App) getSessionRepository() (domain.SessionRepository, error) {
-	if err := a.ensureSessionRepository(); err != nil {
-		return nil, err
+	if a.sessionsRepo != nil {
+		return nil
 	}
-	return a.sessionsRepo, nil
+	if a.storage == nil {
+		return fmt.Errorf("session repository: storage manager not initialized")
+	}
+	repo, err := storage.NewSessionRepository(a.storage)
+	if err != nil {
+		return fmt.Errorf("session repository: initialization failed: %w", err)
+	}
+	a.sessionsRepo = repo
+	return nil
 }
 
 // ensureSettingsRepository initializes settings repository if not already initialized.
 func (a *App) ensureSettingsRepository() error {
-	return ensureRepository(
-		a.storage,
-		&a.settingsRepo,
-		"settings repository",
-		func(mgr *storage.Manager) (domain.SettingsRepository, error) {
-			return storage.NewSettingsRepository(mgr)
-		},
-	)
-}
-
-// getSettingsRepository returns settings repository, initializing if needed.
-func (a *App) getSettingsRepository() (domain.SettingsRepository, error) {
-	if err := a.ensureSettingsRepository(); err != nil {
-		return nil, err
+	if a.settingsRepo != nil {
+		return nil
 	}
-	return a.settingsRepo, nil
+	if a.storage == nil {
+		return fmt.Errorf("settings repository: storage manager not initialized")
+	}
+	repo, err := storage.NewSettingsRepository(a.storage)
+	if err != nil {
+		return fmt.Errorf("settings repository: initialization failed: %w", err)
+	}
+	a.settingsRepo = repo
+	return nil
 }
