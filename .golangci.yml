@@ -103,6 +103,7 @@ issues:
     - build
     - frontend
     - data
+    - node_modules
 
   exclude-rules:
     # Exclude some linters from running on tests files
