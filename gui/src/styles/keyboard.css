@@ -201,6 +201,10 @@ https://github.com/AshBuk/FingerGo
     min-width: calc(var(--key-size) * 2.2);
 }
 
+.key-iso-shift {
+    min-width: calc(var(--key-size) * 1.3);
+}
+
 .key-space {
     min-width: calc(var(--key-size) * 8);
 }
@@ -208,7 +212,8 @@ https://github.com/AshBuk/FingerGo
 /* Special key font size adjustments */
 .key-wide,
 .key-wider,
-.key-widest {
+.key-widest,
+.key-iso-shift {
     font-size: 0.75rem;
 }
 
