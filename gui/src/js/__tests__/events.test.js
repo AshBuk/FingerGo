@@ -4,173 +4,137 @@
 
 /**
  * EventBus unit tests
- * Tests pub/sub event system - critical infrastructure for module communication
+ * Import the real browser module and assert.
  */
-import { describe, it, beforeEach } from 'node:test';
+import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
+import { randomUUID } from 'node:crypto';
 
-// Mock window for browser module
 globalThis.window = {};
-
-// Load EventBus module (creates window.EventBus)
 await import('../events.js');
+
 const EventBus = globalThis.window.EventBus;
 
+// Unique event names isolate tests from each other without resetting EventBus state.
+function uniqueEvent(name) {
+    return `${name}:${randomUUID()}`;
+}
+
+function withMockedConsoleError(run) {
+    const original = console.error;
+    const calls = [];
+    console.error = (...args) => {
+        calls.push(args);
+    };
+
+    try {
+        return run(calls);
+    } finally {
+        console.error = original;
+    }
+}
+
 describe('EventBus', () => {
-    beforeEach(() => {
-        // Reset EventBus by reloading (listeners are private)
-        globalThis.window = {};
-        // Re-execute module to get fresh state
-    });
-
     describe('on/emit', () => {
-        it('should call subscriber when event is emitted', () => {
-            globalThis.window = {};
-            // Fresh load
-            const listeners = {};
-            const on = (event, cb) => {
-                if (!listeners[event]) listeners[event] = [];
-                listeners[event].push(cb);
-            };
-            const emit = (event, data) => {
-                if (!listeners[event]) return;
-                listeners[event].forEach(cb => cb(data));
-            };
-
+        it('calls subscriber when event is emitted', () => {
+            const event = uniqueEvent('test:event');
             let received = null;
-            on('test:event', data => {
+
+            EventBus.on(event, data => {
                 received = data;
             });
-            emit('test:event', { value: 42 });
+            EventBus.emit(event, { value: 42 });
 
             assert.deepEqual(received, { value: 42 });
         });
 
-        it('should support multiple subscribers for same event', () => {
-            const listeners = {};
-            const on = (event, cb) => {
-                if (!listeners[event]) listeners[event] = [];
-                listeners[event].push(cb);
-            };
-            const emit = (event, data) => {
-                if (!listeners[event]) return;
-                listeners[event].forEach(cb => cb(data));
-            };
-
+        it('supports multiple subscribers for the same event', () => {
+            const event = uniqueEvent('typing:keystroke');
             const calls = [];
-            on('typing:keystroke', () => calls.push('a'));
-            on('typing:keystroke', () => calls.push('b'));
-            emit('typing:keystroke', {});
+
+            EventBus.on(event, () => calls.push('a'));
+            EventBus.on(event, () => calls.push('b'));
+            EventBus.emit(event, {});
 
             assert.deepEqual(calls, ['a', 'b']);
+        });
+
+        it('ignores non-function callbacks and logs an error', () => {
+            const event = uniqueEvent('invalid:callback');
+
+            withMockedConsoleError(calls => {
+                EventBus.on(event, 'not-a-function');
+                EventBus.emit(event, { value: 1 });
+
+                assert.equal(calls.length, 1);
+                assert.match(String(calls[0][0]), /callback must be a function/i);
+            });
         });
     });
 
     describe('off', () => {
-        it('should unsubscribe callback from event', () => {
-            const listeners = {};
-            const on = (event, cb) => {
-                if (!listeners[event]) listeners[event] = [];
-                listeners[event].push(cb);
-            };
-            const off = (event, cb) => {
-                if (!listeners[event]) return;
-                const idx = listeners[event].indexOf(cb);
-                if (idx > -1) listeners[event].splice(idx, 1);
-            };
-            const emit = (event, data) => {
-                if (!listeners[event]) return;
-                listeners[event].forEach(cb => cb(data));
-            };
-
+        it('unsubscribes callback from event', () => {
+            const event = uniqueEvent('stats:update');
             let count = 0;
             const handler = () => count++;
 
-            on('stats:update', handler);
-            emit('stats:update', {});
+            EventBus.on(event, handler);
+            EventBus.emit(event, {});
             assert.equal(count, 1);
 
-            off('stats:update', handler);
-            emit('stats:update', {});
-            assert.equal(count, 1); // Still 1, not called again
+            EventBus.off(event, handler);
+            EventBus.emit(event, {});
+            assert.equal(count, 1);
+        });
+
+        it('does nothing when unsubscribing from an unknown event', () => {
+            assert.doesNotThrow(() => {
+                EventBus.off(uniqueEvent('missing:event'), () => {});
+            });
         });
     });
 
     describe('once', () => {
-        it('should call callback only once then auto-unsubscribe', () => {
-            const listeners = {};
-            const on = (event, cb) => {
-                if (!listeners[event]) listeners[event] = [];
-                listeners[event].push(cb);
-            };
-            const off = (event, cb) => {
-                if (!listeners[event]) return;
-                const idx = listeners[event].indexOf(cb);
-                if (idx > -1) listeners[event].splice(idx, 1);
-            };
-            const emit = (event, data) => {
-                if (!listeners[event]) return;
-                listeners[event].forEach(cb => cb(data));
-            };
-            const once = (event, cb) => {
-                const wrapper = data => {
-                    cb(data);
-                    off(event, wrapper);
-                };
-                on(event, wrapper);
-            };
-
+        it('calls callback only once and auto-unsubscribes', () => {
+            const event = uniqueEvent('typing:complete');
             let count = 0;
-            once('typing:complete', () => count++);
 
-            emit('typing:complete', {});
-            emit('typing:complete', {});
-            emit('typing:complete', {});
+            EventBus.once(event, () => count++);
+
+            EventBus.emit(event, {});
+            EventBus.emit(event, {});
+            EventBus.emit(event, {});
 
             assert.equal(count, 1);
         });
     });
 
     describe('error handling', () => {
-        it('should not throw when emitting to non-existent event', () => {
-            const listeners = {};
-            const emit = (event, data) => {
-                if (!listeners[event]) return;
-                listeners[event].forEach(cb => cb(data));
-            };
-
+        it('does not throw when emitting a non-existent event', () => {
             assert.doesNotThrow(() => {
-                emit('nonexistent:event', { data: 'test' });
+                EventBus.emit(uniqueEvent('nonexistent:event'), { data: 'test' });
             });
         });
 
-        it('should continue calling other listeners if one throws', () => {
-            const listeners = {};
-            const on = (event, cb) => {
-                if (!listeners[event]) listeners[event] = [];
-                listeners[event].push(cb);
-            };
-            const emit = (event, data) => {
-                if (!listeners[event]) return;
-                listeners[event].forEach(cb => {
-                    try {
-                        cb(data);
-                    } catch {
-                        // Error boundary
-                    }
+        it('continues calling other listeners if one throws', () => {
+            const event = uniqueEvent('test:error');
+
+            withMockedConsoleError(calls => {
+                let secondCalled = false;
+
+                EventBus.on(event, () => {
+                    throw new Error('First handler error');
                 });
-            };
+                EventBus.on(event, () => {
+                    secondCalled = true;
+                });
 
-            let secondCalled = false;
-            on('test:error', () => {
-                throw new Error('First handler error');
-            });
-            on('test:error', () => {
-                secondCalled = true;
-            });
+                EventBus.emit(event, {});
 
-            emit('test:error', {});
-            assert.equal(secondCalled, true);
+                assert.equal(secondCalled, true);
+                assert.equal(calls.length, 1);
+                assert.match(String(calls[0][0]), /Error in event listener/);
+            });
         });
     });
 });
