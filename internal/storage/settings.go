@@ -10,7 +10,6 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"sync"
 
 	domain "github.com/AshBuk/FingerGo/internal/domain"
 )
@@ -25,7 +24,6 @@ const (
 type SettingsRepository struct {
 	storage  *Manager
 	settings domain.Settings
-	mu       sync.RWMutex
 	loaded   bool
 }
 
@@ -42,15 +40,11 @@ func (r *SettingsRepository) Load() (domain.Settings, error) {
 	if err := r.ensureLoaded(); err != nil {
 		return domain.Settings{}, err
 	}
-	r.mu.RLock()
-	defer r.mu.RUnlock()
 	return r.settings, nil
 }
 
 // Save persists the entire settings object.
 func (r *SettingsRepository) Save(s domain.Settings) error {
-	r.mu.Lock()
-	defer r.mu.Unlock()
 	if err := r.persist(s); err != nil {
 		return err
 	}
@@ -67,9 +61,6 @@ func (r *SettingsRepository) Update(key string, value any) error {
 	if err := r.ensureLoaded(); err != nil {
 		return err
 	}
-	r.mu.Lock()
-	defer r.mu.Unlock()
-
 	updated := r.settings
 	switch key {
 	case "theme":
@@ -129,19 +120,9 @@ func (r *SettingsRepository) Update(key string, value any) error {
 }
 
 func (r *SettingsRepository) ensureLoaded() error {
-	r.mu.RLock()
-	if r.loaded {
-		r.mu.RUnlock()
-		return nil
-	}
-	r.mu.RUnlock()
-
-	r.mu.Lock()
-	defer r.mu.Unlock()
 	if r.loaded {
 		return nil
 	}
-
 	path := r.storage.join(configFile)
 	data, err := os.ReadFile(path)
 	if err != nil {
