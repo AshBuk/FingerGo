@@ -10,7 +10,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"sync"
 
 	domain "github.com/AshBuk/FingerGo/internal/domain"
 )
@@ -32,7 +31,6 @@ const (
 // Design:
 //   - Metadata (index.json) loaded once on first access
 //   - Content files loaded on demand and cached in memory
-//   - All public methods are thread-safe (guarded by RWMutex)
 //   - Writes persist both in-memory state and disk atomically
 //   - O(1) lookups via textIndex and sliceIndex maps
 type TextRepository struct {
@@ -41,7 +39,6 @@ type TextRepository struct {
 	sliceIndex   map[string]int         // id → position in library.Texts slice
 	storage      *Manager               // underlying file manager
 	library      domain.TextLibrary     // categories + text metadata
-	mu           sync.RWMutex           // guards all fields
 	loaded       bool                   // true after first load
 }
 
@@ -63,8 +60,6 @@ func (r *TextRepository) Library() (domain.TextLibrary, error) {
 	if err := r.ensureLoaded(); err != nil {
 		return domain.TextLibrary{}, err
 	}
-	r.mu.RLock()
-	defer r.mu.RUnlock()
 	return cloneLibrary(r.library), nil
 }
 
@@ -89,28 +84,22 @@ func (r *TextRepository) Text(id string) (domain.Text, error) {
 	if err := r.ensureLoaded(); err != nil {
 		return domain.Text{}, err
 	}
-	r.mu.RLock()
 	text, found := r.lookupTextLocked(id)
 	if !found {
-		r.mu.RUnlock()
 		return domain.Text{}, fmt.Errorf("%w: %s", ErrTextNotFound, id)
 	}
 	if content, ok := r.contentCache[id]; ok {
-		r.mu.RUnlock()
 		text.Content = content
 		return text, nil
 	}
-	r.mu.RUnlock()
 	content, err := r.loadContent(id)
 	if err != nil {
 		return domain.Text{}, err
 	}
-	r.mu.Lock()
 	if len(r.contentCache) >= maxCachedTexts {
-		clear(r.contentCache) // evict all to prevent unbounded growth
+		clear(r.contentCache)
 	}
 	r.contentCache[id] = content
-	r.mu.Unlock()
 	text.Content = content
 	return text, nil
 }
@@ -127,8 +116,6 @@ func (r *TextRepository) SaveText(text *domain.Text) error {
 	if err := r.ensureLoaded(); err != nil {
 		return err
 	}
-	r.mu.Lock()
-	defer r.mu.Unlock()
 	if _, exists := r.textIndex[text.ID]; exists {
 		return fmt.Errorf("%w: %s", ErrTextExists, text.ID)
 	}
@@ -168,8 +155,6 @@ func (r *TextRepository) UpdateText(text *domain.Text) error {
 	if err := r.ensureLoaded(); err != nil {
 		return err
 	}
-	r.mu.Lock()
-	defer r.mu.Unlock()
 	idx, exists := r.sliceIndex[text.ID]
 	if !exists {
 		return fmt.Errorf("%w: %s", ErrTextNotFound, text.ID)
@@ -221,8 +206,6 @@ func (r *TextRepository) SaveCategory(cat *domain.Category) error {
 	if err := r.ensureLoaded(); err != nil {
 		return err
 	}
-	r.mu.Lock()
-	defer r.mu.Unlock()
 	for _, c := range r.library.Categories {
 		if c.ID == cat.ID {
 			return fmt.Errorf("%w: %s", ErrCategoryExists, cat.ID)
@@ -249,8 +232,6 @@ func (r *TextRepository) DeleteCategory(id string) error {
 	if err := r.ensureLoaded(); err != nil {
 		return err
 	}
-	r.mu.Lock()
-	defer r.mu.Unlock()
 	idx := -1
 	for i, c := range r.library.Categories {
 		if c.ID == id {
@@ -261,22 +242,15 @@ func (r *TextRepository) DeleteCategory(id string) error {
 	if idx == -1 {
 		return fmt.Errorf("%w: %s", ErrCategoryNotFound, id)
 	}
-	// Collect all texts belonging to this category
-	var textsToDelete []string
+	// Delete all texts belonging to this category
 	for _, text := range r.library.Texts {
 		if text.CategoryID == id {
-			textsToDelete = append(textsToDelete, text.ID)
+			if err := r.DeleteText(text.ID); err != nil {
+				log.Printf("WARNING: failed to delete text %q during category deletion: %v", text.ID, err)
+			}
 		}
 	}
-	// Delete all texts in the category (need to unlock temporarily for DeleteText)
-	r.mu.Unlock()
-	for _, textID := range textsToDelete {
-		if err := r.DeleteText(textID); err != nil {
-			log.Printf("WARNING: failed to delete text %q during category deletion: %v", textID, err)
-		}
-	}
-	r.mu.Lock()
-	// Refresh idx as slice might have changed
+	// Refresh idx as slice may have changed after text deletions
 	idx = -1
 	for i, c := range r.library.Categories {
 		if c.ID == id {
@@ -305,8 +279,6 @@ func (r *TextRepository) DeleteText(id string) error {
 	if err := r.ensureLoaded(); err != nil {
 		return err
 	}
-	r.mu.Lock()
-	defer r.mu.Unlock()
 	idx, exists := r.sliceIndex[id]
 	if !exists {
 		return fmt.Errorf("%w: %s", ErrTextNotFound, id)
@@ -409,14 +381,6 @@ func (r *TextRepository) readContent(id string) (content string, exists bool, er
 }
 
 func (r *TextRepository) ensureLoaded() error {
-	r.mu.RLock()
-	if r.loaded {
-		r.mu.RUnlock()
-		return nil
-	}
-	r.mu.RUnlock()
-	r.mu.Lock()
-	defer r.mu.Unlock()
 	if r.loaded {
 		return nil
 	}

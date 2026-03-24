@@ -10,7 +10,6 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"sync"
 	"time"
 
 	"github.com/google/uuid"
@@ -28,7 +27,6 @@ const (
 type SessionRepository struct {
 	storage  *Manager
 	sessions []domain.TypingSession
-	mu       sync.RWMutex
 	loaded   bool
 }
 
@@ -52,10 +50,6 @@ func (r *SessionRepository) Record(payload *domain.SessionPayload) (domain.Typin
 	if session.ID == "" {
 		session.ID = uuid.NewString()
 	}
-
-	r.mu.Lock()
-	defer r.mu.Unlock()
-
 	candidate := append(append([]domain.TypingSession(nil), r.sessions...), session)
 	if len(candidate) > maxStoredSessions {
 		candidate = candidate[len(candidate)-maxStoredSessions:]
@@ -72,10 +66,6 @@ func (r *SessionRepository) List(limit int) ([]domain.TypingSession, error) {
 	if err := r.ensureLoaded(); err != nil {
 		return nil, err
 	}
-
-	r.mu.RLock()
-	defer r.mu.RUnlock()
-
 	total := len(r.sessions)
 	if total == 0 {
 		return nil, nil
@@ -93,19 +83,9 @@ func (r *SessionRepository) List(limit int) ([]domain.TypingSession, error) {
 }
 
 func (r *SessionRepository) ensureLoaded() error {
-	r.mu.RLock()
-	if r.loaded {
-		r.mu.RUnlock()
-		return nil
-	}
-	r.mu.RUnlock()
-
-	r.mu.Lock()
-	defer r.mu.Unlock()
 	if r.loaded {
 		return nil
 	}
-
 	path := r.storage.join(sessionsFile)
 	data, err := os.ReadFile(path)
 	if err != nil {
