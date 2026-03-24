@@ -61,7 +61,8 @@
                 { key: 'Enter', label: 'Enter', className: 'key-wider' },
             ],
             [
-                { key: 'Shift', label: 'Shift', className: 'key-widest' },
+                { key: 'Shift', label: 'Shift', className: 'key-iso-shift' },
+                { key: '<', label: ['>', '<'] },
                 { key: 'y', label: 'Y' },
                 { key: 'x', label: 'X' },
                 { key: 'c', label: 'C' },
@@ -83,6 +84,7 @@
             1: 'left-pinky',
             q: 'left-pinky',
             a: 'left-pinky',
+            '<': 'left-pinky',
             y: 'left-pinky',
             Tab: 'left-pinky',
             CapsLock: 'left-pinky',
@@ -107,6 +109,7 @@
             b: 'left-index',
 
             // Left hand - shift symbols
+            '>': 'left-pinky',
             '°': 'left-pinky',
             '!': 'left-pinky',
             '"': 'left-ring',
@@ -202,6 +205,8 @@
             'F',
             'g',
             'G',
+            '<',
+            '>',
             'y',
             'Y',
             'x',
@@ -239,6 +244,7 @@
             ';': ',',
             ':': '.',
             _: '-',
+            '>': '<',
         },
     };
 })();
