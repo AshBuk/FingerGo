@@ -2,6 +2,16 @@
 
 All notable changes to FingerGo will be documented in this file.
 
+## [1.2.4] - 2026-03-24
+
+### Added
+- French AZERTY keyboard layout (ISO 105-key)
+- ISO keyboard geometry with shorter left Shift and extra key between Shift and first letter
+- Auto-registration of keyboard layouts from window globals
+
+### Fixed
+- German QWERTZ layout: add missing ISO key (</>)
+
 ## [1.2.3] - 2026-03-19
 
 ### Enhanced

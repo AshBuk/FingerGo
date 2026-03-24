@@ -67,6 +67,11 @@
   </keywords>
   
   <releases>
+    <release version="1.2.4" date="2026-03-24">
+      <description>
+        <p>French AZERTY layout and ISO keyboard geometry</p>
+      </description>
+    </release>
     <release version="1.2.3" date="2026-03-19">
       <description>
         <p>Flathub listing</p>
