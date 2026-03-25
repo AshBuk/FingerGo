@@ -110,17 +110,22 @@
                 </div>
             `;
 
+            const onExternalClose = () => resolve(false);
+
             const handleClick = e => {
                 const action = e.target.dataset?.action;
                 if (action === 'confirm') {
+                    window.EventBus.off('modal:closed', onExternalClose);
                     resolve(true);
                     hide();
                 } else if (action === 'cancel') {
+                    window.EventBus.off('modal:closed', onExternalClose);
                     resolve(false);
                     hide();
                 }
             };
 
+            window.EventBus.on('modal:closed', onExternalClose);
             modalContent.addEventListener('click', handleClick, { once: true });
             modalOverlay.classList.remove('modal-hidden');
         });
