@@ -24,7 +24,7 @@ check_js() {
 			echo "Missing license header: $f"
 			missing=$((missing+1))
 		fi
-	done < <(find "$root/frontend/src/js" -type f -name '*.js' -print0 2>/dev/null || true)
+	done < <(find "$root/gui/src/js" -type f -name '*.js' -print0 2>/dev/null || true)
 }
 
 check_css() {
@@ -33,7 +33,7 @@ check_css() {
 			echo "Missing license header: $f"
 			missing=$((missing+1))
 		fi
-	done < <(find "$root/frontend/src/styles" -type f -name '*.css' -print0 2>/dev/null || true)
+	done < <(find "$root/gui/src/styles" -type f -name '*.css' -print0 2>/dev/null || true)
 }
 
 check_go

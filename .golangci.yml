@@ -101,7 +101,6 @@ linters-settings:
 issues:
   exclude-dirs:
     - build
-    - frontend
     - data
     - node_modules
 
@@ -115,11 +114,6 @@ issues:
         - gosec
         - funlen
         - goconst
-
-    # Exclude known issues in auto-generated files
-    - path: frontend/
-      linters:
-        - all
 
     # Exclude some staticcheck messages
     - linters:

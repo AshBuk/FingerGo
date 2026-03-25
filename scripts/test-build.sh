@@ -153,13 +153,13 @@ log_step "Verifying build artifacts..."
 BUILD_OUTPUT="build/bin"
 case "$PLATFORM" in
     linux)
-        BINARY="fingergo"
+        BINARY="FingerGo"
         ;;
     darwin)
-        BINARY="fingergo.app"
+        BINARY="FingerGo.app"
         ;;
     windows)
-        BINARY="fingergo.exe"
+        BINARY="FingerGo.exe"
         ;;
 esac
 
