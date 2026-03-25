@@ -13,13 +13,13 @@ Why?
 - Fast performance without virtual DOM overhead
 
 **INTERNAL**
-Go backend with Repository Pattern and Domain-Driven Design.
+Go backend with concrete repository types and domain models.
 
-Paradigm: Interface-based dependency injection with idiomatic Go.
+Paradigm: Straightforward layered architecture with idiomatic Go.
 
 Why?
-- Clean separation of concerns (domain, storage, app layers)
-- Testable code through interface abstractions
+- Clean separation of concerns (domain models, storage, app layers)
+- Minimal indirection — app layer uses concrete `*storage.XxxRepository` types directly
 - Simple JSON file storage (no database needed)
 - Type safety and performance of Go
 

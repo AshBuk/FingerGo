@@ -31,7 +31,7 @@ const (
 // Design:
 //   - Metadata (index.json) loaded once on first access
 //   - Content files loaded on demand and cached in memory
-//   - Writes persist both in-memory state and disk atomically
+//   - Writes use ordered persistence (content first, index second) with best-effort rollback
 //   - O(1) lookups via textIndex and sliceIndex maps
 type TextRepository struct {
 	contentCache map[string]string      // id → full text content

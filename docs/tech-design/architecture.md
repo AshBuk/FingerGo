@@ -27,8 +27,7 @@ fingergo/
 │   └── app.go                 # Main app struct (exports to GUI via Wails)
 │
 ├── internal/                  # Internal layer (domain + storage)
-│   ├── domain/                # Domain models and interfaces
-│   │   ├── repository.go      # Repository interfaces (domain contracts)
+│   ├── domain/                # Domain models
 │   │   ├── text.go            # Text, Category, TextLibrary models
 │   │   ├── session.go         # TypingSession, SessionPayload models
 │   │   └── settings.go        # Settings model + defaults
@@ -123,8 +122,8 @@ fingergo/
         ├─ UI Components                             ├─ Domain Models
         │  ├─ KeyboardUI (keyboard.js)               │  ├─ domain/text.go
         │  ├─ TypingEngine (typing.js)               │  ├─ domain/session.go
-        │  ├─ Modals (modals/*.js)                   │  ├─ domain/settings.go
-        │  │  ├─ Core (core.js)                      │  └─ domain/repository.go
+        │  ├─ Modals (modals/*.js)                   │  └─ domain/settings.go
+        │  │  ├─ Core (core.js)                      │
         │  │  ├─ SessionSummary                      │
         │  │  ├─ ColorSettings                       ├─ Storage Layer
         │  │  ├─ TextEditor                          │  ├─ storage/storage.go
@@ -168,14 +167,13 @@ Due to the critical need for immediate UI responsiveness in a typing application
 
 **Internal Layer**
 *   **Domain Models (`internal/domain/`):**
-    *   `repository.go`: Defines repository interfaces (`TextRepository`, `SessionRepository`, `SettingsRepository`) that the application layer depends on.
     *   `text.go`: Text, Category, and TextLibrary domain models.
     *   `session.go`: TypingSession and SessionPayload domain models.
     *   `settings.go`: Settings domain model with defaults.
 *   **Storage Layer (`internal/storage/`):**
     *   `storage.go`: Storage manager that orchestrates all repositories and provides embedded defaults.
-    *   `texts.go`: `TextRepository` implementation for loading text content and metadata from the `texts/` directory with lazy loading and caching.
+    *   `texts.go`: `TextRepository` — loads text content and metadata from the `texts/` directory with lazy loading and caching.
     *   `texts_validate.go`: Text validation logic (ID uniqueness, category validation, etc.).
-    *   `sessions.go`: `SessionRepository` implementation for persisting completed typing sessions to `sessions.json` with limited history.
-    *   `settings.go`: `SettingsRepository` implementation for persisting user preferences (theme, zenMode, showKeyboard) in `settings.json`.
+    *   `sessions.go`: `SessionRepository` — persists completed typing sessions to `sessions.json` with limited history.
+    *   `settings.go`: `SettingsRepository` — persists user preferences (theme, zenMode, showKeyboard) in `settings.json`.
     *   `paths.go`: XDG data directory path management for cross-platform data storage.
