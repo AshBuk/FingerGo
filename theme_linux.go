@@ -37,10 +37,10 @@ func getGsetting(key string) string {
 	var err error
 	// Check if running inside Flatpak sandbox
 	if _, statErr := os.Stat("/.flatpak-info"); statErr == nil {
-		out, err = exec.Command("flatpak-spawn", "--host", "gsettings", "get",
+		out, err = exec.Command("flatpak-spawn", "--host", "gsettings", "get", //nolint:noctx // init-time, no context needed
 			"org.gnome.desktop.interface", key).Output()
 	} else {
-		out, err = exec.Command("gsettings", "get",
+		out, err = exec.Command("gsettings", "get", //nolint:noctx // init-time, no context needed
 			"org.gnome.desktop.interface", key).Output()
 	}
 	if err != nil {
