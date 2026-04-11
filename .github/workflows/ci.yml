@@ -49,10 +49,7 @@ jobs:
         run: go vet ./...
 
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v4
-        with:
-          install-mode: goinstall
-          args: --timeout=5m
+        uses: golangci/golangci-lint-action@v7
 
   js-test:
     name: JavaScript Tests & Lint
