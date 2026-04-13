@@ -2,6 +2,12 @@
 
 All notable changes to FingerGo will be documented in this file.
 
+## [1.2.5] - 2026-04-13
+
+### Added
+- Text zoom controls (± buttons in right panel, Ctrl++/−/0 shortcuts) with persistence
+- Reduced tab indentation width from 8 to 4 spaces in text display
+
 ## [1.2.4] - 2026-03-24
 
 ### Added

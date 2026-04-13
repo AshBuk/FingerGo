@@ -67,6 +67,11 @@
   </keywords>
   
   <releases>
+    <release version="1.2.5" date="2026-04-13">
+      <description>
+        <p>Text zoom controls and reduced tab indentation</p>
+      </description>
+    </release>
     <release version="1.2.4" date="2026-03-24">
       <description>
         <p>French AZERTY layout and ISO keyboard geometry</p>
