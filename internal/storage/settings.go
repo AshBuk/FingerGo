@@ -54,7 +54,7 @@ func (r *SettingsRepository) Save(s domain.Settings) error {
 }
 
 // Update modifies a single setting by key and persists the change.
-// Supported keys: "theme", "showKeyboard", "showStatsBar", "zenMode", "strictMode", "lastTextId", "keyboardLayout".
+// Supported keys: "theme", "showKeyboard", "showStatsBar", "zenMode", "strictMode", "lastTextId", "keyboardLayout", "textZoom".
 //
 //nolint:gocyclo // switch-based dispatch, linear and readable
 func (r *SettingsRepository) Update(key string, value any) error {
@@ -108,6 +108,15 @@ func (r *SettingsRepository) Update(key string, value any) error {
 			return fmt.Errorf("settings: keyboardLayout expects string, got %T", value)
 		}
 		updated.KeyboardLayout = v
+	case "textZoom":
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("settings: textZoom expects float64, got %T", value)
+		}
+		if v < 0.5 || v > 2.0 {
+			return fmt.Errorf("settings: textZoom out of range [0.5, 2.0]: %v", v)
+		}
+		updated.TextZoom = v
 	default:
 		return fmt.Errorf("settings: unknown key %q", key)
 	}
@@ -141,6 +150,9 @@ func (r *SettingsRepository) ensureLoaded() error {
 		var s domain.Settings
 		if err := json.Unmarshal(clean, &s); err != nil {
 			return fmt.Errorf("storage: parse config %q: %w", path, err)
+		}
+		if s.TextZoom == 0 {
+			s.TextZoom = 1.0
 		}
 		r.settings = s
 	}

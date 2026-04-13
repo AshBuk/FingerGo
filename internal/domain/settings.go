@@ -6,13 +6,14 @@ package domain
 
 // Settings holds user preferences persisted in settings.json.
 type Settings struct {
-	Theme          string `json:"theme"`          // "dark" | "light"
-	LastTextID     string `json:"lastTextId"`     // last opened text ID for session restore
-	KeyboardLayout string `json:"keyboardLayout"` // keyboard layout ID (e.g., "en-qwerty", "en-dvorak")
-	ShowKeyboard   bool   `json:"showKeyboard"`   // keyboard section visibility
-	ShowStatsBar   bool   `json:"showStatsBar"`   // stats bar visibility
-	ZenMode        bool   `json:"zenMode"`        // focus mode (hides both keyboard and stats)
-	StrictMode     bool   `json:"strictMode"`     // require backspace to fix errors (true) or allow direct correction (false)
+	Theme          string  `json:"theme"`          // "dark" | "light"
+	LastTextID     string  `json:"lastTextId"`     // last opened text ID for session restore
+	KeyboardLayout string  `json:"keyboardLayout"` // keyboard layout ID (e.g., "en-qwerty", "en-dvorak")
+	ShowKeyboard   bool    `json:"showKeyboard"`   // keyboard section visibility
+	ShowStatsBar   bool    `json:"showStatsBar"`   // stats bar visibility
+	ZenMode        bool    `json:"zenMode"`        // focus mode (hides both keyboard and stats)
+	StrictMode     bool    `json:"strictMode"`     // require backspace to fix errors (true) or allow direct correction (false)
+	TextZoom       float64 `json:"textZoom"`       // text display zoom multiplier (0.5–2.0, default 1.0)
 }
 
 // DefaultSettings returns factory defaults for new installations.
@@ -24,5 +25,6 @@ func DefaultSettings() Settings {
 		ZenMode:        false,
 		StrictMode:     true,        // require backspace to fix errors (false = cheat mode)
 		KeyboardLayout: "en-qwerty", // default keyboard layout
+		TextZoom:       1.0,         // 100% text size
 	}
 }
