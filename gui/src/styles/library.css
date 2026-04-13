@@ -43,6 +43,16 @@
     outline: 2px solid var(--accent);
     outline-offset: 2px;
 }
+#zoom-controls {
+    display: flex;
+    gap: 0.25rem;
+}
+#zoom-controls button {
+    flex: 1;
+    padding: 3px 0;
+    font-size: 0.65rem;
+    font-weight: 600;
+}
 
 /* Zen mode: hide library controls and sidebar */
 body.zen-mode #library-controls,

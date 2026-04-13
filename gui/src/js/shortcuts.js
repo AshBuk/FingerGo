@@ -79,6 +79,24 @@
                 window.LibraryManager?.toggle();
                 return;
             }
+            // Ctrl+= / Ctrl++ - Zoom in text
+            if ((e.key === '=' || e.key === '+') && (e.ctrlKey || e.metaKey) && !e.altKey) {
+                e.preventDefault();
+                window.SettingsManager?.zoomIn();
+                return;
+            }
+            // Ctrl+- - Zoom out text
+            if (e.key === '-' && (e.ctrlKey || e.metaKey) && !e.altKey) {
+                e.preventDefault();
+                window.SettingsManager?.zoomOut();
+                return;
+            }
+            // Ctrl+0 - Reset zoom
+            if (e.key === '0' && (e.ctrlKey || e.metaKey) && !e.altKey) {
+                e.preventDefault();
+                window.SettingsManager?.resetZoom();
+                return;
+            }
             // Ctrl+Alt+N - Toggle text editor (new text or close if modal open)
             if (e.key === 'n' && (e.ctrlKey || e.metaKey) && e.altKey) {
                 e.preventDefault();
