@@ -14,6 +14,11 @@
     let isStatsBarVisible = true;
     let isStrictMode = false;
     let currentKeyboardLayout = 'en-qwerty';
+    let textZoom = 1.0;
+
+    const ZOOM_MIN = 0.5;
+    const ZOOM_MAX = 2.0;
+    const ZOOM_STEP = 0.1;
 
     // DOM element references (cached on first use)
     const getEl = id => document.getElementById(id);
@@ -192,8 +197,34 @@
     }
 
     /**
+     * Apply text zoom level and optionally persist
+     * @param {number} level - Zoom multiplier (0.5–2.0)
+     * @param {boolean} [persist=true]
+     */
+    function applyTextZoom(level, persist = true) {
+        textZoom = Math.round(Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, level)) * 10) / 10;
+        const display = getEl('text-display');
+        const input = getEl('text-input');
+        if (display) display.style.setProperty('--text-zoom', textZoom);
+        if (input) input.style.setProperty('--text-zoom', textZoom);
+        if (persist) persistSetting('textZoom', textZoom);
+    }
+
+    function zoomIn() {
+        applyTextZoom(textZoom + ZOOM_STEP);
+    }
+
+    function zoomOut() {
+        applyTextZoom(textZoom - ZOOM_STEP);
+    }
+
+    function resetZoom() {
+        applyTextZoom(1.0);
+    }
+
+    /**
      * Load settings from internal layer
-     * @returns {Promise<{theme: string, zenMode: boolean, showKeyboard: boolean, showStatsBar: boolean, strictMode: boolean, keyboardLayout: string}>}
+     * @returns {Promise<{theme: string, zenMode: boolean, showKeyboard: boolean, showStatsBar: boolean, strictMode: boolean, keyboardLayout: string, textZoom: number}>}
      */
     async function load() {
         const defaults = {
@@ -203,6 +234,7 @@
             showStatsBar: true,
             strictMode: true,
             keyboardLayout: 'en-qwerty',
+            textZoom: 1.0,
         };
         if (!window.go?.app?.App?.GetSettings) return defaults;
         try {
@@ -227,11 +259,16 @@
         applyStrictMode,
         toggleStrictMode,
         applyKeyboardLayout,
+        applyTextZoom,
+        zoomIn,
+        zoomOut,
+        resetZoom,
         getTheme: () => currentTheme,
         isZenMode: () => isZenMode,
         isKeyboardVisible: () => isKeyboardVisible,
         isStatsBarVisible: () => isStatsBarVisible,
         isStrictMode: () => isStrictMode,
         getKeyboardLayout: () => currentKeyboardLayout,
+        getTextZoom: () => textZoom,
     };
 })();

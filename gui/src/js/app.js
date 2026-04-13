@@ -28,6 +28,8 @@
         bind('keyboard-toggle', () => window.SettingsManager.toggleKeyboard());
         bind('reset-session', () => window.SessionManager.reset());
         bind('strict-mode-toggle', () => window.SettingsManager.toggleStrictMode());
+        bind('zoom-in', () => window.SettingsManager.zoomIn());
+        bind('zoom-out', () => window.SettingsManager.zoomOut());
         bind('layout-toggle', () => window.UIManager?.showModal('settings', {}));
         // GitHub link
         const githubLink = document.getElementById('github-link');
@@ -89,6 +91,9 @@
         window.SettingsManager.applyStrictMode(settings.strictMode, false);
         if (settings.keyboardLayout) {
             window.SettingsManager.applyKeyboardLayout(settings.keyboardLayout, false);
+        }
+        if (settings.textZoom && settings.textZoom !== 1.0) {
+            window.SettingsManager.applyTextZoom(settings.textZoom, false);
         }
         // Bind UI handlers
         bindButtonHandlers();
