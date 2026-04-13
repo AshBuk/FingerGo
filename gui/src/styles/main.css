@@ -115,9 +115,10 @@ body.zen-mode .top-action-button:not(#zen-toggle) {
     color: transparent;
     caret-color: transparent;
     font: inherit;
-    font-size: clamp(0.96rem, calc(0.98rem + 0.5vw), 1.28rem);
+    font-size: calc(clamp(0.96rem, 0.98rem + 0.5vw, 1.28rem) * var(--text-zoom, 1));
     line-height: 1.68;
     letter-spacing: 0.02em;
+    tab-size: 4;
     white-space: pre-wrap;
     overflow-wrap: break-word;
     word-break: break-word;
@@ -128,7 +129,7 @@ body.zen-mode .top-action-button:not(#zen-toggle) {
     flex: 1 1 auto;
     height: 100%;
     overflow-y: auto;
-    font-size: clamp(0.96rem, calc(0.98rem + 0.5vw), 1.28rem);
+    font-size: calc(clamp(0.96rem, 0.98rem + 0.5vw, 1.28rem) * var(--text-zoom, 1));
     line-height: 1.68;
     letter-spacing: 0.02em;
     color: var(--accent);
@@ -140,6 +141,7 @@ body.zen-mode .top-action-button:not(#zen-toggle) {
     background: rgba(var(--accent-rgb), 0.03);
     border-radius: 8px;
     min-height: 200px;
+    tab-size: 4;
     white-space: pre-wrap;
     word-wrap: break-word;
 }
@@ -273,7 +275,7 @@ body.zen-mode #text-area {
 /* Responsive adjustments */
 @media (max-width: 1400px) {
     #text-display {
-        font-size: 1.25rem;
+        font-size: calc(1.25rem * var(--text-zoom, 1));
         padding: 1.25rem 1.5rem;
     }
 
@@ -288,7 +290,7 @@ body.zen-mode #text-area {
 
 @media (max-width: 1024px) {
     #text-display {
-        font-size: clamp(0.95rem, 1.2vw + 0.4rem, 1.1rem);
+        font-size: calc(clamp(0.95rem, 1.2vw + 0.4rem, 1.1rem) * var(--text-zoom, 1));
         padding: 1rem;
     }
 
