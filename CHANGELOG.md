@@ -2,6 +2,12 @@
 
 All notable changes to FingerGo will be documented in this file.
 
+## [1.2.6] - 2026-04-18
+
+### Security
+- Bump Go dependencies
+- Add `SECURITY.md` with a private vulnerability reporting channel
+
 ## [1.2.5] - 2026-04-13
 
 ### Added

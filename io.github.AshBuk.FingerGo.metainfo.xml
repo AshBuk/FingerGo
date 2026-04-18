@@ -67,6 +67,11 @@
   </keywords>
   
   <releases>
+    <release version="1.2.6" date="2026-04-18">
+      <description>
+        <p>Security dependency bumps</p>
+      </description>
+    </release>
     <release version="1.2.5" date="2026-04-13">
       <description>
         <p>Text zoom controls and reduced tab indentation</p>
