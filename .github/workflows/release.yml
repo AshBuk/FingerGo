@@ -150,17 +150,16 @@ jobs:
           VERSION=${GITHUB_REF#refs/tags/v}
           echo "version=${VERSION}" >> $GITHUB_OUTPUT
 
-      - name: Generate release notes
-        env:
-          VERSION: ${{ steps.version.outputs.version }}
+      - name: Extract tag body
         run: |
-          # Extract changelog for this version
-          awk '/^## \['"${VERSION}"'\]/{flag=1; next} /^## \[/{flag=0} flag' CHANGELOG.md > RELEASE_NOTES.md
+          TAG=${GITHUB_REF#refs/tags/}
+          git tag -l --format='%(contents:body)' "$TAG" > RELEASE_NOTES.md
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           body_path: RELEASE_NOTES.md
+          generate_release_notes: true
           draft: false
           prerelease: ${{ contains(github.ref, 'alpha') || contains(github.ref, 'beta') || contains(github.ref, 'rc') }}
           files: |
