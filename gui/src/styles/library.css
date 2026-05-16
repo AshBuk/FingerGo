@@ -159,6 +159,7 @@ body.zen-mode #library-sidebar {
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    color: inherit;
     opacity: 0;
     transition:
         opacity 0.15s ease,
@@ -229,6 +230,7 @@ body.zen-mode #library-sidebar {
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    color: inherit;
     opacity: 0.6;
     transition:
         opacity 0.2s ease,

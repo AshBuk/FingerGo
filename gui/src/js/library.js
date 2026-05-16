@@ -9,6 +9,14 @@
 (() => {
     const esc = window.AppUtils?.escapeHtml || (s => String(s ?? ''));
 
+    // Lucide icon SVGs for library UI elements
+    const ICON = {
+        bookOpen: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>`,
+        trash: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>`,
+        pencil: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>`,
+        star: `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
+    };
+
     const state = {
         library: null,
         selectedCategory: null, // null = All, string = category id
@@ -70,7 +78,7 @@
         let html = '<ul class="category-list">';
         // "All" category
         html += `<li class="category-item${isAllActive ? ' active' : ''}${allExpanded ? ' expanded' : ''}" data-category="">
-            <span class="icon">📚</span>
+            <span class="icon">${ICON.bookOpen}</span>
             <span>All</span>
             <span class="count">${allCount}</span>
         </li>`;
@@ -90,7 +98,7 @@
                 <span>${catName}</span>
                 <span class="spacer"></span>
                 <span class="count">${count}</span>
-                <button class="delete-btn" data-id="${catId}" title="Delete category">🗑️</button>
+                <button class="delete-btn" data-id="${catId}" title="Delete category">${ICON.trash}</button>
             </li>`;
             if (isExpanded) {
                 html += renderTextsForCategory(cat.id);
@@ -146,7 +154,7 @@
 
         let html = '<div>';
         texts.forEach(text => {
-            const fav = text.isFavorite ? '<span class="favorite">★</span>' : '';
+            const fav = text.isFavorite ? `<span class="favorite">${ICON.star}</span>` : '';
             const lang = normalizeLanguage(text.language);
             const langLabel = lang === 'text' ? 'Text' : esc(lang);
             const textId = esc(text.id);
@@ -157,8 +165,8 @@
                     <span>${langIcon(lang)} ${langLabel}</span>
                 </div>
                 <div class="text-item-actions">
-                    <button class="icon-btn edit-btn" data-id="${textId}" title="Edit">✏️</button>
-                    <button class="icon-btn delete-btn" data-id="${textId}" title="Delete">🗑️</button>
+                    <button class="icon-btn edit-btn" data-id="${textId}" title="Edit">${ICON.pencil}</button>
+                    <button class="icon-btn delete-btn" data-id="${textId}" title="Delete">${ICON.trash}</button>
                 </div>
             </div>`;
         });
