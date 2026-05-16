@@ -1,8 +1,11 @@
 # Contributing to FingerGo
 
-I considered using Svelte, which would be ideal for this type of application, but:
+Thank you for your interest to FingerGo!
+
+AI-assisted contributions accepted **if author understands and can defend the code**.
 
 **GUI**
+I considered using Svelte, which would be ideal for this type of application, but:
 This project uses a **classic vanilla JavaScript approach** (circa 2010-2015) without modern frameworks like React/Vue or build tools like Webpack/Vite.
 
 Paradigm: Procedural code with functional patterns.
