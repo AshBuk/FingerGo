@@ -67,6 +67,11 @@
   </keywords>
   
   <releases>
+    <release version="1.2.8" date="2026-05-24">
+      <description>
+        <p>AltGr key handling for German/EU keyboard layouts; dependency bumps</p>
+      </description>
+    </release>
     <release version="1.2.7" date="2026-05-17">
       <description>
         <p>Internal improvements</p>
