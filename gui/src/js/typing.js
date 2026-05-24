@@ -160,15 +160,15 @@
         if (window.KeyUtils.isNavigationKey?.(e.key)) {
             return;
         }
-        // Ignore shortcuts using control/meta modifiers
-        if (e.ctrlKey || e.metaKey) {
+        // Ignore shortcuts using control/meta modifiers (AltGr sets both ctrlKey+altKey on Windows/Chromium - let those through)
+        if ((e.ctrlKey || e.metaKey) && !(e.altKey && e.ctrlKey && e.key.length === 1)) {
             return;
         }
         if (IGNORED_KEYS.has(e.key)) {
             return;
         }
-        // Ignore modifier keys
-        if (['Control', 'Alt', 'Meta', 'Shift'].includes(e.key)) return;
+        // Ignore modifier keys (AltGraph = AltGr on German/EU keyboards)
+        if (['Control', 'Alt', 'AltGraph', 'Meta', 'Shift'].includes(e.key)) return;
         // Auto-resume on first valid keystroke after pause
         if (session.isPaused) resume();
         // Prevent default behavior for special keys during active session
