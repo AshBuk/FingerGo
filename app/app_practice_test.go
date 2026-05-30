@@ -59,7 +59,7 @@ func TestApp_AggregateKeyMistakes(t *testing.T) {
 func TestSessionPayload_PracticeMeta(t *testing.T) {
 	payload := &domain.SessionPayload{
 		SessionTextMeta: &domain.SessionTextMeta{Text: "qqq"},
-		PracticeSessionMeta: &domain.PracticeSessionMeta{
+		PracticeSessionMeta: domain.PracticeSessionMeta{
 			PracticeMode:      domain.PracticeModeTargeted,
 			PracticeGroupID:   "builtin-home-row",
 			PracticeGroupName: "Home row",

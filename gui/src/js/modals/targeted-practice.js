@@ -115,6 +115,16 @@
     function render(data) {
         if (state.editingGroup !== null) return renderEditor();
         const builtins = PM().getBuiltinGroups();
+        let builtinCards = builtins.map(g => renderGroupCard({ ...g, source: 'builtin' }));
+        if (state.weakKeys.length) {
+            const weakGroup = {
+                id: 'builtin-weak-keys',
+                name: 'Weak keys',
+                keys: state.weakKeys.map(([k]) => k),
+                source: 'suggested',
+            };
+            builtinCards = [renderGroupCard(weakGroup), ...builtinCards];
+        }
         return `<div class="targeted-practice">
             <section class="practice-section">
                 <h4>Suggested weak keys</h4>
@@ -122,7 +132,7 @@
             </section>
             <section class="practice-section">
                 <h4>Built-in groups</h4>
-                <div class="practice-group-grid">${builtins.map(g => renderGroupCard({ ...g, source: 'builtin' })).join('')}</div>
+                <div class="practice-group-grid">${builtinCards.join('')}</div>
             </section>
             <section class="practice-section">
                 <h4>Custom groups <button type="button" class="practice-link-btn" id="practice-new-group">+ New group</button></h4>

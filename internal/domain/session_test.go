@@ -139,6 +139,30 @@ func TestSessionPayload_ToTypingSession(t *testing.T) {
 		}
 	})
 
+	t.Run("copies practice metadata", func(t *testing.T) {
+		payload := &SessionPayload{
+			SessionTextMeta: &SessionTextMeta{Text: "qqq aaa"},
+			PracticeSessionMeta: PracticeSessionMeta{
+				PracticeMode:      PracticeModeTargeted,
+				PracticeGroupID:   "builtin-home-row",
+				PracticeGroupName: "Home row",
+				TargetKeys:        []string{"a", "s", "d"},
+			},
+		}
+
+		session := payload.ToTypingSession(fallback)
+
+		if session.PracticeMode != PracticeModeTargeted {
+			t.Errorf("practiceMode = %q", session.PracticeMode)
+		}
+		if session.PracticeGroupID != "builtin-home-row" {
+			t.Errorf("practiceGroupId = %q", session.PracticeGroupID)
+		}
+		if len(session.TargetKeys) != 3 {
+			t.Errorf("targetKeys = %v", session.TargetKeys)
+		}
+	})
+
 	t.Run("clones mistakes map", func(t *testing.T) {
 		original := map[string]int{"a": 3, "s": 5}
 		payload := &SessionPayload{

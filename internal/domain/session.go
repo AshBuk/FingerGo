@@ -65,7 +65,7 @@ type SessionPayload struct {
 	TotalErrors     int `json:"totalErrors"`
 	TotalKeystrokes int `json:"totalKeystrokes"`
 
-	*PracticeSessionMeta
+	PracticeSessionMeta
 }
 
 // ToTypingSession converts the payload to a normalized TypingSession.
@@ -122,13 +122,12 @@ func (p *SessionPayload) ToTypingSession(fallback time.Time) TypingSession {
 		CharacterCount:  charCount,
 		Mistakes:        mistakes,
 	}
-	if p.PracticeSessionMeta != nil {
-		session.PracticeSessionMeta = &PracticeSessionMeta{
-			PracticeMode:      strings.TrimSpace(p.PracticeMode),
-			PracticeGroupID:   strings.TrimSpace(p.PracticeGroupID),
-			PracticeGroupName: strings.TrimSpace(p.PracticeGroupName),
-			TargetKeys:        cloneTargetKeys(p.TargetKeys),
-		}
+	mode := strings.TrimSpace(p.PracticeMode)
+	if mode != "" || len(p.TargetKeys) > 0 || strings.TrimSpace(p.PracticeGroupID) != "" {
+		session.PracticeMode = mode
+		session.PracticeGroupID = strings.TrimSpace(p.PracticeGroupID)
+		session.PracticeGroupName = strings.TrimSpace(p.PracticeGroupName)
+		session.TargetKeys = cloneTargetKeys(p.TargetKeys)
 	}
 	return session
 }
