@@ -2,11 +2,16 @@
 
 Thank you for your interest to FingerGo!
 
-AI-assisted contributions accepted **if author understands and can defend the code**.
+## Before You Start
 
-**GUI**
+- **For features** (not bug fixes or small PRs): please open an issue first to discuss the idea before sending a pull request.
+- **Stay in scope:** any new contribution must fit the scope and goals of the project.
+- AI-assisted contributions accepted **if author understands and can defend the code**.
+
+ • **GUI** • 
+
 I considered using Svelte, which would be ideal for this type of application, but:
-This project uses a **classic vanilla JavaScript approach** (circa 2010-2015) without modern frameworks like React/Vue or build tools like Webpack/Vite.
+This project uses a **classic vanilla JavaScript approach** without modern frameworks like React/Vue or build tools like Webpack/Vite.
 
 Paradigm: Procedural code with functional patterns.
 
@@ -15,7 +20,8 @@ Why?
 - Simple and maintainable for a desktop app
 - Fast performance without virtual DOM overhead
 
-**INTERNAL**
+ • **INTERNAL** • 
+
 Go backend with concrete repository types and domain models.
 
 Paradigm: Straightforward layered architecture with idiomatic Go.
