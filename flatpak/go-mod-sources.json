@@ -351,58 +351,58 @@
   },
   {
     "type": "file",
-    "url": "https://proxy.golang.org/golang.org/x/crypto/@v/v0.45.0.zip",
-    "sha256": "416335b9102df16747b29fe58d034d6d9fb70af314740136fb0a37ae8c568705",
+    "url": "https://proxy.golang.org/golang.org/x/crypto/@v/v0.51.0.zip",
+    "sha256": "a28a63b8a6abbbfcbf9fecf8417ce734c50dd988564cadf301c72c2a944f3a6a",
     "dest": "go/pkg/mod/cache/download/golang.org/x/crypto/@v/",
+    "dest-filename": "v0.51.0.zip"
+  },
+  {
+    "type": "file",
+    "url": "https://proxy.golang.org/golang.org/x/crypto/@v/v0.51.0.mod",
+    "sha256": "4e067d17c37f93ac185dc92917ead5be497e956a45d56860db8db511cc2ea897",
+    "dest": "go/pkg/mod/cache/download/golang.org/x/crypto/@v/",
+    "dest-filename": "v0.51.0.mod"
+  },
+  {
+    "type": "file",
+    "url": "https://proxy.golang.org/golang.org/x/net/@v/v0.55.0.zip",
+    "sha256": "21c29cd58b7a02de60a3cb5122d8f59bc3c96d4750f9c1bb77a270a64eb42e61",
+    "dest": "go/pkg/mod/cache/download/golang.org/x/net/@v/",
+    "dest-filename": "v0.55.0.zip"
+  },
+  {
+    "type": "file",
+    "url": "https://proxy.golang.org/golang.org/x/net/@v/v0.55.0.mod",
+    "sha256": "ba56dceb42bf7ab4eeea7603daa4162ae9205d48208b2abbc65b0cdbdf9e627b",
+    "dest": "go/pkg/mod/cache/download/golang.org/x/net/@v/",
+    "dest-filename": "v0.55.0.mod"
+  },
+  {
+    "type": "file",
+    "url": "https://proxy.golang.org/golang.org/x/sys/@v/v0.45.0.zip",
+    "sha256": "e51c1c88045b4edbe48ad810122131381ff541c89edbd97ef833ed6653b59e6a",
+    "dest": "go/pkg/mod/cache/download/golang.org/x/sys/@v/",
     "dest-filename": "v0.45.0.zip"
   },
   {
     "type": "file",
-    "url": "https://proxy.golang.org/golang.org/x/crypto/@v/v0.45.0.mod",
-    "sha256": "6eee774fe69c286329ac0ae96c550a53f62dc1ad320b34d2b72e89e7f72c28a9",
-    "dest": "go/pkg/mod/cache/download/golang.org/x/crypto/@v/",
+    "url": "https://proxy.golang.org/golang.org/x/sys/@v/v0.45.0.mod",
+    "sha256": "57f4393ea18d5446a12363b35c23a616d843fa1669c7121a70a2bc3a9677d665",
+    "dest": "go/pkg/mod/cache/download/golang.org/x/sys/@v/",
     "dest-filename": "v0.45.0.mod"
   },
   {
     "type": "file",
-    "url": "https://proxy.golang.org/golang.org/x/net/@v/v0.47.0.zip",
-    "sha256": "3444c04eff1dc7a41a6386cb6a0b0b1facebfc7e222bae523043ed4b14039f76",
-    "dest": "go/pkg/mod/cache/download/golang.org/x/net/@v/",
-    "dest-filename": "v0.47.0.zip"
-  },
-  {
-    "type": "file",
-    "url": "https://proxy.golang.org/golang.org/x/net/@v/v0.47.0.mod",
-    "sha256": "da7ab98f71cb7ee5dd3766ed0f29d7088c9d62bc137b8fd286ebdb3d236c67c4",
-    "dest": "go/pkg/mod/cache/download/golang.org/x/net/@v/",
-    "dest-filename": "v0.47.0.mod"
-  },
-  {
-    "type": "file",
-    "url": "https://proxy.golang.org/golang.org/x/sys/@v/v0.38.0.zip",
-    "sha256": "dacd7c9aa2b298f966822da214c6d601da08f14d41b29032bcac4bc503887a49",
-    "dest": "go/pkg/mod/cache/download/golang.org/x/sys/@v/",
-    "dest-filename": "v0.38.0.zip"
-  },
-  {
-    "type": "file",
-    "url": "https://proxy.golang.org/golang.org/x/sys/@v/v0.38.0.mod",
-    "sha256": "f411814d83a96e86781b1dee41c125b9504da5422dba37cc1d63b016ae39cfe2",
-    "dest": "go/pkg/mod/cache/download/golang.org/x/sys/@v/",
-    "dest-filename": "v0.38.0.mod"
-  },
-  {
-    "type": "file",
-    "url": "https://proxy.golang.org/golang.org/x/text/@v/v0.31.0.zip",
-    "sha256": "10d76a358ae35fae9523ffef7b378ec30f2e73bc3f99ba40e46a6cb722ad888a",
+    "url": "https://proxy.golang.org/golang.org/x/text/@v/v0.37.0.zip",
+    "sha256": "b8d475c17835ab602b91f1147684ceb5dbf4060e72e5dfb2e0e33efc9312a982",
     "dest": "go/pkg/mod/cache/download/golang.org/x/text/@v/",
-    "dest-filename": "v0.31.0.zip"
+    "dest-filename": "v0.37.0.zip"
   },
   {
     "type": "file",
-    "url": "https://proxy.golang.org/golang.org/x/text/@v/v0.31.0.mod",
-    "sha256": "e8cbf2786e3b3608e10dabd2c5e3fa9cc8d12451178f0c6008251d038d5e4e37",
+    "url": "https://proxy.golang.org/golang.org/x/text/@v/v0.37.0.mod",
+    "sha256": "90d5ab4e4289e0f9d735ca4561eee22d9f9ebcd7fa04f23583c7d2140940968e",
     "dest": "go/pkg/mod/cache/download/golang.org/x/text/@v/",
-    "dest-filename": "v0.31.0.mod"
+    "dest-filename": "v0.37.0.mod"
   }
 ]
