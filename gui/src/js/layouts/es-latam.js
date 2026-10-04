@@ -42,6 +42,7 @@
                 { key: 'p', label: 'P' },
                 { key: '´', label: ['¨', '´'] },
                 { key: '+', label: ['*', '+'] },
+                { key: '}', label: [']', '}'], className: 'key-wide' },
             ],
             [
                 { key: 'CapsLock', label: 'Caps', className: 'key-wider' },
@@ -56,7 +57,6 @@
                 { key: 'l', label: 'L' },
                 { key: 'ñ', label: 'Ñ' },
                 { key: '{', label: ['[', '{'] },
-                { key: '}', label: [']', '}'] },
                 { key: 'Enter', label: 'Enter', className: 'key-wider' },
             ],
             [
@@ -107,7 +107,7 @@
 
             // Left hand - index
             4: 'left-index',
-            '$': 'left-index',
+            $: 'left-index',
             5: 'left-index',
             '%': 'left-index',
             r: 'left-index',
@@ -133,7 +133,7 @@
             '(': 'right-middle',
             i: 'right-middle',
             k: 'right-middle',
-            m: 'right-middle',
+            m: 'right-index',
             ',': 'right-middle',
 
             // Right hand - ring
@@ -163,8 +163,8 @@
             ']': 'right-pinky',
             '-': 'right-pinky',
             _: 'right-pinky',
-            ';': 'right-pinky',
-            ':': 'right-pinky',
+            ';': 'right-middle',
+            ':': 'right-ring',
             Backspace: 'right-pinky',
             Enter: 'right-pinky',
 
