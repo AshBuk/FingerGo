@@ -1,6 +1,6 @@
 {
   "name": "fingergo",
-  "version": "1.2.6",
+  "version": "1.3.0",
   "description": "Touch-typing trainer desktop app with real-time keyboard visualization",
   "private": true,
   "type": "module",
