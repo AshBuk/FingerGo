@@ -10,8 +10,12 @@ import assert from 'node:assert/strict';
 
 globalThis.window = {};
 await import('../utils.js');
+await import('../layouts/en-qwerty.js');
+await import('../layouts/es-latam.js');
+await import('../layouts/fr-azerty.js');
 
-const { KeyUtils, AppUtils } = globalThis.window;
+const { KeyUtils, AppUtils, LAYOUT_EN_QWERTY, LAYOUT_ES_LATAM, LAYOUT_FR_AZERTY } =
+    globalThis.window;
 
 describe('KeyUtils', () => {
     describe('normalizeKey', () => {
@@ -77,6 +81,58 @@ describe('KeyUtils', () => {
             assert.equal(KeyUtils.isNavigationKey('Enter'), false);
             assert.equal(KeyUtils.isNavigationKey('a'), false);
             assert.equal(KeyUtils.isNavigationKey('Escape'), false);
+        });
+    });
+
+    describe('deadKeySequence', () => {
+        it('splits accented characters into dead key and base character', () => {
+            assert.deepEqual(KeyUtils.deadKeySequence('é', LAYOUT_ES_LATAM), ['´', 'e']);
+            assert.deepEqual(KeyUtils.deadKeySequence('Á', LAYOUT_ES_LATAM), ['´', 'A']);
+            assert.deepEqual(KeyUtils.deadKeySequence('ü', LAYOUT_ES_LATAM), ['¨', 'u']);
+            assert.deepEqual(KeyUtils.deadKeySequence('ê', LAYOUT_FR_AZERTY), ['^', 'e']);
+        });
+
+        it('returns null for characters with their own key', () => {
+            assert.equal(KeyUtils.deadKeySequence('ñ', LAYOUT_ES_LATAM), null);
+            assert.equal(KeyUtils.deadKeySequence('´', LAYOUT_ES_LATAM), null);
+            assert.equal(KeyUtils.deadKeySequence('é', LAYOUT_FR_AZERTY), null);
+            assert.equal(KeyUtils.deadKeySequence('a', LAYOUT_ES_LATAM), null);
+        });
+
+        it('returns null when the layout has no matching dead key', () => {
+            assert.equal(KeyUtils.deadKeySequence('é', LAYOUT_EN_QWERTY), null);
+            assert.equal(KeyUtils.deadKeySequence('è', LAYOUT_ES_LATAM), null);
+            assert.equal(KeyUtils.deadKeySequence(null, LAYOUT_ES_LATAM), null);
+        });
+    });
+
+    describe('baseKey', () => {
+        it('maps shift symbols and uppercase letters to their key', () => {
+            assert.equal(KeyUtils.baseKey('!', LAYOUT_EN_QWERTY), '1');
+            assert.equal(KeyUtils.baseKey('A', LAYOUT_EN_QWERTY), 'a');
+            assert.equal(KeyUtils.baseKey('¨', LAYOUT_ES_LATAM), '´');
+            assert.equal(KeyUtils.baseKey('2', LAYOUT_FR_AZERTY), 'é');
+        });
+
+        it('keeps base characters and key names', () => {
+            assert.equal(KeyUtils.baseKey('a', LAYOUT_EN_QWERTY), 'a');
+            assert.equal(KeyUtils.baseKey(' ', LAYOUT_EN_QWERTY), ' ');
+            assert.equal(KeyUtils.baseKey('Enter', LAYOUT_EN_QWERTY), 'Enter');
+        });
+    });
+
+    describe('keysForChar', () => {
+        it('resolves dead key characters to both keys', () => {
+            assert.deepEqual(KeyUtils.keysForChar('é', LAYOUT_ES_LATAM), ['´', 'e']);
+            assert.deepEqual(KeyUtils.keysForChar('Ü', LAYOUT_ES_LATAM), ['´', 'u']);
+            assert.deepEqual(KeyUtils.keysForChar('ê', LAYOUT_FR_AZERTY), ['^', 'e']);
+        });
+
+        it('resolves other characters to a single key', () => {
+            assert.deepEqual(KeyUtils.keysForChar('ñ', LAYOUT_ES_LATAM), ['ñ']);
+            assert.deepEqual(KeyUtils.keysForChar('?', LAYOUT_ES_LATAM), ["'"]);
+            assert.deepEqual(KeyUtils.keysForChar('Tab', LAYOUT_EN_QWERTY), ['Tab']);
+            assert.deepEqual(KeyUtils.keysForChar('A', undefined), ['a']);
         });
     });
 });

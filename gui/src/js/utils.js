@@ -77,10 +77,48 @@
         return s.replace(/[&<>"']/g, c => map[c]);
     }
 
+    /**
+     * Split a dead key character into [deadKey, baseChar], e.g. "é" -> ["´", "e"]
+     * @param {string} char - Character from text
+     * @param {Object} layout - Keyboard layout with optional deadKeys map
+     * @returns {string[]|null} null if the character has its own key or no dead key
+     */
+    function deadKeySequence(char, layout) {
+        if (!layout?.deadKeys || typeof char !== 'string' || char.length !== 1) return null;
+        if (layout.fingerMap?.[char.toLowerCase()] || layout.shiftToBaseKey?.[char]) return null;
+        const [base, mark, ...rest] = char.normalize('NFD');
+        const deadKey = !rest.length && layout.deadKeys[mark];
+        return deadKey ? [deadKey, base] : null;
+    }
+
+    /**
+     * Resolve the layout key that types a character, e.g. "!" -> "1", "A" -> "a"
+     * @param {string} char - Character or key name
+     * @param {Object} layout - Keyboard layout with optional shiftToBaseKey map
+     * @returns {string} Key as used in layout rows
+     */
+    function baseKey(char, layout) {
+        if (layout?.shiftToBaseKey?.[char]) return layout.shiftToBaseKey[char];
+        return char.length === 1 ? char.toLowerCase() : char;
+    }
+
+    /**
+     * Resolve all layout keys pressed to type a character, e.g. "é" -> ["´", "e"]
+     * @param {string} char - Character or key name
+     * @param {Object} layout - Keyboard layout
+     * @returns {string[]} Keys as used in layout rows
+     */
+    function keysForChar(char, layout) {
+        return (deadKeySequence(char, layout) ?? [char]).map(c => baseKey(c, layout));
+    }
+
     window.KeyUtils = {
         normalizeKey,
         normalizeTextChar,
         isNavigationKey,
+        deadKeySequence,
+        baseKey,
+        keysForChar,
     };
 
     window.AppUtils = {

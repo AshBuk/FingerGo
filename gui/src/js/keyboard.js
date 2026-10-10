@@ -261,19 +261,8 @@
         else if (originalChar === '\t') keyName = 'Tab';
         else if (originalChar === ' ') keyName = ' ';
 
-        // For shift symbols, find the base key to highlight
-        // For uppercase letters, use lowercase; for shift symbols, use the base key
-        const shiftToBaseKey = layout.shiftToBaseKey;
-        let baseKey = keyName;
-
-        if (shiftToBaseKey?.[keyName]) {
-            // Shift symbol (e.g., "!" -> "1", "Ё" -> "ё")
-            baseKey = shiftToBaseKey[keyName];
-        } else if (keyName.length === 1 && keyName !== keyName.toLowerCase()) {
-            // Uppercase letter, Unicode-aware (e.g., "Y" -> "y", "Й" -> "й")
-            baseKey = keyName.toLowerCase();
-        }
-        // Otherwise baseKey = keyName (Enter, Tab, space, lowercase letters, base symbols)
+        // Shift symbol -> base key ("!" -> "1"), uppercase -> lowercase ("Й" -> "й")
+        const baseKey = window.KeyUtils.baseKey(keyName, layout);
 
         targetKey = baseKey;
 
@@ -281,6 +270,20 @@
             keyToEls.get(baseKey).forEach(el => el.classList.add('target'));
         }
         highlightFingers(originalChar);
+    }
+
+    // Dead key characters take two steps: [deadKey, baseChar]
+    let deadKeySteps = null;
+    const MODIFIER_KEYS = new Set(['Shift', 'Control', 'Alt', 'AltGraph', 'Meta', 'CapsLock']);
+
+    function showDeadKeyStep(step) {
+        if (deadKeySteps) setTarget(deadKeySteps[step], deadKeySteps[step]);
+    }
+
+    function setTargetChar(originalChar) {
+        deadKeySteps = window.KeyUtils.deadKeySequence(originalChar, layout);
+        if (deadKeySteps) showDeadKeyStep(0);
+        else setTarget(window.KeyUtils.normalizeKey(originalChar), originalChar);
     }
 
     function setErrorState(key) {
@@ -302,6 +305,9 @@
     }
 
     function onKeyDown(e) {
+        if (deadKeySteps && !e.isComposing && e.keyCode !== 229 && !MODIFIER_KEYS.has(e.key)) {
+            showDeadKeyStep(e.key === 'Dead' ? 1 : 0);
+        }
         const k = window.KeyUtils.normalizeKey(e.key);
         // For Shift, use location to determine which one
         if (e.key === 'Shift') {
@@ -355,6 +361,8 @@
     render();
     window.addEventListener('keydown', onKeyDown);
     window.addEventListener('keyup', onKeyUp);
+    window.addEventListener('compositionstart', () => showDeadKeyStep(1));
+    window.addEventListener('compositionend', () => showDeadKeyStep(0));
 
     // Expose minimal API
     window.KeyboardUI = {
@@ -362,13 +370,10 @@
          * Set target key for highlighting
          * @param {string} originalChar - Original character from text (for Shift detection)
          */
-        setTargetKey: originalChar => {
-            const normalizedKey = window.KeyUtils.normalizeKey(originalChar);
-            setTarget(normalizedKey, originalChar);
-        },
-        clearTarget: () => setTarget(null, null),
-        setError: k => setErrorState(window.KeyUtils.normalizeKey(k)),
-        clearError: k => clearErrorState(window.KeyUtils.normalizeKey(k)),
+        setTargetKey: setTargetChar,
+        clearTarget: () => setTargetChar(null),
+        setError: k => window.KeyUtils.keysForChar(k, layout).forEach(setErrorState),
+        clearError: k => window.KeyUtils.keysForChar(k, layout).forEach(clearErrorState),
         clearAllErrors,
         getCurrentLayout: () => layout,
         setLayout,

@@ -243,5 +243,11 @@
             '§': '!',
             '>': '<',
         },
+
+        // Combining mark -> dead key
+        deadKeys: {
+            '\u0302': '^', // circumflex
+            '\u0308': '¨', // diaeresis
+        },
     };
 })();
