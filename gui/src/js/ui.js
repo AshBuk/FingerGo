@@ -25,6 +25,7 @@
     let characterElements = [];
     let cursorIndex = 0;
     let suppressSelectionSync = false;
+    let inputText = '';
 
     /**
      * Ensure the cursor position is visible within the text container
@@ -100,6 +101,7 @@
         textDisplay.appendChild(fragment);
 
         // Sync textarea with text content
+        inputText = text;
         if (textInput) {
             textInput.value = text;
         }
@@ -184,6 +186,16 @@
         // Prevent actual text input in textarea (typing engine handles input)
         textInput.addEventListener('beforeinput', e => {
             e.preventDefault();
+        });
+        // Composition (dead keys, IME) cannot be cancelled: restore text and caret once it commits
+        const restoreInput = () => {
+            if (textInput.value === inputText) return;
+            textInput.value = inputText;
+            setCursorPosition(cursorIndex, { emit: false });
+        };
+        textInput.addEventListener('compositionend', restoreInput);
+        textInput.addEventListener('input', e => {
+            if (!e.isComposing) restoreInput();
         });
         // Prevent context menu on right-click
         textInput.addEventListener('contextmenu', e => {

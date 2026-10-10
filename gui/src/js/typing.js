@@ -167,6 +167,8 @@
         if (IGNORED_KEYS.has(e.key)) {
             return;
         }
+        // Composed characters (dead keys, IME) arrive via compositionend
+        if (e.isComposing || e.keyCode === 229) return;
         // Ignore modifier keys (AltGraph = AltGr on German/EU keyboards)
         if (['Control', 'Alt', 'AltGraph', 'Meta', 'Shift'].includes(e.key)) return;
         // Auto-resume on first valid keystroke after pause
@@ -202,7 +204,27 @@
             return;
         }
 
-        const pressedKey = window.KeyUtils.normalizeKey(e.key);
+        processChar(e.key);
+    }
+
+    /**
+     * Handle text committed by composition (dead keys, IME)
+     */
+    function handleCompositionEnd(e) {
+        if (!session.isActive || !e.data || e.target.id !== 'text-input') return;
+        if (session.isPaused) resume();
+        for (const char of e.data) processChar(char);
+    }
+
+    /**
+     * Compare typed character with the expected one and advance the session
+     * @param {string} char - Character from keydown or composition
+     */
+    function processChar(char) {
+        const expectedChar = session.text[session.currentIndex];
+        if (expectedChar === undefined) return;
+
+        const pressedKey = window.KeyUtils.normalizeKey(char);
         const expectedKey = window.KeyUtils.normalizeTextChar(expectedChar);
 
         const isCorrect = pressedKey === expectedKey;
@@ -337,6 +359,7 @@
 
         // Attach keyboard listener
         window.addEventListener('keydown', handleKeyDown);
+        window.addEventListener('compositionend', handleCompositionEnd);
 
         // Start background stats/timer tick (1s)
         if (statsIntervalId) {
@@ -352,6 +375,7 @@
         if (!session.isActive) return;
 
         window.removeEventListener('keydown', handleKeyDown);
+        window.removeEventListener('compositionend', handleCompositionEnd);
 
         // Stop background stats timer
         if (statsIntervalId) {
@@ -394,6 +418,7 @@
      */
     function reset() {
         window.removeEventListener('keydown', handleKeyDown);
+        window.removeEventListener('compositionend', handleCompositionEnd);
 
         // Stop background stats timer
         if (statsIntervalId) {
