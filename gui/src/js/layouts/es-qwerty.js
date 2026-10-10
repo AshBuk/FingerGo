@@ -246,5 +246,13 @@
             ':': '.',
             _: '-',
         },
+
+        // Combining mark -> dead key
+        deadKeys: {
+            '\u0301': '´', // acute
+            '\u0308': '¨', // diaeresis
+            '\u0300': '`', // grave
+            '\u0302': '^', // circumflex
+        },
     };
 })();
