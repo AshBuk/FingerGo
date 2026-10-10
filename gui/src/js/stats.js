@@ -71,16 +71,12 @@
         return 'rgba(183, 28, 28, 0.90)'; // Dark Red
     }
 
-    // Cache key elements map for O(1) lookup
-    let keyElsMap = null;
-
     /**
-     * Build or return cached map of key elements
+     * Build map of key elements (rebuilt each call: layout switch re-renders keys)
      * @returns {Map<string, HTMLElement[]>}
      */
     function getKeyElementsMap() {
-        if (keyElsMap) return keyElsMap;
-        keyElsMap = new Map();
+        const keyElsMap = new Map();
         document.querySelectorAll('#keyboard .key').forEach(el => {
             const key = el.dataset?.key;
             if (!key) return;
@@ -92,20 +88,25 @@
 
     /**
      * Apply keyboard heatmap overlay
-     * Optimized: O(n) instead of O(n*m) using cached element map
-     * @param {Record<string, number>} mistakes
+     * @param {Record<string, number>} mistakes - Mistake count by text character
      */
     function renderHeatmap(mistakes) {
         if (!mistakes) return;
         const map = getKeyElementsMap();
         // Reset all keys
         map.forEach(els => els.forEach(el => el.style.removeProperty('--heatmap-color')));
-        // Apply colors only to mistake keys - O(1) lookup per key
-        Object.entries(mistakes).forEach(([key, count]) => {
+        // Sum mistakes per physical key ("A" and "a" -> "a", "é" -> "´" + "e")
+        const layout = window.KeyboardUI?.getCurrentLayout();
+        const keyCounts = new Map();
+        Object.entries(mistakes).forEach(([char, count]) => {
             if (!count) return;
+            window.KeyUtils.keysForChar(char, layout).forEach(key => {
+                keyCounts.set(key, (keyCounts.get(key) || 0) + count);
+            });
+        });
+        keyCounts.forEach((count, key) => {
             const color = getHeatmapColor(count);
-            const els = map.get(key);
-            if (els) els.forEach(el => el.style.setProperty('--heatmap-color', color));
+            map.get(key)?.forEach(el => el.style.setProperty('--heatmap-color', color));
         });
     }
 
