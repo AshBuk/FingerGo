@@ -22,6 +22,8 @@ Built with Go ↔ Wails ↔ Vanilla JavaScript (ES6+). Available for **Linux, ma
 
 ▸ **Real-time visual keyboard with finger mapping**  
 
+▸ **Multiple keyboard layouts: QWERTY, Dvorak, JCUKEN, QWERTZ, AZERTY, Bopomofo**
+
 ▸ **Hierarchical text/code library (plain text and code samples)**  
 
 ▸ **Live stats: WPM, CPM, accuracy, per‑key mistakes**  

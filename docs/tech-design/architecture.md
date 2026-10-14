@@ -20,6 +20,7 @@ fingergo/
 ├── wails.json                   # Wails configuration
 ├── go.mod
 ├── go.sum
+├── package.json                 # JS tooling (ESLint, Prettier, tests)
 ├── README.md
 ├── LICENSE
 │
@@ -32,6 +33,7 @@ fingergo/
 │   │   ├── session.go         # TypingSession, SessionPayload models
 │   │   └── settings.go        # Settings model + defaults
 │   └── storage/               # Persistence layer implementations
+│       ├── embedded/          # Default text library (embedded into binary)
 │       ├── storage.go         # Storage manager + embedded defaults
 │       ├── texts.go           # Text repository implementation
 │       ├── texts_validate.go  # Text validation logic
@@ -39,7 +41,7 @@ fingergo/
 │       ├── settings.go        # Settings repository implementation
 │       └── paths.go           # XDG data directory paths
 │
-├── data/                      # User data (~/.local/share/fingergo/)
+├── data/                      # User data (~/.local/share/FingerGo/)
 │   ├── texts/                 # Text library
 │   │   ├── index.json         # Categories and text metadata
 │   │   └── content/           # Text content files
@@ -64,7 +66,7 @@ fingergo/
 │   │   │   ├── constants.js      # Application-wide constants
 │   │   │   ├── layouts.js        # Keyboard layout registry system
 │   │   │   ├── layouts/          # Modular keyboard layout definitions
-│   │   │   │   └── en-qwerty.js  # EN QWERTY layout data
+│   │   │   │   └── {id}.js       # One layout per file (en-qwerty, zh-bopomofo, ...)
 │   │   │   ├── keyboard.js       # Keyboard highlighting + finger mapping
 │   │   │   ├── typing.js         # Typing engine (WPM, accuracy, mistakes)
 │   │   │   ├── modals/           # Modal dialog components
@@ -85,9 +87,6 @@ fingergo/
 │   │   ├── wailsjs/              # Auto-generated Wails runtime (not in repo)
 │   │   │   └── runtime/
 │   │   │       └── runtime.js    # Wails Go-JS bridge
-│   │   └── assets/               # Static assets (TODO)
-│   │       └── icons/            # Category icons (text, code languages)
-│   └── package.json              # Optional (if using bundler)
 │
 └── build/                        # Build configurations
     └── linux/
@@ -138,14 +137,14 @@ fingergo/
         │  └─ ShortcutsManager (shortcuts.js)        │
         │                                            │
         ├─ Layout Data                               │
-        │  └─ layouts/en-qwerty.js                   │
+        │  └─ layouts/*.js                           │
         │                                            │
         └─ Orchestration                             │
            └─ app.js (main controller)               │
                                                      ▼
                                           ┌────────────────────────┐
                                           │   FILE STORAGE         │
-                                          │ ~/.local/share/fingergo│
+                                          │ ~/.local/share/FingerGo│
                                           └────────────────────────┘
                                                      │
                                          ┌───────────┼───────────┐

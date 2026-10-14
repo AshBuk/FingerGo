@@ -6,7 +6,9 @@ SPDX-License-Identifier: Apache-2.0
 ## Keyboard
 
 #### Layout
-- **Primary:** EN QWERTY layout only (MVP)
+- **Layouts:** English QWERTY and Dvorak, Russian JCUKEN, German QWERTZ, French AZERTY, Spanish (Spain and Latin America), Traditional Chinese Bopomofo. Selected in Settings, one file per layout in `gui/src/js/layouts/`.
+- **Input:** keystrokes are matched by `KeyboardEvent.key`, so the OS layout must match the selected one. Characters typed through dead keys or an IME arrive on `compositionend`; the target key is highlighted in two steps for dead keys.
+- **Physical input:** a layout with `physicalInput: true` (Bopomofo) is typed on an English OS layout. FingerGo maps `KeyboardEvent.code` to the layout character, because these layouts otherwise need an IME.
 - **Visual features:**
   - Current target key highlighted
   - Finger mapping color 
