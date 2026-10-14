@@ -204,7 +204,9 @@
             return;
         }
 
-        processChar(e.key);
+        // Layouts without an OS layout or IME map the physical key to their character
+        const physical = window.KeyboardUI?.getPhysicalKey(e.code);
+        processChar(physical ? physical[e.shiftKey ? 'shift' : 'base'] : e.key);
     }
 
     /**

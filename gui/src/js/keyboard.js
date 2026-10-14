@@ -229,6 +229,9 @@
         return;
     }
 
+    // Physical key -> layout character, for layouts typed without an OS layout or IME
+    let physicalKeys = window.KeyUtils.physicalKeyMap(layout);
+
     function setPressed(key, pressed) {
         const els = keyToEls.get(key);
         if (!els) return;
@@ -308,7 +311,7 @@
         if (deadKeySteps && !e.isComposing && e.keyCode !== 229 && !MODIFIER_KEYS.has(e.key)) {
             showDeadKeyStep(e.key === 'Dead' ? 1 : 0);
         }
-        const k = window.KeyUtils.normalizeKey(e.key);
+        const k = physicalKeys?.[e.code]?.base ?? window.KeyUtils.normalizeKey(e.key);
         // For Shift, use location to determine which one
         if (e.key === 'Shift') {
             const shiftEls = keyToEls.get('Shift');
@@ -323,7 +326,7 @@
     }
 
     function onKeyUp(e) {
-        const k = window.KeyUtils.normalizeKey(e.key);
+        const k = physicalKeys?.[e.code]?.base ?? window.KeyUtils.normalizeKey(e.key);
         // For Shift, use location to determine which one
         if (e.key === 'Shift') {
             const shiftEls = keyToEls.get('Shift');
@@ -348,6 +351,7 @@
         layout = newLayout;
         rows = layout.rows;
         fingerForKey = layout.fingerMap;
+        physicalKeys = window.KeyUtils.physicalKeyMap(layout);
 
         // Clear and re-render
         container.innerHTML = '';
@@ -376,6 +380,7 @@
         clearError: k => window.KeyUtils.keysForChar(k, layout).forEach(clearErrorState),
         clearAllErrors,
         getCurrentLayout: () => layout,
+        getPhysicalKey: code => physicalKeys?.[code],
         setLayout,
         getAvailableLayouts: () => window.KeyboardLayouts.getAvailableLayouts(),
     };
