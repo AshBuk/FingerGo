@@ -68,6 +68,11 @@
   </keywords>
   
   <releases>
+    <release version="1.5.0" date="2026-10-14">
+      <description>
+        <p>New Bopomofo keyboard layout</p>
+      </description>
+    </release>
     <release version="1.4.0" date="2026-10-11">
       <description>
         <p>Bug fixes and improvements</p>
