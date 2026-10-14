@@ -112,6 +112,34 @@
         return (deadKeySequence(char, layout) ?? [char]).map(c => baseKey(c, layout));
     }
 
+    // KeyboardEvent.code of each layout row position on an ANSI keyboard
+    const ANSI_CODES = [
+        'Backquote Digit1 Digit2 Digit3 Digit4 Digit5 Digit6 Digit7 Digit8 Digit9 Digit0 Minus Equal Backspace',
+        'Tab KeyQ KeyW KeyE KeyR KeyT KeyY KeyU KeyI KeyO KeyP BracketLeft BracketRight Backslash',
+        'CapsLock KeyA KeyS KeyD KeyF KeyG KeyH KeyJ KeyK KeyL Semicolon Quote Enter',
+        'ShiftLeft KeyZ KeyX KeyC KeyV KeyB KeyN KeyM Comma Period Slash ShiftRight',
+        'Space',
+    ].map(row => row.split(' '));
+
+    /**
+     * Map physical keys to layout characters for layouts typed without an OS layout or IME
+     * @param {Object} layout - Keyboard layout with ANSI rows and physicalInput flag
+     * @returns {Record<string, {base: string, shift: string}>|null} e.g. KeyS -> {base: "ㄋ", shift: "ㄋ"}
+     */
+    function physicalKeyMap(layout) {
+        if (!layout?.physicalInput) return null;
+        const map = {};
+        layout.rows.forEach((row, i) =>
+            row.forEach(({ key, label }, j) => {
+                const code = ANSI_CODES[i]?.[j];
+                if (!code || key.length !== 1) return;
+                const shift = Array.isArray(label) ? label[0] : key.toUpperCase();
+                map[code] = { base: key, shift };
+            }),
+        );
+        return map;
+    }
+
     window.KeyUtils = {
         normalizeKey,
         normalizeTextChar,
@@ -119,6 +147,7 @@
         deadKeySequence,
         baseKey,
         keysForChar,
+        physicalKeyMap,
     };
 
     window.AppUtils = {
