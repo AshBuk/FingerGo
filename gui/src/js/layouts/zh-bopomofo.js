@@ -11,6 +11,7 @@
         id: 'zh-bopomofo',
         name: '繁體中文 (注音)',
         language: 'zh',
+        physicalInput: true,
         rows: [
             [
                 { key: '`', label: ['~', '`'] },
