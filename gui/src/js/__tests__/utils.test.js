@@ -135,6 +135,48 @@ describe('KeyUtils', () => {
             assert.deepEqual(KeyUtils.keysForChar('A', undefined), ['a']);
         });
     });
+
+    describe('physicalKeyMap', () => {
+        const qwerty = KeyUtils.physicalKeyMap({ ...LAYOUT_EN_QWERTY, physicalInput: true });
+
+        it('returns null for layouts without physical input', () => {
+            assert.equal(KeyUtils.physicalKeyMap(LAYOUT_EN_QWERTY), null);
+        });
+
+        it('maps ANSI key codes to base and shift characters', () => {
+            assert.deepEqual(qwerty.KeyS, { base: 's', shift: 'S' });
+            assert.deepEqual(qwerty.Digit1, { base: '1', shift: '!' });
+            assert.deepEqual(qwerty.Backquote, { base: '`', shift: '~' });
+            assert.deepEqual(qwerty.Quote, { base: "'", shift: '"' });
+            assert.deepEqual(qwerty.Slash, { base: '/', shift: '?' });
+            assert.deepEqual(qwerty.Space, { base: ' ', shift: ' ' });
+        });
+
+        it('skips service keys', () => {
+            ['Backspace', 'Tab', 'CapsLock', 'Enter', 'ShiftLeft', 'ShiftRight'].forEach(code =>
+                assert.equal(qwerty[code], undefined),
+            );
+            assert.equal(Object.keys(qwerty).length, 48);
+        });
+
+        it('maps non-Latin keys by row position', () => {
+            const map = KeyUtils.physicalKeyMap({
+                physicalInput: true,
+                rows: [
+                    [
+                        { key: '`', label: ['~', '`'] },
+                        { key: 'ㄅ', label: ['!', 'ㄅ'] },
+                    ],
+                    [
+                        { key: 'Tab', label: 'Tab' },
+                        { key: 'ㄆ', label: 'ㄆ' },
+                    ],
+                ],
+            });
+            assert.deepEqual(map.Digit1, { base: 'ㄅ', shift: '!' });
+            assert.deepEqual(map.KeyQ, { base: 'ㄆ', shift: 'ㄆ' });
+        });
+    });
 });
 
 describe('AppUtils', () => {
