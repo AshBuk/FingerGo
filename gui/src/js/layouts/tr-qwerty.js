@@ -60,7 +60,7 @@
                 { key: 'Enter', label: 'Enter', className: 'key-wider' },
             ],
             [
-                { key: 'Shift', label: 'Shift', className: 'key-wide' },
+                { key: 'Shift', label: 'Shift', className: 'key-iso-shift' },
                 { key: '<', label: ['>', '<'] },
                 { key: 'z', label: 'Z' },
                 { key: 'x', label: 'X' },
@@ -123,12 +123,13 @@
             8: 'right-middle',
             ı: 'right-middle',
             k: 'right-middle',
+            ö: 'right-middle',
 
             // Right hand - ring
             9: 'right-ring',
             o: 'right-ring',
             l: 'right-ring',
-            '.': 'right-ring',
+            ç: 'right-ring',
 
             // Right hand - pinky
             0: 'right-pinky',
@@ -139,8 +140,7 @@
             ü: 'right-pinky',
             ş: 'right-pinky',
             i: 'right-pinky',
-            ö: 'right-pinky',
-            ç: 'right-pinky',
+            '.': 'right-pinky',
             ',': 'right-pinky',
             Backspace: 'right-pinky',
             Enter: 'right-pinky',
@@ -161,7 +161,7 @@
             '?': 'right-pinky',
             _: 'right-pinky',
             ';': 'right-pinky',
-            ':': 'right-ring',
+            ':': 'right-pinky',
 
             // Thumbs
             ' ': 'thumb',
@@ -236,39 +236,9 @@
             ':': '.',
             '>': '<',
 
-            // Turkish uppercase letters
-            Q: 'q',
-            W: 'w',
-            E: 'e',
-            R: 'r',
-            T: 't',
-            Y: 'y',
-            U: 'u',
+            // Turkish dotless and dotted I
             I: 'ı',
-            O: 'o',
-            P: 'p',
-            Ğ: 'ğ',
-            Ü: 'ü',
-            A: 'a',
-            S: 's',
-            D: 'd',
-            F: 'f',
-            G: 'g',
-            H: 'h',
-            J: 'j',
-            K: 'k',
-            L: 'l',
-            Ş: 'ş',
             İ: 'i',
-            Z: 'z',
-            X: 'x',
-            C: 'c',
-            V: 'v',
-            B: 'b',
-            N: 'n',
-            M: 'm',
-            Ö: 'ö',
-            Ç: 'ç',
         },
     };
 })();
