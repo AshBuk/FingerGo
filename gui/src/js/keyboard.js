@@ -64,8 +64,10 @@
                 addKeyMapping(def.key, el);
 
                 // For letter keys, also map the uppercase version (Unicode-aware)
-                if (def.key.length === 1 && def.key !== def.key.toUpperCase()) {
-                    addKeyMapping(def.key.toUpperCase(), el);
+                // A single-letter label wins over toUpperCase(): Turkish "i" -> "İ", not "I"
+                const upper = def.label?.length === 1 ? def.label : def.key.toUpperCase();
+                if (def.key.length === 1 && def.key !== upper) {
+                    addKeyMapping(upper, el);
                 }
                 rowEl.appendChild(el);
             });
@@ -161,14 +163,8 @@
         if (originalChar === '\n') keyName = 'Enter';
         else if (originalChar === '\t') keyName = 'Tab';
 
-        let keyForFingerMap = keyName;
-        // If keyName is an uppercase letter or shift symbol, get base key for fingerMap lookup
-        // Unicode-aware: works for Latin, Cyrillic, Greek, etc.
-        if (keyForFingerMap.length === 1 && keyForFingerMap !== keyForFingerMap.toLowerCase()) {
-            keyForFingerMap = keyForFingerMap.toLowerCase();
-        } else if (layout.shiftToBaseKey?.[keyForFingerMap]) {
-            keyForFingerMap = layout.shiftToBaseKey[keyForFingerMap];
-        }
+        // Shift symbol or uppercase letter -> base key for fingerMap lookup
+        const keyForFingerMap = window.KeyUtils.baseKey(keyName, layout);
 
         const fingerId = fingerForKey[keyForFingerMap];
 
