@@ -112,6 +112,21 @@
         return (deadKeySequence(char, layout) ?? [char]).map(c => baseKey(c, layout));
     }
 
+    /**
+     * Resolve the modifier needed to type a character, e.g. "A" -> "Shift", "È" -> "CapsLock"
+     * @param {string} char - Character from text
+     * @param {Object} layout - Keyboard layout
+     * @returns {string|null} "Shift", "CapsLock" or null
+     */
+    function modifierForChar(char, layout) {
+        if (typeof char !== 'string' || char.length !== 1) return null;
+        if (layout?.shiftToBaseKey?.[char]) return 'Shift';
+        if (char === char.toLowerCase() || char !== char.toUpperCase()) return null;
+        // Uppercase of a key whose Shift types another symbol ("è" -> "é") needs CapsLock
+        const label = layout?.rows?.flat().find(d => d.key === char.toLowerCase())?.label;
+        return Array.isArray(label) && label[0] !== char ? 'CapsLock' : 'Shift';
+    }
+
     // KeyboardEvent.code of each layout row position on an ANSI keyboard
     const ANSI_CODES = [
         'Backquote Digit1 Digit2 Digit3 Digit4 Digit5 Digit6 Digit7 Digit8 Digit9 Digit0 Minus Equal Backspace',
@@ -147,6 +162,7 @@
         deadKeySequence,
         baseKey,
         keysForChar,
+        modifierForChar,
         physicalKeyMap,
     };
 

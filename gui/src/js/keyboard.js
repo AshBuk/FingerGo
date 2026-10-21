@@ -138,6 +138,12 @@
         if (el) el.classList.toggle('active', active);
     }
 
+    function clearModifierTargets() {
+        ['Shift', 'CapsLock'].forEach(k =>
+            keyToEls.get(k)?.forEach(el => el.classList.remove('target')),
+        );
+    }
+
     /**
      * Highlight fingers for a given character
      * @param {string|null} originalChar - Original character from text (not normalized)
@@ -146,8 +152,7 @@
         // Clear previous highlights
         highlightedFingers.forEach(id => toggleFingerActive(id, false));
         highlightedFingers = [];
-        // Clear Shift key highlight
-        keyToEls.get('Shift')?.forEach(el => el.classList.remove('target'));
+        clearModifierTargets();
 
         if (!originalChar) return;
 
@@ -179,10 +184,16 @@
             return;
         }
 
-        // Check if Shift is needed
-        const needsShift = requiresShift(originalChar);
+        const modifier = window.KeyUtils.modifierForChar(originalChar, layout);
 
-        if (needsShift) {
+        if (modifier === 'CapsLock') {
+            const capsFinger = fingerForKey.CapsLock;
+            if (fingerToEl.has(capsFinger)) {
+                toggleFingerActive(capsFinger, true);
+                highlightedFingers.push(capsFinger);
+            }
+            keyToEls.get('CapsLock')?.forEach(el => el.classList.add('target'));
+        } else if (modifier === 'Shift') {
             // Determine which Shift to use (opposite hand)
             const leftHandKeys = layout.leftHandKeys;
             const isLeftHandKey =
@@ -209,18 +220,6 @@
             toggleFingerActive(fingerId, true);
             highlightedFingers.push(fingerId);
         }
-    }
-
-    /**
-     * Check if character requires Shift key
-     * Unicode-aware: works for Latin, Cyrillic, Greek, etc.
-     */
-    function requiresShift(char) {
-        if (!char || char.length !== 1) return false;
-        // Unicode-aware uppercase check
-        if (char !== char.toLowerCase() && char === char.toUpperCase()) return true;
-        // Shift symbols from layout
-        return !!layout.shiftToBaseKey?.[char];
     }
 
     // Key normalization utilities are now in utils.js (KeyUtils)
@@ -250,8 +249,7 @@
         if (targetKey && keyToEls.get(targetKey)) {
             keyToEls.get(targetKey).forEach(el => el.classList.remove('target'));
         }
-        // Clear previous Shift highlight
-        keyToEls.get('Shift')?.forEach(el => el.classList.remove('target'));
+        clearModifierTargets();
 
         if (!originalChar) {
             targetKey = null;

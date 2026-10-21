@@ -13,9 +13,18 @@ await import('../utils.js');
 await import('../layouts/en-qwerty.js');
 await import('../layouts/es-latam.js');
 await import('../layouts/fr-azerty.js');
+await import('../layouts/es-qwerty.js');
+await import('../layouts/it-qwerty.js');
 
-const { KeyUtils, AppUtils, LAYOUT_EN_QWERTY, LAYOUT_ES_LATAM, LAYOUT_FR_AZERTY } =
-    globalThis.window;
+const {
+    KeyUtils,
+    AppUtils,
+    LAYOUT_EN_QWERTY,
+    LAYOUT_ES_LATAM,
+    LAYOUT_FR_AZERTY,
+    LAYOUT_ES_QWERTY,
+    LAYOUT_IT_QWERTY,
+} = globalThis.window;
 
 describe('KeyUtils', () => {
     describe('normalizeKey', () => {
@@ -133,6 +142,32 @@ describe('KeyUtils', () => {
             assert.deepEqual(KeyUtils.keysForChar('?', LAYOUT_ES_LATAM), ["'"]);
             assert.deepEqual(KeyUtils.keysForChar('Tab', LAYOUT_EN_QWERTY), ['Tab']);
             assert.deepEqual(KeyUtils.keysForChar('A', undefined), ['a']);
+        });
+    });
+
+    describe('modifierForChar', () => {
+        it('requires Shift for uppercase letters and shift symbols', () => {
+            assert.equal(KeyUtils.modifierForChar('A', LAYOUT_EN_QWERTY), 'Shift');
+            assert.equal(KeyUtils.modifierForChar('!', LAYOUT_EN_QWERTY), 'Shift');
+            assert.equal(KeyUtils.modifierForChar('é', LAYOUT_IT_QWERTY), 'Shift');
+            assert.equal(KeyUtils.modifierForChar('Ç', LAYOUT_ES_QWERTY), 'Shift');
+        });
+
+        it('requires CapsLock for uppercase letters whose Shift types another symbol', () => {
+            assert.equal(KeyUtils.modifierForChar('È', LAYOUT_IT_QWERTY), 'CapsLock');
+            assert.equal(KeyUtils.modifierForChar('É', LAYOUT_FR_AZERTY), 'CapsLock');
+        });
+
+        it('resolves uppercase letters through shiftToBaseKey first', () => {
+            const layout = { rows: [[{ key: 'i', label: 'İ' }]], shiftToBaseKey: { İ: 'i' } };
+            assert.equal(KeyUtils.modifierForChar('İ', layout), 'Shift');
+            assert.equal(KeyUtils.baseKey('İ', layout), 'i');
+        });
+
+        it('returns null for base characters and key names', () => {
+            assert.equal(KeyUtils.modifierForChar('a', LAYOUT_EN_QWERTY), null);
+            assert.equal(KeyUtils.modifierForChar('è', LAYOUT_IT_QWERTY), null);
+            assert.equal(KeyUtils.modifierForChar('Enter', LAYOUT_EN_QWERTY), null);
         });
     });
 
