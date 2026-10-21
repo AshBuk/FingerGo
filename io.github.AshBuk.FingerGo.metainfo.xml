@@ -68,6 +68,11 @@
   </keywords>
   
   <releases>
+    <release version="1.6.0" date="2026-10-21">
+      <description>
+        <p>New Italian and Turkish keyboard layouts</p>
+      </description>
+    </release>
     <release version="1.5.0" date="2026-10-14">
       <description>
         <p>New Bopomofo keyboard layout</p>
