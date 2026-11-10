@@ -110,23 +110,22 @@
                 </div>
             `;
 
-            const onExternalClose = () => resolve(false);
+            const finish = result => {
+                window.EventBus.off('modal:closed', onExternalClose);
+                modalContent.removeEventListener('click', handleClick);
+                resolve(result);
+            };
+            const onExternalClose = () => finish(false);
 
             const handleClick = e => {
                 const action = e.target.dataset?.action;
-                if (action === 'confirm') {
-                    window.EventBus.off('modal:closed', onExternalClose);
-                    resolve(true);
-                    hide();
-                } else if (action === 'cancel') {
-                    window.EventBus.off('modal:closed', onExternalClose);
-                    resolve(false);
-                    hide();
-                }
+                if (action !== 'confirm' && action !== 'cancel') return;
+                finish(action === 'confirm');
+                hide();
             };
 
             window.EventBus.on('modal:closed', onExternalClose);
-            modalContent.addEventListener('click', handleClick, { once: true });
+            modalContent.addEventListener('click', handleClick);
             modalOverlay.classList.remove('modal-hidden');
         });
     }
