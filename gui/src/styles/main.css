@@ -149,9 +149,6 @@ body.zen-mode .top-action-button:not(#zen-toggle) {
 /* Character-level text rendering */
 #text-display .char {
     display: inline;
-    transition:
-        background-color 0.2s ease,
-        color 0.2s ease;
 }
 
 #text-display .char.typed {
