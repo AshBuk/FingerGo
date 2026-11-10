@@ -12,6 +12,7 @@ import (
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
+	"github.com/wailsapp/wails/v2/pkg/options/linux"
 	"github.com/wailsapp/wails/v2/pkg/options/mac"
 	"github.com/wailsapp/wails/v2/pkg/options/windows"
 
@@ -41,6 +42,11 @@ func main() {
 		},
 		Mac: &mac.Options{
 			Appearance: mac.NSAppearanceNameDarkAqua,
+		},
+		// Wails defaults to GPU policy Never when Linux is nil. Wails 2.16 maps
+		// OnDemand to WebKit's ALWAYS. Opt out with WEBKIT_DISABLE_COMPOSITING_MODE=1.
+		Linux: &linux.Options{
+			WebviewGpuPolicy: linux.WebviewGpuPolicyOnDemand,
 		},
 	}); err != nil {
 		log.Fatalf("failed to start application: %v", err)
