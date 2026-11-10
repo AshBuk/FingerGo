@@ -15,17 +15,17 @@
   },
   {
     "type": "file",
-    "url": "https://proxy.golang.org/github.com/wailsapp/wails/v2/@v/v2.16.0.zip",
-    "sha256": "6c000d9ddba86b99903fa450edc6bfc56995c427ebd37037aaa1c0cb3a6c8fd2",
+    "url": "https://proxy.golang.org/github.com/wailsapp/wails/v2/@v/v2.17.1.zip",
+    "sha256": "b4605bedc1f4d1c0f5991357cc92dd5bc7c80a196067614686b755afa1785913",
     "dest": "go/pkg/mod/cache/download/github.com/wailsapp/wails/v2/@v/",
-    "dest-filename": "v2.16.0.zip"
+    "dest-filename": "v2.17.1.zip"
   },
   {
     "type": "file",
-    "url": "https://proxy.golang.org/github.com/wailsapp/wails/v2/@v/v2.16.0.mod",
-    "sha256": "f78984d91560ec3ca43a37028ce9bd6af984ca8374db12319a8ea2338ea6340c",
+    "url": "https://proxy.golang.org/github.com/wailsapp/wails/v2/@v/v2.17.1.mod",
+    "sha256": "59768a5b84d6e8e15ace3f83ef04a184d894c4cb37000eb620a611c195f3f998",
     "dest": "go/pkg/mod/cache/download/github.com/wailsapp/wails/v2/@v/",
-    "dest-filename": "v2.16.0.mod"
+    "dest-filename": "v2.17.1.mod"
   },
   {
     "type": "file",
@@ -54,6 +54,20 @@
     "sha256": "5094c6b919573a7c2e28826ac90c9595ac99665608307d3797c957f537537d4b",
     "dest": "go/pkg/mod/cache/download/github.com/bep/debounce/@v/",
     "dest-filename": "v1.2.1.mod"
+  },
+  {
+    "type": "file",
+    "url": "https://proxy.golang.org/github.com/gabriel-vasile/mimetype/@v/v1.4.16.zip",
+    "sha256": "8b5a6b5e60c462072f9214676dc9a773f8c38844fa16eebeb37a2901abf26d3e",
+    "dest": "go/pkg/mod/cache/download/github.com/gabriel-vasile/mimetype/@v/",
+    "dest-filename": "v1.4.16.zip"
+  },
+  {
+    "type": "file",
+    "url": "https://proxy.golang.org/github.com/gabriel-vasile/mimetype/@v/v1.4.16.mod",
+    "sha256": "e7a39d89ad1e968d858a5b5179ab8a406a9c9fe918d99cbc77a4029657081fd6",
+    "dest": "go/pkg/mod/cache/download/github.com/gabriel-vasile/mimetype/@v/",
+    "dest-filename": "v1.4.16.mod"
   },
   {
     "type": "file",
@@ -334,20 +348,6 @@
     "sha256": "4fedf1f25fe5dc9bb6d07a6b1630cb01c379dc7130f6237d427d79e8737e0346",
     "dest": "go/pkg/mod/cache/download/github.com/wailsapp/go-webview2/@v/",
     "dest-filename": "v1.0.22.mod"
-  },
-  {
-    "type": "file",
-    "url": "https://proxy.golang.org/github.com/wailsapp/mimetype/@v/v1.4.1.zip",
-    "sha256": "8576e6dd4be29c4e6182907b3c81dc2e706893de0a00d79e158b954e0226efae",
-    "dest": "go/pkg/mod/cache/download/github.com/wailsapp/mimetype/@v/",
-    "dest-filename": "v1.4.1.zip"
-  },
-  {
-    "type": "file",
-    "url": "https://proxy.golang.org/github.com/wailsapp/mimetype/@v/v1.4.1.mod",
-    "sha256": "affd350d0b1d48ad06d2ce7958706a1d8f774e45a7f291a0511d4622113307c7",
-    "dest": "go/pkg/mod/cache/download/github.com/wailsapp/mimetype/@v/",
-    "dest-filename": "v1.4.1.mod"
   },
   {
     "type": "file",
