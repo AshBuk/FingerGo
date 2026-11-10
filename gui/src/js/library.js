@@ -358,7 +358,7 @@
         const textsInCategory = state.library?.texts.filter(t => t.categoryId === categoryId) || [];
         const warningMsg =
             textsInCategory.length > 0
-                ? `Category "${category.name}" contains ${textsInCategory.length} text(s).\nTexts will become uncategorized.\n\nDelete category?`
+                ? `Category "${category.name}" contains ${textsInCategory.length} text(s).\nThey will be deleted too.\n\nDelete category?`
                 : `Delete category "${category.name}"?`;
 
         const confirmed = await window.ModalManager.confirm({
