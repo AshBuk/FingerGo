@@ -144,7 +144,7 @@
      * Handle keydown event
      */
     function handleKeyDown(e) {
-        if (!session.isActive) return;
+        if (!session.isActive || window.ModalManager?.isVisible()) return;
         // Ignore events from input/textarea/select elements (forms, modals)
         // BUT allow events from our main text-input textarea
         const target = e.target;
@@ -208,6 +208,7 @@
      */
     function handleCompositionEnd(e) {
         if (!session.isActive || !e.data || e.target.id !== 'text-input') return;
+        if (window.ModalManager?.isVisible()) return;
         if (session.isPaused) resume();
         for (const char of e.data) processChar(char);
     }
