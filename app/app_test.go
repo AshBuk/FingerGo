@@ -6,6 +6,7 @@ package app
 
 import (
 	"context"
+	"sync"
 	"testing"
 
 	domain "github.com/AshBuk/FingerGo/internal/domain"
@@ -273,5 +274,29 @@ func TestApp_Persistence(t *testing.T) {
 	settings, _ := app2.GetSettings()
 	if settings.Theme != "light" {
 		t.Errorf("settings not persisted: theme = %q", settings.Theme)
+	}
+}
+
+// Wails dispatches each bound call in its own goroutine.
+func TestApp_ConcurrentUpdateSetting(t *testing.T) {
+	dir := t.TempDir()
+	app := startApp(t, dir)
+
+	var wg sync.WaitGroup
+	for _, key := range []string{"showKeyboard", "showStatsBar", "zenMode", "strictMode"} {
+		wg.Go(func() {
+			if err := app.UpdateSetting(key, true); err != nil {
+				t.Errorf("UpdateSetting(%q): %v", key, err)
+			}
+		})
+	}
+	wg.Wait()
+
+	s, err := startApp(t, dir).GetSettings()
+	if err != nil {
+		t.Fatalf("GetSettings after restart: %v", err)
+	}
+	if !s.ShowKeyboard || !s.ShowStatsBar || !s.ZenMode || !s.StrictMode {
+		t.Errorf("lost concurrent update: %+v", s)
 	}
 }

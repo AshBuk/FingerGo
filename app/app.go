@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"sync"
 
 	domain "github.com/AshBuk/FingerGo/internal/domain"
 	"github.com/AshBuk/FingerGo/internal/storage"
@@ -18,11 +19,14 @@ type App struct {
 	textsRepo    *storage.TextRepository     // Handles operations related to typing texts
 	sessionsRepo *storage.SessionRepository  // Manages the persistence of typing session data
 	settingsRepo *storage.SettingsRepository // Handles user preferences persistence
+	mu           sync.Mutex                  // Serializes bound calls: Wails runs each in its own goroutine
 }
 
 func New() *App { return &App{} }
 
 func (a *App) Startup(ctx context.Context) error {
+	a.mu.Lock()
+	defer a.mu.Unlock()
 	if a.storage == nil {
 		root := storage.DefaultRoot()
 		manager, err := storage.New(root)
@@ -53,6 +57,8 @@ func (a *App) Shutdown(ctx context.Context) {}
 
 // DefaultText returns the default text entry (metadata + content).
 func (a *App) DefaultText() (domain.Text, error) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
 	if a.textsRepo == nil {
 		return domain.Text{}, fmt.Errorf("text repository not initialized")
 	}
@@ -61,6 +67,8 @@ func (a *App) DefaultText() (domain.Text, error) {
 
 // Text returns text content by identifier.
 func (a *App) Text(id string) (domain.Text, error) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
 	if a.textsRepo == nil {
 		return domain.Text{}, fmt.Errorf("text repository not initialized")
 	}
@@ -69,6 +77,8 @@ func (a *App) Text(id string) (domain.Text, error) {
 
 // TextLibrary returns library metadata for UI navigation.
 func (a *App) TextLibrary() (domain.TextLibrary, error) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
 	if a.textsRepo == nil {
 		return domain.TextLibrary{}, fmt.Errorf("text repository not initialized")
 	}
@@ -77,6 +87,8 @@ func (a *App) TextLibrary() (domain.TextLibrary, error) {
 
 // SaveSession persists a completed typing session.
 func (a *App) SaveSession(payload *domain.SessionPayload) error {
+	a.mu.Lock()
+	defer a.mu.Unlock()
 	if a.sessionsRepo == nil {
 		return fmt.Errorf("session repository not initialized")
 	}
@@ -86,6 +98,8 @@ func (a *App) SaveSession(payload *domain.SessionPayload) error {
 
 // ListSessions returns recent typing sessions (newest first).
 func (a *App) ListSessions(limit int) ([]domain.TypingSession, error) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
 	if a.sessionsRepo == nil {
 		return nil, fmt.Errorf("session repository not initialized")
 	}
@@ -94,6 +108,8 @@ func (a *App) ListSessions(limit int) ([]domain.TypingSession, error) {
 
 // GetSettings returns current user settings.
 func (a *App) GetSettings() (domain.Settings, error) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
 	if a.settingsRepo == nil {
 		return domain.DefaultSettings(), fmt.Errorf("settings repository not initialized")
 	}
@@ -102,6 +118,8 @@ func (a *App) GetSettings() (domain.Settings, error) {
 
 // UpdateSetting modifies a single setting by key and persists the change.
 func (a *App) UpdateSetting(key string, value any) error {
+	a.mu.Lock()
+	defer a.mu.Unlock()
 	if a.settingsRepo == nil {
 		return fmt.Errorf("settings repository not initialized")
 	}
@@ -110,6 +128,8 @@ func (a *App) UpdateSetting(key string, value any) error {
 
 // SaveText creates a new text entry.
 func (a *App) SaveText(text *domain.Text) error {
+	a.mu.Lock()
+	defer a.mu.Unlock()
 	if a.textsRepo == nil {
 		return fmt.Errorf("text repository not initialized")
 	}
@@ -118,6 +138,8 @@ func (a *App) SaveText(text *domain.Text) error {
 
 // UpdateText modifies an existing text entry.
 func (a *App) UpdateText(text *domain.Text) error {
+	a.mu.Lock()
+	defer a.mu.Unlock()
 	if a.textsRepo == nil {
 		return fmt.Errorf("text repository not initialized")
 	}
@@ -126,6 +148,8 @@ func (a *App) UpdateText(text *domain.Text) error {
 
 // DeleteText removes a text entry by ID.
 func (a *App) DeleteText(id string) error {
+	a.mu.Lock()
+	defer a.mu.Unlock()
 	if a.textsRepo == nil {
 		return fmt.Errorf("text repository not initialized")
 	}
@@ -134,6 +158,8 @@ func (a *App) DeleteText(id string) error {
 
 // SaveCategory creates a new category entry.
 func (a *App) SaveCategory(cat *domain.Category) error {
+	a.mu.Lock()
+	defer a.mu.Unlock()
 	if a.textsRepo == nil {
 		return fmt.Errorf("text repository not initialized")
 	}
@@ -142,6 +168,8 @@ func (a *App) SaveCategory(cat *domain.Category) error {
 
 // DeleteCategory removes a category entry by ID.
 func (a *App) DeleteCategory(id string) error {
+	a.mu.Lock()
+	defer a.mu.Unlock()
 	if a.textsRepo == nil {
 		return fmt.Errorf("text repository not initialized")
 	}
