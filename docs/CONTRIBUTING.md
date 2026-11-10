@@ -35,7 +35,7 @@ Why?
 ## Development Setup
 
 **Prerequisites:**
-- Go 1.25+
+- Go 1.26+
 - Node.js 20+
 - Wails CLI: `go install github.com/wailsapp/wails/v2/cmd/wails@latest`
 - Platform-specific:

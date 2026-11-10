@@ -87,7 +87,7 @@ tar -xzf FingerGo-{VERSION}-linux-x86_64.tar.gz
 ```
 ┌──────────────────────┐                    ┌────────────────────────┐
 │   GUI LAYER          │◄──── Wails ───────►│  INTERNAL LAYER        │
-│   HTML/CSS/JS        │      Bridge        │  Go 1.25+              │
+│   HTML/CSS/JS        │      Bridge        │  Go 1.26+              │
 └──────────────────────┘                    └────────────────────────┘
          │                                              │
     Event-Driven                                   Layered
@@ -106,7 +106,7 @@ tar -xzf FingerGo-{VERSION}-linux-x86_64.tar.gz
                                            └─────────────────────┘
 ```
 
-- **Backend:** [Go](https://github.com/golang/go) 1.25+ with concrete repositories
+- **Backend:** [Go](https://github.com/golang/go) 1.26+ with concrete repositories
 - **Bridge:** [Wails v2](https://github.com/wailsapp/wails) provides Go↔JS communication
 - **Frontend:** Vanilla [JavaScript](https://github.com/tc39/ecma262) (ES6+) with Event-Driven Architecture (pub/sub EventBus)
 - **Storage:** JSON files in XDG directories
