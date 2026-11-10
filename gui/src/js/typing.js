@@ -179,13 +179,7 @@
             e.preventDefault();
         }
 
-        const expectedChar = session.text[session.currentIndex];
-        if (expectedChar === undefined) {
-            // Session already complete
-            return;
-        }
-
-        // Handle backspace
+        // Handle backspace (also past the last char after a strict-mode error)
         if (e.key === 'Backspace') {
             if (session.currentIndex > 0) {
                 session.currentIndex--;
