@@ -329,7 +329,7 @@ func (r *TextRepository) persistIndex() error {
 	if err != nil {
 		return fmt.Errorf("storage: marshal index: %w", err)
 	}
-	if err := os.WriteFile(indexPath, data, 0o600); err != nil {
+	if err := writeFileAtomic(indexPath, data); err != nil {
 		return fmt.Errorf("storage: write index %q: %w", indexPath, err)
 	}
 	return nil
@@ -338,7 +338,7 @@ func (r *TextRepository) persistIndex() error {
 // persistContent writes text content to a separate file.
 func (r *TextRepository) persistContent(id, content string) error {
 	contentPath := r.storage.join(textsContentDir, fmt.Sprintf("%s.txt", id))
-	if err := os.WriteFile(contentPath, []byte(content), 0o600); err != nil {
+	if err := writeFileAtomic(contentPath, []byte(content)); err != nil {
 		return fmt.Errorf("storage: write content %q: %w", contentPath, err)
 	}
 	return nil

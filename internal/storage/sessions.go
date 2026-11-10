@@ -119,7 +119,7 @@ func (r *SessionRepository) persist(items []domain.TypingSession) error {
 	if err != nil {
 		return fmt.Errorf("storage: marshal sessions: %w", err)
 	}
-	if err := os.WriteFile(path, data, 0o600); err != nil {
+	if err := writeFileAtomic(path, data); err != nil {
 		return fmt.Errorf("storage: write sessions %q: %w", path, err)
 	}
 	return nil

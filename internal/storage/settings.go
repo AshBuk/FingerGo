@@ -166,7 +166,7 @@ func (r *SettingsRepository) persist(s domain.Settings) error {
 	if err != nil {
 		return fmt.Errorf("storage: marshal config: %w", err)
 	}
-	if err := os.WriteFile(path, data, 0o600); err != nil {
+	if err := writeFileAtomic(path, data); err != nil {
 		return fmt.Errorf("storage: write config %q: %w", path, err)
 	}
 	return nil

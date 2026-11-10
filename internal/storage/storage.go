@@ -149,3 +149,21 @@ func (m *Manager) ensureJSONFile(relPath string, defaultContent []byte) error {
 	}
 	return nil
 }
+
+// writeFileAtomic writes data to a temp file in the same directory and renames it
+// over path, so a crash mid-write never leaves a truncated file behind.
+func writeFileAtomic(path string, data []byte) error {
+	tmp, err := os.CreateTemp(filepath.Dir(path), ".tmp-*")
+	if err != nil {
+		return err
+	}
+	defer os.Remove(tmp.Name()) // no-op after a successful rename
+	if _, err := tmp.Write(data); err != nil {
+		tmp.Close()
+		return err
+	}
+	if err := tmp.Close(); err != nil {
+		return err
+	}
+	return os.Rename(tmp.Name(), path)
+}
