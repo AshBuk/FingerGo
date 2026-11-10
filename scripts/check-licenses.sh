@@ -15,7 +15,7 @@ check_go() {
 			echo "Missing license header: $f"
 			missing=$((missing+1))
 		fi
-	done < <(find "$root" -type f -name '*.go' -not -path '*/vendor/*' -print0)
+	done < <(find "$root" -type f -name '*.go' -not -path '*/vendor/*' -not -path '*/node_modules/*' -print0)
 }
 
 check_js() {
